@@ -35,6 +35,8 @@ import com.google.android.gms.auth.api.identity.AuthorizationRequest
 import com.google.android.gms.auth.api.identity.Identity
 import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.common.api.Scope
+import io.github.quazzong.gwado.db.Gudang
+import io.github.quazzong.gwado.db.isiSemesterSementara
 import io.github.quazzong.gwado.fetch.CatatanSukses
 import io.github.quazzong.gwado.fetch.FetchError
 import io.github.quazzong.gwado.fetch.HasilJob
@@ -44,11 +46,16 @@ import io.github.quazzong.gwado.fetch.ambilClassroom
 import io.github.quazzong.gwado.fetch.ambilMoodle
 import io.github.quazzong.gwado.fetch.job
 import io.github.quazzong.gwado.fetch.tertahan
+import io.github.quazzong.gwado.ingest.isiGagal
+import io.github.quazzong.gwado.ingest.isiSukses
+import io.github.quazzong.gwado.ingest.proses
 import io.github.quazzong.gwado.masuk.BrankasKeystore
 import io.github.quazzong.gwado.masuk.HasilLogin
 import io.github.quazzong.gwado.masuk.alamatLogin
 import io.github.quazzong.gwado.masuk.bacaRedirect
 import io.github.quazzong.gwado.sumber.HasilSumber
+import io.github.quazzong.gwado.tugas.BarisTugas
+import io.github.quazzong.gwado.tugas.daftarTugas
 import io.github.quazzong.gwado.ui.theme.GwadoTheme
 import java.time.Duration
 import java.time.Instant
@@ -58,7 +65,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-// GW5: tiga sumber, token Moodle tersimpan di Keystore, penahan untuk semua. Tampilan polos sampai GW8.
+// GW6: tiga sumber → ingest → database lokal; daftar dibaca dari database. Tampilan polos sampai GW8.
 
 /** situs null = Classroom (token dari AuthorizationClient, bukan login SSO). */
 private class Sumber(val id: String, val label: String, val situs: String? = null)
@@ -74,11 +81,9 @@ private val SCOPES = listOf(
     Scope("https://www.googleapis.com/auth/classroom.coursework.me.readonly"),
 )
 
-private class Baris(val judul: String, val keterangan: String, val deadline: String?)
-
 class MainActivity : ComponentActivity() {
     private val status = mutableStateMapOf<String, String>()
-    private val hasil = mutableStateMapOf<String, List<Baris>>()
+    private var daftar by mutableStateOf<List<BarisTugas>>(emptyList())
     private var sibuk by mutableStateOf(false)
     private var umum by mutableStateOf("")
     private var alamatTempel by mutableStateOf("")
@@ -114,7 +119,7 @@ class MainActivity : ComponentActivity() {
                         modifier = Modifier.padding(innerPadding).padding(16.dp),
                         verticalArrangement = Arrangement.spacedBy(8.dp),
                     ) {
-                        Text("Gwado · uji tiga sumber (GW5)")
+                        Text("Gwado · uji database (GW6)")
                         for (s in DAFTAR_SUMBER) {
                             Row(
                                 verticalAlignment = Alignment.CenterVertically,
@@ -140,17 +145,30 @@ class MainActivity : ComponentActivity() {
                             enabled = !sibuk && alamatTempel.isNotBlank(),
                         ) { Text("Pakai alamat") }
                         if (umum.isNotEmpty()) Text(umum)
-                        val semua = hasil.values.flatten().sortedWith(compareBy(nullsLast<String>()) { it.deadline })
+                        Text("${daftar.size} tugas di database", style = MaterialTheme.typography.bodySmall)
                         LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                            items(semua) { b ->
+                            items(daftar, key = { it.id }) { t ->
                                 Column {
-                                    Text(b.judul)
-                                    Text(b.keterangan, style = MaterialTheme.typography.bodySmall)
+                                    Text(t.judul)
+                                    Text(keterangan(t), style = MaterialTheme.typography.bodySmall)
                                 }
                             }
                         }
                     }
                 }
+            }
+        }
+        lifecycleScope.launch {
+            umum = try {
+                daftar = Gudang.pakai(this@MainActivity) { db ->
+                    db.isiSemesterSementara()
+                    db.daftarTugas()
+                }
+                ""
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                "Database tidak bisa dibuka: ${e.javaClass.simpleName}"
             }
         }
         // Hanya saat pertama dibuat: rotasi layar mengirim intent yang sama lagi (passport sudah terpakai).
@@ -210,9 +228,9 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+    /** Hanya menghapus token; tugas yang sudah tersimpan di database tetap ada. */
     private fun lupakan(s: Sumber) {
         brankas.hapus(s.id)
-        hasil.remove(s.id)
         status[s.id] = "Token ${s.label} dihapus dari HP"
     }
 
@@ -255,23 +273,35 @@ class MainActivity : ComponentActivity() {
         status[s.id] = "Mengambil dari ${s.label}…"
         lifecycleScope.launch {
             status[s.id] = try {
-                when (val j = withContext(Dispatchers.IO) { job(s.id, catatan, manual = true, jalankan = jalankan) }) {
-                    is HasilJob.Tertahan -> pesanTertahan(s, j)
-                    is HasilJob.Selesai -> {
-                        hasil[s.id] = keBaris(s, j.hasil)
-                        "${j.hasil.kelas.size} kelas, ${j.hasil.tugas.size} tugas (belum disaring semester)"
-                    }
-                }
+                ambilDanSimpan(s, jalankan)
             } catch (e: CancellationException) {
                 throw e                                              // layar ditutup: biarkan batal
-            } catch (e: FetchError) {
-                if (e.jenis == "token_ditolak" && s.situs != null) brankas.hapus(s.id)
-                "Gagal (${e.jenis}): ${e.pesan}" +
-                    if (e.jenis == "token_ditolak") ". Tekan Ambil untuk login ulang." else ""
             } catch (e: Exception) {
                 "Gagal tak terduga: ${e.javaClass.simpleName}"       // tanpa pesan: bisa memuat data
             }
             sibuk = false
+        }
+    }
+
+    /** Fetch → Isi → ingest → muat ulang daftar. Kembalikan teks status untuk sumber ini. */
+    private suspend fun ambilDanSimpan(s: Sumber, jalankan: () -> HasilSumber): String {
+        val mulai = Instant.now()
+        val isi = try {
+            when (val j = withContext(Dispatchers.IO) { job(s.id, catatan, manual = true, jalankan = jalankan) }) {
+                is HasilJob.Tertahan -> return pesanTertahan(s, j)      // situs tidak dihubungi: tidak ada run
+                is HasilJob.Selesai -> isiSukses(s.id, mulai, Instant.now(), j.hasil)
+            }
+        } catch (e: FetchError) {
+            if (e.jenis == "token_ditolak" && s.situs != null) brankas.hapus(s.id)
+            isiGagal(s.id, mulai, Instant.now(), e)                    // run gagal tetap dicatat
+        }
+        val (h, baru) = Gudang.pakai(this) { db -> db.proses(isi) to db.daftarTugas() }
+        daftar = baru
+        val e = isi.error
+        return when {
+            e == null -> "${h.status}: ${h.pesan}"
+            e.jenis == "token_ditolak" -> "Gagal (token_ditolak): ${e.pesan}. Tekan Ambil untuk login ulang."
+            else -> "Gagal (${e.jenis}): ${e.pesan}"
         }
     }
 
@@ -288,20 +318,12 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-    private fun keBaris(s: Sumber, h: HasilSumber): List<Baris> {
-        val namaKelas = h.kelas.associate { "${it.externalId}" to it.nama }
-        return h.tugas.map { t ->
-            Baris(
-                t.judul ?: "(tanpa judul)",
-                listOfNotNull(
-                    s.label,
-                    namaKelas["${t.courseExternalId}"],
-                    t.jenis,
-                    t.deadline ?: "tanpa deadline",
-                    t.statusKumpulSitus?.let { "situs: $it" },
-                ).joinToString(" · "),
-                t.deadline,
-            )
-        }
-    }
+    private fun keterangan(t: BarisTugas): String = listOfNotNull(
+        t.sumber,
+        t.kelas,
+        t.jenis,
+        t.deadline ?: "tanpa deadline",
+        t.statusKumpulSitus?.let { "situs: $it" },
+        "hilang di situs".takeIf { t.statusSitus == "hilang" },
+    ).joinToString(" · ")
 }
