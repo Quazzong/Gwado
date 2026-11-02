@@ -1,0 +1,53 @@
+{
+  "lastattempt": {
+    "submission": {
+      "id": 2040,
+      "userid": "999",
+      "attemptnumber": 0,
+      "timecreated": 1788220800,
+      "timemodified": 1788307200,
+      "timestarted": null,
+      "status": "reopened",
+      "groupid": 0,
+      "assignment": 204,
+      "latest": 1,
+      "plugins": [
+        {
+          "type": "file",
+          "name": "File submissions",
+          "fileareas": [
+            {
+              "area": "submission_files",
+              "files": []
+            }
+          ]
+        },
+        {
+          "type": "comments",
+          "name": "Submission comments"
+        }
+      ]
+    },
+    "submissiongroupmemberswhoneedtosubmit": [],
+    "submissionsenabled": true,
+    "locked": false,
+    "graded": false,
+    "canedit": true,
+    "caneditowner": true,
+    "cansubmit": true,
+    "extensionduedate": null,
+    "timelimit": 0,
+    "blindmarking": false,
+    "gradingstatus": "notgraded",
+    "usergroups": []
+  },
+  "assignmentdata": {
+    "attachments": {
+      "intro": [],
+      "activity": []
+    },
+    "activity": "",
+    "activityformat": 1
+  },
+  "warnings": []
+}

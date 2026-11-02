@@ -1,0 +1,124 @@
+{
+  "courses": [
+    {
+      "dibuat": "2026-08-20T03:15:42Z",
+      "external_id": "100000000001",
+      "kategori": "ACTIVE",
+      "kode_mk": null,
+      "mulai": null,
+      "nama": "Bahasa Inggris Kelas A",
+      "selesai": null,
+      "shortname": "Kelas A"
+    },
+    {
+      "dibuat": "2026-08-21T04:00:00Z",
+      "external_id": "100000000002",
+      "kategori": "ACTIVE",
+      "kode_mk": null,
+      "mulai": null,
+      "nama": "Klub Riset Mahasiswa",
+      "selesai": null,
+      "shortname": null
+    },
+    {
+      "dibuat": "2025-08-18T03:00:00Z",
+      "external_id": "100000000003",
+      "kategori": "ARCHIVED",
+      "kode_mk": null,
+      "mulai": null,
+      "nama": "Bahasa Inggris Dasar",
+      "selesai": null,
+      "shortname": "Kelas B"
+    }
+  ],
+  "tasks": [
+    {
+      "course_external_id": "100000000001",
+      "deadline": "2026-10-09T16:59:00Z",
+      "deskripsi": "Pelajari daftar kata di unit 3.\n\nBawa catatan ke kelas.",
+      "external_id": "300000000001",
+      "jenis": "coursework",
+      "judul": "Vocabulary Quiz Prep",
+      "link_id": null,
+      "status_kumpul_situs": "terkumpul",
+      "url": "https://classroom.google.com/c/Q100000000001/a/W300000000001/details"
+    },
+    {
+      "course_external_id": "100000000001",
+      "deadline": "2026-10-16T16:00:00Z",
+      "deskripsi": "Ringkas artikel dalam 1 halaman.",
+      "external_id": "300000000002",
+      "jenis": "coursework",
+      "judul": "Reading Summary",
+      "link_id": null,
+      "status_kumpul_situs": "belum",
+      "url": "https://classroom.google.com/c/Q100000000001/a/W300000000002/details"
+    },
+    {
+      "course_external_id": "100000000001",
+      "deadline": "2026-10-23T00:00:00Z",
+      "deskripsi": "",
+      "external_id": "300000000003",
+      "jenis": "coursework",
+      "judul": "Speaking Practice Recording",
+      "link_id": null,
+      "status_kumpul_situs": "belum",
+      "url": "https://classroom.google.com/c/Q100000000001/a/W300000000003/details"
+    },
+    {
+      "course_external_id": "100000000001",
+      "deadline": "2026-10-30T00:00:00Z",
+      "deskripsi": "Isi jurnal setiap minggu.",
+      "external_id": "300000000004",
+      "jenis": "coursework",
+      "judul": "Listening Journal",
+      "link_id": null,
+      "status_kumpul_situs": "belum",
+      "url": "https://classroom.google.com/c/Q100000000001/a/W300000000004/details"
+    },
+    {
+      "course_external_id": "100000000001",
+      "deadline": null,
+      "deskripsi": "Kumpulkan sebelum akhir semester.",
+      "external_id": "300000000005",
+      "jenis": "coursework",
+      "judul": "Portfolio (kapan saja)",
+      "link_id": null,
+      "status_kumpul_situs": null,
+      "url": "https://classroom.google.com/c/Q100000000001/a/W300000000005/details"
+    },
+    {
+      "course_external_id": "100000000001",
+      "deadline": "2026-09-30T16:59:00Z",
+      "deskripsi": "Perbaiki sesuai komentar.",
+      "external_id": "300000000006",
+      "jenis": "coursework",
+      "judul": "Revisi Essay",
+      "link_id": null,
+      "status_kumpul_situs": "terkumpul",
+      "url": "https://classroom.google.com/c/Q100000000001/a/W300000000006/details"
+    },
+    {
+      "course_external_id": "100000000002",
+      "deadline": "2026-11-02T09:30:00Z",
+      "deskripsi": "",
+      "external_id": "300000000007",
+      "jenis": "coursework",
+      "judul": "Pilih Topik Riset",
+      "link_id": null,
+      "status_kumpul_situs": null,
+      "url": "https://classroom.google.com/c/Q100000000002/a/W300000000007/details"
+    },
+    {
+      "course_external_id": "100000000002",
+      "deadline": "2026-11-20T16:59:00Z",
+      "deskripsi": "Maksimal 2 halaman.",
+      "external_id": "300000000008",
+      "jenis": "coursework",
+      "judul": "Proposal Singkat",
+      "link_id": null,
+      "status_kumpul_situs": null,
+      "url": "https://classroom.google.com/c/Q100000000002/a/W300000000008/details"
+    }
+  ]
+}

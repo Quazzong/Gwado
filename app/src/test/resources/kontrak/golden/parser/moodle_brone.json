@@ -1,0 +1,155 @@
+{
+  "courses": [
+    {
+      "dibuat": null,
+      "external_id": "101",
+      "kategori": "Semester Ganjil 2026/2027",
+      "kode_mk": "ABC60001",
+      "mulai": "2026-08-24T00:00:00Z",
+      "nama": "Pemrograman Dasar",
+      "selesai": "2026-12-31T00:00:00Z",
+      "shortname": "ABC60001_2025|101.01.01|2026.1"
+    },
+    {
+      "dibuat": null,
+      "external_id": "102",
+      "kategori": "Semester Ganjil 2026/2027",
+      "kode_mk": "ABC60011",
+      "mulai": "2026-08-24T00:00:00Z",
+      "nama": "Praktikum Pemrograman Dasar",
+      "selesai": "2026-12-31T00:00:00Z",
+      "shortname": "ABC60011_2025|101.01.02|2026.1"
+    },
+    {
+      "dibuat": null,
+      "external_id": "103",
+      "kategori": "Semester Genap 2025/2026",
+      "kode_mk": "ABC60002",
+      "mulai": "2026-02-16T00:00:00Z",
+      "nama": "Matematika Diskrit",
+      "selesai": "2026-06-30T00:00:00Z",
+      "shortname": "ABC60002_2025|101.01.01|2025.2"
+    },
+    {
+      "dibuat": null,
+      "external_id": "104",
+      "kategori": "Umum",
+      "kode_mk": null,
+      "mulai": null,
+      "nama": "Informasi Akademik Fakultas",
+      "selesai": null,
+      "shortname": "INFO-FAKULTAS"
+    },
+    {
+      "dibuat": null,
+      "external_id": "105",
+      "kategori": "Semester Ganjil 2026/2027",
+      "kode_mk": null,
+      "mulai": "2026-08-24T00:00:00Z",
+      "nama": "Kapita Selekta",
+      "selesai": null,
+      "shortname": "XABC60003_2025|ABC600031"
+    }
+  ],
+  "tasks": [
+    {
+      "course_external_id": "101",
+      "deadline": "2026-10-09T16:59:00Z",
+      "deskripsi": "Kerjakan soal berikut:\nBab 1 & 2\nLatihan 3\nKumpulkan dalam PDF.\nTerima kasih.",
+      "external_id": "assign:201",
+      "jenis": "assign",
+      "judul": "Tugas 1: Algoritma & Flowchart",
+      "link_id": "1201",
+      "status_kumpul_situs": "terkumpul",
+      "url": "https://brone.ub.ac.id/mod/assign/view.php?id=1201"
+    },
+    {
+      "course_external_id": "101",
+      "deadline": null,
+      "deskripsi": "",
+      "external_id": "assign:202",
+      "jenis": "assign",
+      "judul": "Refleksi Mingguan",
+      "link_id": "1202",
+      "status_kumpul_situs": "belum",
+      "url": "https://brone.ub.ac.id/mod/assign/view.php?id=1202"
+    },
+    {
+      "course_external_id": "102",
+      "deadline": "2026-10-15T16:59:00Z",
+      "deskripsi": "Upload laporan + kode program (format .zip). Batas revisi 2× saja.",
+      "external_id": "assign:203",
+      "jenis": "assign",
+      "judul": "Laporan Praktikum 2 — Percabangan",
+      "link_id": "1203",
+      "status_kumpul_situs": "draf",
+      "url": "https://brone.ub.ac.id/mod/assign/view.php?id=1203"
+    },
+    {
+      "course_external_id": "102",
+      "deadline": "2026-09-30T16:59:00Z",
+      "deskripsi": "Revisi sesuai catatan.",
+      "external_id": "assign:204",
+      "jenis": "assign",
+      "judul": "Laporan Praktikum 1",
+      "link_id": "1204",
+      "status_kumpul_situs": "belum",
+      "url": "https://brone.ub.ac.id/mod/assign/view.php?id=1204"
+    },
+    {
+      "course_external_id": "103",
+      "deadline": "2026-06-10T16:59:00Z",
+      "deskripsi": "Lihat modul.",
+      "external_id": "assign:205",
+      "jenis": "assign",
+      "judul": "Tugas Akhir Semester",
+      "link_id": "1205",
+      "status_kumpul_situs": null,
+      "url": "https://brone.ub.ac.id/mod/assign/view.php?id=1205"
+    },
+    {
+      "course_external_id": "104",
+      "deadline": "2026-11-30T16:59:00Z",
+      "deskripsi": "Isi survei.",
+      "external_id": "assign:206",
+      "jenis": "assign",
+      "judul": "Survei Kepuasan Layanan",
+      "link_id": "1206",
+      "status_kumpul_situs": null,
+      "url": "https://brone.ub.ac.id/mod/assign/view.php?id=1206"
+    },
+    {
+      "course_external_id": "101",
+      "deadline": "2026-09-25T03:00:00Z",
+      "deskripsi": "Waktu pengerjaan 60 menit.",
+      "external_id": "quiz:301",
+      "jenis": "quiz",
+      "judul": "Kuis 1: Variabel dan Tipe Data",
+      "link_id": "1301",
+      "status_kumpul_situs": null,
+      "url": "https://brone.ub.ac.id/mod/quiz/view.php?id=1301"
+    },
+    {
+      "course_external_id": "101",
+      "deadline": null,
+      "deskripsi": "",
+      "external_id": "quiz:302",
+      "jenis": "quiz",
+      "judul": "Kuis Latihan (tanpa batas waktu)",
+      "link_id": "1302",
+      "status_kumpul_situs": null,
+      "url": "https://brone.ub.ac.id/mod/quiz/view.php?id=1302"
+    },
+    {
+      "course_external_id": "103",
+      "deadline": "2026-06-05T02:00:00Z",
+      "deskripsi": "",
+      "external_id": "quiz:303",
+      "jenis": "quiz",
+      "judul": "Kuis Akhir Matematika Diskrit",
+      "link_id": "1303",
+      "status_kumpul_situs": null,
+      "url": "https://brone.ub.ac.id/mod/quiz/view.php?id=1303"
+    }
+  ]
+}

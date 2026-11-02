@@ -1,0 +1,69 @@
+{
+  "courses": [
+    {
+      "id": "100000000001",
+      "name": "Bahasa Inggris Kelas A",
+      "descriptionHeading": "Bahasa Inggris Kelas A",
+      "description": "",
+      "room": "",
+      "ownerId": "200000000000000000001",
+      "creationTime": "2026-08-20T03:15:42.123Z",
+      "updateTime": "2026-08-25T01:00:00.000Z",
+      "courseState": "ACTIVE",
+      "alternateLink": "https://classroom.google.com/c/Q100000000001",
+      "teacherGroupEmail": "kelas_100000000001_guru@example.com",
+      "courseGroupEmail": "kelas_100000000001@example.com",
+      "guardiansEnabled": false,
+      "calendarId": "c_100000000001@group.calendar.google.com",
+      "gradebookSettings": {
+        "calculationType": "TOTAL_POINTS",
+        "displaySetting": "HIDE_OVERALL_GRADE"
+      },
+      "subject": "",
+      "section": "Kelas A"
+    },
+    {
+      "id": "100000000002",
+      "name": "Klub Riset Mahasiswa",
+      "descriptionHeading": "Klub Riset Mahasiswa",
+      "description": "",
+      "room": "",
+      "ownerId": "200000000000000000001",
+      "creationTime": "2026-08-21T04:00:00Z",
+      "updateTime": "2026-08-25T01:00:00.000Z",
+      "courseState": "ACTIVE",
+      "alternateLink": "https://classroom.google.com/c/Q100000000002",
+      "teacherGroupEmail": "kelas_100000000002_guru@example.com",
+      "courseGroupEmail": "kelas_100000000002@example.com",
+      "guardiansEnabled": false,
+      "calendarId": "c_100000000002@group.calendar.google.com",
+      "gradebookSettings": {
+        "calculationType": "TOTAL_POINTS",
+        "displaySetting": "HIDE_OVERALL_GRADE"
+      },
+      "subject": ""
+    },
+    {
+      "id": "100000000003",
+      "name": "Bahasa Inggris Dasar",
+      "descriptionHeading": "Bahasa Inggris Dasar",
+      "description": "",
+      "room": "",
+      "ownerId": "200000000000000000001",
+      "creationTime": "2025-08-18T03:00:00.5Z",
+      "updateTime": "2026-08-25T01:00:00.000Z",
+      "courseState": "ARCHIVED",
+      "alternateLink": "https://classroom.google.com/c/Q100000000003",
+      "teacherGroupEmail": "kelas_100000000003_guru@example.com",
+      "courseGroupEmail": "kelas_100000000003@example.com",
+      "guardiansEnabled": false,
+      "calendarId": "c_100000000003@group.calendar.google.com",
+      "gradebookSettings": {
+        "calculationType": "TOTAL_POINTS",
+        "displaySetting": "HIDE_OVERALL_GRADE"
+      },
+      "subject": "",
+      "section": "Kelas B"
+    }
+  ]
+}

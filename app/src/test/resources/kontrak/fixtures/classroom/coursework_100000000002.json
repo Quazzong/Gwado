@@ -1,0 +1,63 @@
+{
+  "courseWork": [
+    {
+      "courseId": "100000000002",
+      "id": "300000000007",
+      "title": "Pilih Topik Riset",
+      "state": "PUBLISHED",
+      "alternateLink": "https://classroom.google.com/c/Q100000000002/a/W300000000007/details",
+      "creationTime": "2026-09-01T02:00:00.000Z",
+      "updateTime": "2026-09-01T02:00:00.000Z",
+      "maxPoints": 100,
+      "workType": "MULTIPLE_CHOICE_QUESTION",
+      "submissionModificationMode": "MODIFIABLE_UNTIL_TURNED_IN",
+      "creatorUserId": "200000000000000000001",
+      "description": "",
+      "dueDate": {
+        "year": 2026,
+        "month": 11,
+        "day": 2
+      },
+      "dueTime": {
+        "hours": 9,
+        "minutes": 30
+      }
+    },
+    {
+      "courseId": "100000000002",
+      "id": "300000000008",
+      "title": "Proposal Singkat",
+      "state": "PUBLISHED",
+      "alternateLink": "https://classroom.google.com/c/Q100000000002/a/W300000000008/details",
+      "creationTime": "2026-09-01T02:00:00.000Z",
+      "updateTime": "2026-09-01T02:00:00.000Z",
+      "maxPoints": 100,
+      "workType": "ASSIGNMENT",
+      "submissionModificationMode": "MODIFIABLE_UNTIL_TURNED_IN",
+      "creatorUserId": "200000000000000000001",
+      "description": "Maksimal 2 halaman.",
+      "dueDate": {
+        "year": 2026,
+        "month": 11,
+        "day": 20
+      },
+      "dueTime": {
+        "hours": 16,
+        "minutes": 59
+      },
+      "materials": [
+        {
+          "driveFile": {
+            "driveFile": {
+              "id": "drv-template-02",
+              "title": "Template Proposal",
+              "alternateLink": "https://drive.google.com/file/d/drv-template-02/view",
+              "thumbnailUrl": "https://drive.google.com/thumbnail?id=drv-template-02"
+            },
+            "shareMode": "VIEW"
+          }
+        }
+      ]
+    }
+  ]
+}

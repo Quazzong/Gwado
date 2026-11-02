@@ -1,0 +1,49 @@
+{
+  "courses": [
+    {
+      "id": 101,
+      "fullname": "Bahasa Inggris Akademik",
+      "shortname": "ABC60005 Kelas A 2026 Ganjil",
+      "idnumber": "",
+      "summary": "",
+      "summaryformat": 1,
+      "startdate": 1787529600,
+      "enddate": 1799971200,
+      "visible": true,
+      "showactivitydates": true,
+      "showcompletionconditions": true,
+      "fullnamedisplay": "Bahasa Inggris Akademik",
+      "viewurl": "https://eling.ub.ac.id/course/view.php?id=101",
+      "courseimage": "",
+      "progress": 0,
+      "hasprogress": true,
+      "isfavourite": false,
+      "hidden": false,
+      "showshortname": false,
+      "coursecategory": "Ganjil 2026/2027"
+    },
+    {
+      "id": 150,
+      "fullname": "Etika Profesi",
+      "shortname": "ABC60006 Kelas C 2026 Ganjil",
+      "idnumber": "",
+      "summary": "",
+      "summaryformat": 1,
+      "startdate": 1787529600,
+      "enddate": 1799971200,
+      "visible": true,
+      "showactivitydates": true,
+      "showcompletionconditions": true,
+      "fullnamedisplay": "Etika Profesi",
+      "viewurl": "https://eling.ub.ac.id/course/view.php?id=150",
+      "courseimage": "",
+      "progress": 0,
+      "hasprogress": true,
+      "isfavourite": false,
+      "hidden": false,
+      "showshortname": false,
+      "coursecategory": "Ganjil 2026/2027"
+    }
+  ],
+  "nextoffset": 2
+}

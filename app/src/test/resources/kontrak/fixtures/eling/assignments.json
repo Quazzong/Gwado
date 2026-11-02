@@ -1,0 +1,139 @@
+{
+  "courses": [
+    {
+      "id": 101,
+      "fullname": "Bahasa Inggris Akademik",
+      "shortname": "ABC60005 Kelas A 2026 Ganjil",
+      "timemodified": 1787184000,
+      "assignments": [
+        {
+          "id": 201,
+          "cmid": 2201,
+          "course": 101,
+          "name": "Essay: My Learning Goals",
+          "nosubmissions": 0,
+          "submissiondrafts": 1,
+          "sendnotifications": 0,
+          "sendlatenotifications": 0,
+          "sendstudentnotifications": 1,
+          "duedate": 1792454400,
+          "allowsubmissionsfromdate": 0,
+          "grade": 100,
+          "timemodified": 1787184000,
+          "completionsubmit": 1,
+          "cutoffdate": 0,
+          "gradingduedate": 0,
+          "teamsubmission": 0,
+          "requireallteammemberssubmit": 0,
+          "teamsubmissiongroupingid": 0,
+          "blindmarking": 0,
+          "hidegrader": 0,
+          "revealidentities": 0,
+          "attemptreopenmethod": "untilpass",
+          "maxattempts": -1,
+          "markingworkflow": 0,
+          "markingallocation": 0,
+          "requiresubmissionstatement": 0,
+          "preventsubmissionnotingroup": 0,
+          "configs": [
+            {
+              "plugin": "file",
+              "subtype": "assignsubmission",
+              "name": "enabled",
+              "value": "1"
+            },
+            {
+              "plugin": "comments",
+              "subtype": "assignsubmission",
+              "name": "enabled",
+              "value": "1"
+            },
+            {
+              "plugin": "comments",
+              "subtype": "assignfeedback",
+              "name": "enabled",
+              "value": "1"
+            }
+          ],
+          "intro": "<p>Write 300 words.</p><p></p><p>Use APA style.</p>",
+          "introformat": 1,
+          "introfiles": [],
+          "introattachments": [],
+          "activity": "",
+          "activityformat": 1,
+          "activityattachments": [],
+          "timelimit": 0,
+          "submissionattachments": 0
+        }
+      ]
+    },
+    {
+      "id": 150,
+      "fullname": "Etika Profesi",
+      "shortname": "ABC60006 Kelas C 2026 Ganjil",
+      "timemodified": 1787184000,
+      "assignments": [
+        {
+          "id": 207,
+          "cmid": 2207,
+          "course": 150,
+          "name": "Studi Kasus Etika",
+          "nosubmissions": 0,
+          "submissiondrafts": 1,
+          "sendnotifications": 0,
+          "sendlatenotifications": 0,
+          "sendstudentnotifications": 1,
+          "duedate": 1793725140,
+          "allowsubmissionsfromdate": 0,
+          "grade": 100,
+          "timemodified": 1787184000,
+          "completionsubmit": 1,
+          "cutoffdate": 0,
+          "gradingduedate": 0,
+          "teamsubmission": 0,
+          "requireallteammemberssubmit": 0,
+          "teamsubmissiongroupingid": 0,
+          "blindmarking": 0,
+          "hidegrader": 0,
+          "revealidentities": 0,
+          "attemptreopenmethod": "untilpass",
+          "maxattempts": -1,
+          "markingworkflow": 0,
+          "markingallocation": 0,
+          "requiresubmissionstatement": 0,
+          "preventsubmissionnotingroup": 0,
+          "configs": [
+            {
+              "plugin": "file",
+              "subtype": "assignsubmission",
+              "name": "enabled",
+              "value": "1"
+            },
+            {
+              "plugin": "comments",
+              "subtype": "assignsubmission",
+              "name": "enabled",
+              "value": "1"
+            },
+            {
+              "plugin": "comments",
+              "subtype": "assignfeedback",
+              "name": "enabled",
+              "value": "1"
+            }
+          ],
+          "intro": "<p>Analisis kasus pada modul 2.</p>",
+          "introformat": 1,
+          "introfiles": [],
+          "introattachments": [],
+          "activity": "",
+          "activityformat": 1,
+          "activityattachments": [],
+          "timelimit": 0,
+          "submissionattachments": 0
+        }
+      ]
+    }
+  ],
+  "warnings": []
+}

@@ -1,0 +1,82 @@
+{
+  "studentSubmissions": [
+    {
+      "courseId": "100000000001",
+      "courseWorkId": "300000000001",
+      "id": "S1",
+      "userId": "200000000000000000099",
+      "creationTime": "2026-09-01T02:00:00.000Z",
+      "updateTime": "2026-09-05T02:00:00.000Z",
+      "state": "TURNED_IN",
+      "late": false,
+      "alternateLink": "https://classroom.google.com/c/Q100000000001/a/W300000000001/submissions/by-status/and-sort-last-name/student/SS1",
+      "courseWorkType": "ASSIGNMENT",
+      "assignmentSubmission": {}
+    },
+    {
+      "courseId": "100000000001",
+      "courseWorkId": "300000000002",
+      "id": "S2",
+      "userId": "200000000000000000099",
+      "creationTime": "2026-09-01T02:00:00.000Z",
+      "updateTime": "2026-09-05T02:00:00.000Z",
+      "state": "CREATED",
+      "late": false,
+      "alternateLink": "https://classroom.google.com/c/Q100000000001/a/W300000000002/submissions/by-status/and-sort-last-name/student/SS2",
+      "courseWorkType": "ASSIGNMENT",
+      "assignmentSubmission": {}
+    },
+    {
+      "courseId": "100000000001",
+      "courseWorkId": "300000000003",
+      "id": "S3",
+      "userId": "200000000000000000099",
+      "creationTime": "2026-09-01T02:00:00.000Z",
+      "updateTime": "2026-09-05T02:00:00.000Z",
+      "state": "NEW",
+      "late": false,
+      "alternateLink": "https://classroom.google.com/c/Q100000000001/a/W300000000003/submissions/by-status/and-sort-last-name/student/SS3",
+      "courseWorkType": "ASSIGNMENT",
+      "assignmentSubmission": {}
+    },
+    {
+      "courseId": "100000000001",
+      "courseWorkId": "300000000004",
+      "id": "S4",
+      "userId": "200000000000000000099",
+      "creationTime": "2026-09-01T02:00:00.000Z",
+      "updateTime": "2026-09-05T02:00:00.000Z",
+      "state": "RECLAIMED_BY_STUDENT",
+      "late": false,
+      "alternateLink": "https://classroom.google.com/c/Q100000000001/a/W300000000004/submissions/by-status/and-sort-last-name/student/SS4",
+      "courseWorkType": "ASSIGNMENT",
+      "assignmentSubmission": {}
+    },
+    {
+      "courseId": "100000000001",
+      "courseWorkId": "300000000005",
+      "id": "S5",
+      "userId": "200000000000000000099",
+      "creationTime": "2026-09-01T02:00:00.000Z",
+      "updateTime": "2026-09-05T02:00:00.000Z",
+      "state": "SUBMISSION_STATE_UNSPECIFIED",
+      "late": false,
+      "alternateLink": "https://classroom.google.com/c/Q100000000001/a/W300000000005/submissions/by-status/and-sort-last-name/student/SS5",
+      "courseWorkType": "ASSIGNMENT",
+      "assignmentSubmission": {}
+    },
+    {
+      "courseId": "100000000001",
+      "courseWorkId": "300000000006",
+      "id": "S6",
+      "userId": "200000000000000000099",
+      "creationTime": "2026-09-01T02:00:00.000Z",
+      "updateTime": "2026-09-05T02:00:00.000Z",
+      "state": "RETURNED",
+      "late": true,
+      "alternateLink": "https://classroom.google.com/c/Q100000000001/a/W300000000006/submissions/by-status/and-sort-last-name/student/SS6",
+      "courseWorkType": "ASSIGNMENT",
+      "assignmentSubmission": {}
+    }
+  ]
+}
