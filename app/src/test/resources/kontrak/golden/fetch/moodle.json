@@ -1,0 +1,286 @@
+{
+  "fungsi": "fungsi_karangan",
+  "http": [
+    {
+      "hasil": {
+        "jenis": "lain",
+        "pesan": "HTTP 400"
+      },
+      "kode": 400
+    },
+    {
+      "hasil": {
+        "jenis": "lain",
+        "pesan": "HTTP 403"
+      },
+      "kode": 403
+    },
+    {
+      "hasil": {
+        "jenis": "lain",
+        "pesan": "HTTP 404"
+      },
+      "kode": 404
+    },
+    {
+      "hasil": {
+        "jenis": "jaringan",
+        "pesan": "HTTP 500"
+      },
+      "kode": 500
+    },
+    {
+      "hasil": {
+        "jenis": "jaringan",
+        "pesan": "HTTP 502"
+      },
+      "kode": 502
+    },
+    {
+      "hasil": {
+        "jenis": "jaringan",
+        "pesan": "HTTP 503"
+      },
+      "kode": 503
+    }
+  ],
+  "jawaban": [
+    {
+      "hasil": {
+        "ok": true
+      },
+      "jawaban": {
+        "courses": []
+      }
+    },
+    {
+      "hasil": {
+        "ok": true
+      },
+      "jawaban": []
+    },
+    {
+      "hasil": {
+        "jenis": "token_ditolak",
+        "pesan": "invalidtoken (token kedaluwarsa, ambil ulang)"
+      },
+      "jawaban": {
+        "errorcode": "invalidtoken",
+        "exception": "moodle_exception",
+        "message": "Token tidak valid"
+      }
+    },
+    {
+      "hasil": {
+        "jenis": "lain",
+        "pesan": "fungsi_karangan: nopermissions"
+      },
+      "jawaban": {
+        "errorcode": "nopermissions",
+        "exception": "required_capability_exception"
+      }
+    },
+    {
+      "hasil": {
+        "jenis": "lain",
+        "pesan": "fungsi_karangan: tanpa kode"
+      },
+      "jawaban": {
+        "errorcode": "",
+        "exception": "moodle_exception"
+      }
+    },
+    {
+      "hasil": {
+        "jenis": "lain",
+        "pesan": "fungsi_karangan: tanpa kode"
+      },
+      "jawaban": {
+        "errorcode": null,
+        "exception": "moodle_exception"
+      }
+    },
+    {
+      "hasil": {
+        "jenis": "lain",
+        "pesan": "fungsi_karangan: tanpa kode"
+      },
+      "jawaban": {
+        "exception": "moodle_exception"
+      }
+    },
+    {
+      "hasil": {
+        "ok": true
+      },
+      "jawaban": {
+        "errorcode": "invalidtoken"
+      }
+    }
+  ],
+  "konstanta": {
+    "jeda_ulang": [
+      10,
+      20
+    ],
+    "jendela_detail_detik": 2592000,
+    "timeout": 30
+  },
+  "param": [
+    {
+      "badan": "wstoken=0123456789abcdef0123456789abcdef&wsfunction=fungsi_karangan&moodlewsrestformat=json",
+      "masukan": [],
+      "pasangan": [],
+      "url": "https://moodle.example.com/webservice/rest/server.php"
+    },
+    {
+      "badan": "wstoken=0123456789abcdef0123456789abcdef&wsfunction=fungsi_karangan&moodlewsrestformat=json&classification=all&limit=0",
+      "masukan": [
+        [
+          "classification",
+          "all"
+        ],
+        [
+          "limit",
+          0
+        ]
+      ],
+      "pasangan": [
+        [
+          "classification",
+          "all"
+        ],
+        [
+          "limit",
+          "0"
+        ]
+      ],
+      "url": "https://moodle.example.com/webservice/rest/server.php"
+    },
+    {
+      "badan": "wstoken=0123456789abcdef0123456789abcdef&wsfunction=fungsi_karangan&moodlewsrestformat=json&courseids%5B0%5D=101&courseids%5B1%5D=102&courseids%5B2%5D=103",
+      "masukan": [
+        [
+          "courseids",
+          [
+            101,
+            102,
+            103
+          ]
+        ]
+      ],
+      "pasangan": [
+        [
+          "courseids[0]",
+          "101"
+        ],
+        [
+          "courseids[1]",
+          "102"
+        ],
+        [
+          "courseids[2]",
+          "103"
+        ]
+      ],
+      "url": "https://moodle.example.com/webservice/rest/server.php"
+    },
+    {
+      "badan": "wstoken=0123456789abcdef0123456789abcdef&wsfunction=fungsi_karangan&moodlewsrestformat=json",
+      "masukan": [
+        [
+          "courseids",
+          []
+        ]
+      ],
+      "pasangan": [],
+      "url": "https://moodle.example.com/webservice/rest/server.php"
+    },
+    {
+      "badan": "wstoken=0123456789abcdef0123456789abcdef&wsfunction=fungsi_karangan&moodlewsrestformat=json&assignid=201",
+      "masukan": [
+        [
+          "assignid",
+          201
+        ]
+      ],
+      "pasangan": [
+        [
+          "assignid",
+          "201"
+        ]
+      ],
+      "url": "https://moodle.example.com/webservice/rest/server.php"
+    },
+    {
+      "badan": "wstoken=0123456789abcdef0123456789abcdef&wsfunction=fungsi_karangan&moodlewsrestformat=json&teks=a+b~c%2Ad%2F%C3%A9%26%3D&daftar%5B0%5D=x+y&daftar%5B1%5D=7",
+      "masukan": [
+        [
+          "teks",
+          "a b~c*d/é&="
+        ],
+        [
+          "daftar",
+          [
+            "x y",
+            7
+          ]
+        ]
+      ],
+      "pasangan": [
+        [
+          "teks",
+          "a b~c*d/é&="
+        ],
+        [
+          "daftar[0]",
+          "x y"
+        ],
+        [
+          "daftar[1]",
+          "7"
+        ]
+      ],
+      "url": "https://moodle.example.com/webservice/rest/server.php"
+    }
+  ],
+  "perlu_detail": {
+    "kasus": [
+      {
+        "duedate": null,
+        "hasil": true
+      },
+      {
+        "duedate": 0,
+        "hasil": true
+      },
+      {
+        "duedate": 1789707600,
+        "hasil": false
+      },
+      {
+        "duedate": 1789793999,
+        "hasil": false
+      },
+      {
+        "duedate": 1789794000,
+        "hasil": true
+      },
+      {
+        "duedate": 1789794001,
+        "hasil": true
+      },
+      {
+        "duedate": 1792386000,
+        "hasil": true
+      },
+      {
+        "duedate": 1792472400,
+        "hasil": true
+      }
+    ],
+    "sekarang": "2026-10-19T05:00:00Z"
+  },
+  "situs": "https://moodle.example.com/",
+  "token": "0123456789abcdef0123456789abcdef"
+}

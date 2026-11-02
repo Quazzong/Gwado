@@ -1,5 +1,7 @@
 package io.github.quazzong.gwado.sumber
 
+import java.time.Duration
+import java.time.Instant
 import kotlinx.serialization.json.JsonObject
 
 /**
@@ -89,4 +91,13 @@ object Moodle {
         quizzes: JsonObject,
         statusPerAssign: Map<Long, JsonObject>,
     ) = HasilSumber(kelas(coursesAll), tugas(situs, assignments, quizzes, statusPerAssign))
+
+    /** Jendela status assign (moodle.JENDELA_DETAIL). */
+    val JENDELA_DETAIL: Duration = Duration.ofDays(30)
+
+    /** Apakah status pengumpulan assign ini perlu diambil (satu panggilan API per assign). Batas inklusif. */
+    fun perluDetail(duedate: Long?, sekarang: Instant): Boolean {
+        if (duedate == null || duedate == 0L) return true
+        return Instant.ofEpochSecond(duedate) >= sekarang.minus(JENDELA_DETAIL)
+    }
 }
