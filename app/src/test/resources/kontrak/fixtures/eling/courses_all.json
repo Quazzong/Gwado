@@ -3,7 +3,7 @@
     {
       "id": 101,
       "fullname": "Bahasa Inggris Akademik",
-      "shortname": "ABC60005 Kelas A 2026 Ganjil",
+      "shortname": "ABC60005_20261_A",
       "idnumber": "",
       "summary": "",
       "summaryformat": 1,
@@ -20,12 +20,12 @@
       "isfavourite": false,
       "hidden": false,
       "showshortname": false,
-      "coursecategory": "Ganjil 2026/2027"
+      "coursecategory": "Praktikum"
     },
     {
       "id": 150,
       "fullname": "Etika Profesi",
-      "shortname": "ABC60006 Kelas C 2026 Ganjil",
+      "shortname": "ABC60006_20252_C",
       "idnumber": "",
       "summary": "",
       "summaryformat": 1,
@@ -42,7 +42,7 @@
       "isfavourite": false,
       "hidden": false,
       "showshortname": false,
-      "coursecategory": "Ganjil 2026/2027"
+      "coursecategory": "Praktikum"
     }
   ],
   "nextoffset": 2

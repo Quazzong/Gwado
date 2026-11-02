@@ -3,6 +3,8 @@ plugins {
     alias(libs.plugins.kotlin.compose)
 }
 
+val versiSqlite = "2.7.1"  // sqlite, sqlite-bundled, dan .so test (GW6b) harus satu versi
+
 android {
     namespace = "io.github.quazzong.gwado"
     compileSdk {
@@ -38,6 +40,8 @@ android {
 
 dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.9.0")
+    implementation("androidx.sqlite:sqlite:$versiSqlite")
+    implementation("androidx.sqlite:sqlite-bundled:$versiSqlite")
     implementation("com.google.android.gms:play-services-auth:21.5.1")
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.activity.compose)
@@ -54,4 +58,40 @@ dependencies {
     androidTestImplementation(libs.androidx.junit)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
     debugImplementation(libs.androidx.compose.ui.tooling)
+}
+// GW6b: test JVM di laptop butuh libsqliteJni.so versi Linux. sqlite-bundled versi
+// Android hanya membawa .so untuk HP, jadi .so diambil dari artefak desktop
+// (sqlite-bundled-jvm) ke folder yang dibaca AGP saat test. Tidak di-commit.
+val sqliteNativeJvm = configurations.create("sqliteNativeJvm") { isTransitive = false }
+
+dependencies {
+    sqliteNativeJvm("androidx.sqlite:sqlite-bundled-jvm:$versiSqlite")
+}
+
+interface LayananBerkas {
+    @get:javax.inject.Inject val arsip: ArchiveOperations
+    @get:javax.inject.Inject val berkas: FileSystemOperations
+}
+
+val ekstrakSqliteNative = tasks.register("ekstrakSqliteNative") {
+    val jar: FileCollection = sqliteNativeJvm
+    val tujuan = layout.projectDirectory.dir("src/test/jniLibs")
+    val layanan = objects.newInstance<LayananBerkas>()
+    inputs.files(jar)
+    outputs.dir(tujuan)
+    doLast {
+        layanan.berkas.sync {
+            from(layanan.arsip.zipTree(jar.singleFile)) {
+                include("natives/linux_x64/libsqliteJni.so")
+                eachFile { path = name }
+            }
+            includeEmptyDirs = false
+            into(tujuan)
+        }
+    }
+}
+
+tasks.withType<Test>().configureEach {
+    dependsOn(ekstrakSqliteNative)
+    jvmArgs("--enable-native-access=ALL-UNNAMED")
 }

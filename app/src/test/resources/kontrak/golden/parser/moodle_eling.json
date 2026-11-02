@@ -3,22 +3,22 @@
     {
       "dibuat": null,
       "external_id": "101",
-      "kategori": "Ganjil 2026/2027",
+      "kategori": "Praktikum",
       "kode_mk": "ABC60005",
       "mulai": "2026-08-24T00:00:00Z",
       "nama": "Bahasa Inggris Akademik",
       "selesai": "2027-01-15T00:00:00Z",
-      "shortname": "ABC60005 Kelas A 2026 Ganjil"
+      "shortname": "ABC60005_20261_A"
     },
     {
       "dibuat": null,
       "external_id": "150",
-      "kategori": "Ganjil 2026/2027",
+      "kategori": "Praktikum",
       "kode_mk": "ABC60006",
       "mulai": "2026-08-24T00:00:00Z",
       "nama": "Etika Profesi",
       "selesai": "2027-01-15T00:00:00Z",
-      "shortname": "ABC60006 Kelas C 2026 Ganjil"
+      "shortname": "ABC60006_20252_C"
     }
   ],
   "tasks": [

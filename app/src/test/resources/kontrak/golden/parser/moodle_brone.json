@@ -3,7 +3,7 @@
     {
       "dibuat": null,
       "external_id": "101",
-      "kategori": "Semester Ganjil 2026/2027",
+      "kategori": "Ganjil 2026/2027",
       "kode_mk": "ABC60001",
       "mulai": "2026-08-24T00:00:00Z",
       "nama": "Pemrograman Dasar",
@@ -13,7 +13,7 @@
     {
       "dibuat": null,
       "external_id": "102",
-      "kategori": "Semester Ganjil 2026/2027",
+      "kategori": "Ganjil 2026/2027",
       "kode_mk": "ABC60011",
       "mulai": "2026-08-24T00:00:00Z",
       "nama": "Praktikum Pemrograman Dasar",
@@ -23,7 +23,7 @@
     {
       "dibuat": null,
       "external_id": "103",
-      "kategori": "Semester Genap 2025/2026",
+      "kategori": "Genap 2025/2026",
       "kode_mk": "ABC60002",
       "mulai": "2026-02-16T00:00:00Z",
       "nama": "Matematika Diskrit",
@@ -43,7 +43,7 @@
     {
       "dibuat": null,
       "external_id": "105",
-      "kategori": "Semester Ganjil 2026/2027",
+      "kategori": "Ganjil 2026/2027",
       "kode_mk": null,
       "mulai": "2026-08-24T00:00:00Z",
       "nama": "Kapita Selekta",
