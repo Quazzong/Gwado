@@ -1,0 +1,257 @@
+{
+  "akses": "ya29.karangan",
+  "daftar": [
+    {
+      "halaman": [
+        {
+          "courses": [
+            {
+              "id": "1"
+            },
+            {
+              "id": "2"
+            }
+          ]
+        }
+      ],
+      "hasil": [
+        {
+          "id": "1"
+        },
+        {
+          "id": "2"
+        }
+      ],
+      "kunci": "courses",
+      "param": [
+        [
+          "studentId",
+          "me"
+        ]
+      ],
+      "path": "courses",
+      "permintaan": [
+        {
+          "headers": {
+            "Authorization": "Bearer ya29.karangan"
+          },
+          "url": "https://classroom.googleapis.com/v1/courses?studentId=me&pageSize=100"
+        }
+      ]
+    },
+    {
+      "halaman": [
+        {
+          "courses": [
+            {
+              "id": "1"
+            }
+          ],
+          "nextPageToken": "Cg0I+/x=="
+        },
+        {
+          "courses": [
+            {
+              "id": "2"
+            }
+          ],
+          "nextPageToken": ""
+        }
+      ],
+      "hasil": [
+        {
+          "id": "1"
+        },
+        {
+          "id": "2"
+        }
+      ],
+      "kunci": "courses",
+      "param": [
+        [
+          "studentId",
+          "me"
+        ]
+      ],
+      "path": "courses",
+      "permintaan": [
+        {
+          "headers": {
+            "Authorization": "Bearer ya29.karangan"
+          },
+          "url": "https://classroom.googleapis.com/v1/courses?studentId=me&pageSize=100"
+        },
+        {
+          "headers": {
+            "Authorization": "Bearer ya29.karangan"
+          },
+          "url": "https://classroom.googleapis.com/v1/courses?studentId=me&pageSize=100&pageToken=Cg0I%2B%2Fx%3D%3D"
+        }
+      ]
+    },
+    {
+      "halaman": [
+        {}
+      ],
+      "hasil": [],
+      "kunci": "courseWork",
+      "param": [],
+      "path": "courses/100/courseWork",
+      "permintaan": [
+        {
+          "headers": {
+            "Authorization": "Bearer ya29.karangan"
+          },
+          "url": "https://classroom.googleapis.com/v1/courses/100/courseWork?pageSize=100"
+        }
+      ]
+    },
+    {
+      "halaman": [
+        {
+          "nextPageToken": "p2"
+        },
+        {
+          "studentSubmissions": [
+            {
+              "id": "s1"
+            }
+          ]
+        }
+      ],
+      "hasil": [
+        {
+          "id": "s1"
+        }
+      ],
+      "kunci": "studentSubmissions",
+      "param": [
+        [
+          "userId",
+          "me"
+        ]
+      ],
+      "path": "courses/100/courseWork/-/studentSubmissions",
+      "permintaan": [
+        {
+          "headers": {
+            "Authorization": "Bearer ya29.karangan"
+          },
+          "url": "https://classroom.googleapis.com/v1/courses/100/courseWork/-/studentSubmissions?userId=me&pageSize=100"
+        },
+        {
+          "headers": {
+            "Authorization": "Bearer ya29.karangan"
+          },
+          "url": "https://classroom.googleapis.com/v1/courses/100/courseWork/-/studentSubmissions?userId=me&pageSize=100&pageToken=p2"
+        }
+      ]
+    }
+  ],
+  "http": [
+    {
+      "hasil": {
+        "jenis": "token_ditolak",
+        "pesan": "akses Google ditolak (HTTP 401)"
+      },
+      "kode": 401
+    },
+    {
+      "hasil": {
+        "jenis": "lain",
+        "pesan": "HTTP 403"
+      },
+      "kode": 403
+    },
+    {
+      "hasil": {
+        "jenis": "lain",
+        "pesan": "HTTP 404"
+      },
+      "kode": 404
+    },
+    {
+      "hasil": {
+        "jenis": "jaringan",
+        "pesan": "HTTP 500"
+      },
+      "kode": 500
+    },
+    {
+      "hasil": {
+        "jenis": "jaringan",
+        "pesan": "HTTP 503"
+      },
+      "kode": 503
+    }
+  ],
+  "konstanta": {
+    "api_classroom": "https://classroom.googleapis.com/v1/",
+    "jendela_kelas_detik": 31536000
+  },
+  "perlu_detail": {
+    "kasus": [
+      {
+        "hasil": true,
+        "kelas": {
+          "updateTime": "2026-01-01T00:00:00Z"
+        }
+      },
+      {
+        "hasil": true,
+        "kelas": {
+          "updateTime": "2025-10-19T05:00:00Z"
+        }
+      },
+      {
+        "hasil": false,
+        "kelas": {
+          "updateTime": "2025-10-19T04:59:59Z"
+        }
+      },
+      {
+        "hasil": false,
+        "kelas": {
+          "updateTime": "2025-10-19T04:59:59.999Z"
+        }
+      },
+      {
+        "hasil": true,
+        "kelas": {
+          "updateTime": "2025-10-19T05:00:00.123Z"
+        }
+      },
+      {
+        "hasil": true,
+        "kelas": {
+          "creationTime": "2026-08-01T00:00:00Z"
+        }
+      },
+      {
+        "hasil": false,
+        "kelas": {
+          "creationTime": "2020-01-01T00:00:00Z",
+          "updateTime": ""
+        }
+      },
+      {
+        "hasil": false,
+        "kelas": {
+          "creationTime": "2026-08-01T00:00:00Z",
+          "updateTime": "2020-01-01T00:00:00Z"
+        }
+      },
+      {
+        "hasil": true,
+        "kelas": {
+          "updateTime": null
+        }
+      },
+      {
+        "hasil": true,
+        "kelas": {}
+      }
+    ],
+    "sekarang": "2026-10-19T05:00:00Z"
+  }
+}

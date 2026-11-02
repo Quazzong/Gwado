@@ -1,0 +1,292 @@
+{
+  "cooldown": [
+    {
+      "hasil": null,
+      "sekarang": "2026-10-21T03:00:05Z",
+      "status": null
+    },
+    {
+      "hasil": "2026-10-21T03:00:05Z",
+      "sekarang": "2026-10-21T03:00:05Z",
+      "status": "2026-10-21T03:00:05Z\n"
+    },
+    {
+      "hasil": "2026-10-21T03:00:05Z",
+      "sekarang": "2026-10-21T03:30:04Z",
+      "status": "2026-10-21T03:00:05Z\n"
+    },
+    {
+      "hasil": null,
+      "sekarang": "2026-10-21T03:30:05Z",
+      "status": "2026-10-21T03:00:05Z\n"
+    },
+    {
+      "hasil": null,
+      "sekarang": "2026-10-21T05:00:05Z",
+      "status": "2026-10-21T03:00:05Z\n"
+    },
+    {
+      "hasil": "2026-10-21T03:00:05Z",
+      "sekarang": "2026-10-21T03:10:05Z",
+      "status": "2026-10-21T03:00:05+00:00\n"
+    },
+    {
+      "hasil": "2026-10-21T03:00:05Z",
+      "sekarang": "2026-10-21T03:01:05Z",
+      "status": "  2026-10-21T03:00:05Z  \n"
+    },
+    {
+      "hasil": null,
+      "sekarang": "2026-10-21T03:00:05Z",
+      "status": "2026-10-22T03:00:00Z\n"
+    },
+    {
+      "hasil": null,
+      "sekarang": "2026-10-21T03:00:05Z",
+      "status": "bukan waktu\n"
+    },
+    {
+      "hasil": null,
+      "sekarang": "2026-10-21T03:00:05Z",
+      "status": ""
+    }
+  ],
+  "jendela": [
+    {
+      "hasil": false,
+      "sekarang": "2026-10-21T15:59:59Z",
+      "sumber": "brone",
+      "wib": "22.59.59"
+    },
+    {
+      "hasil": true,
+      "sekarang": "2026-10-21T16:00:00Z",
+      "sumber": "brone",
+      "wib": "23.00.00"
+    },
+    {
+      "hasil": true,
+      "sekarang": "2026-10-21T16:59:59Z",
+      "sumber": "brone",
+      "wib": "23.59.59"
+    },
+    {
+      "hasil": true,
+      "sekarang": "2026-10-20T17:00:00Z",
+      "sumber": "brone",
+      "wib": "00.00.00"
+    },
+    {
+      "hasil": true,
+      "sekarang": "2026-10-20T17:30:00Z",
+      "sumber": "brone",
+      "wib": "00.30.00"
+    },
+    {
+      "hasil": true,
+      "sekarang": "2026-10-20T18:59:59Z",
+      "sumber": "brone",
+      "wib": "01.59.59"
+    },
+    {
+      "hasil": false,
+      "sekarang": "2026-10-20T19:00:00Z",
+      "sumber": "brone",
+      "wib": "02.00.00"
+    },
+    {
+      "hasil": false,
+      "sekarang": "2026-10-21T05:00:00Z",
+      "sumber": "brone",
+      "wib": "12.00.00"
+    },
+    {
+      "hasil": false,
+      "sekarang": "2026-10-21T15:59:59Z",
+      "sumber": "eling",
+      "wib": "22.59.59"
+    },
+    {
+      "hasil": false,
+      "sekarang": "2026-10-21T16:00:00Z",
+      "sumber": "eling",
+      "wib": "23.00.00"
+    },
+    {
+      "hasil": false,
+      "sekarang": "2026-10-21T16:59:59Z",
+      "sumber": "eling",
+      "wib": "23.59.59"
+    },
+    {
+      "hasil": false,
+      "sekarang": "2026-10-20T17:00:00Z",
+      "sumber": "eling",
+      "wib": "00.00.00"
+    },
+    {
+      "hasil": false,
+      "sekarang": "2026-10-20T17:30:00Z",
+      "sumber": "eling",
+      "wib": "00.30.00"
+    },
+    {
+      "hasil": false,
+      "sekarang": "2026-10-20T18:59:59Z",
+      "sumber": "eling",
+      "wib": "01.59.59"
+    },
+    {
+      "hasil": false,
+      "sekarang": "2026-10-20T19:00:00Z",
+      "sumber": "eling",
+      "wib": "02.00.00"
+    },
+    {
+      "hasil": false,
+      "sekarang": "2026-10-21T05:00:00Z",
+      "sumber": "eling",
+      "wib": "12.00.00"
+    },
+    {
+      "hasil": false,
+      "sekarang": "2026-10-21T15:59:59Z",
+      "sumber": "classroom",
+      "wib": "22.59.59"
+    },
+    {
+      "hasil": false,
+      "sekarang": "2026-10-21T16:00:00Z",
+      "sumber": "classroom",
+      "wib": "23.00.00"
+    },
+    {
+      "hasil": false,
+      "sekarang": "2026-10-21T16:59:59Z",
+      "sumber": "classroom",
+      "wib": "23.59.59"
+    },
+    {
+      "hasil": false,
+      "sekarang": "2026-10-20T17:00:00Z",
+      "sumber": "classroom",
+      "wib": "00.00.00"
+    },
+    {
+      "hasil": false,
+      "sekarang": "2026-10-20T17:30:00Z",
+      "sumber": "classroom",
+      "wib": "00.30.00"
+    },
+    {
+      "hasil": false,
+      "sekarang": "2026-10-20T18:59:59Z",
+      "sumber": "classroom",
+      "wib": "01.59.59"
+    },
+    {
+      "hasil": false,
+      "sekarang": "2026-10-20T19:00:00Z",
+      "sumber": "classroom",
+      "wib": "02.00.00"
+    },
+    {
+      "hasil": false,
+      "sekarang": "2026-10-21T05:00:00Z",
+      "sumber": "classroom",
+      "wib": "12.00.00"
+    }
+  ],
+  "job": [
+    {
+      "dihubungi": false,
+      "hasil_run": "success",
+      "sekarang": "2026-10-20T17:30:00Z",
+      "status_sebelum": null,
+      "status_sesudah": null,
+      "sumber": "brone",
+      "tertahan": "jendela_hindari"
+    },
+    {
+      "dihubungi": false,
+      "hasil_run": "success",
+      "sekarang": "2026-10-20T17:30:00Z",
+      "status_sebelum": "2026-10-20T17:20:00Z\n",
+      "status_sesudah": "2026-10-20T17:20:00Z\n",
+      "sumber": "brone",
+      "tertahan": "jendela_hindari"
+    },
+    {
+      "dihubungi": true,
+      "hasil_run": "success",
+      "sekarang": "2026-10-20T19:00:00Z",
+      "status_sebelum": null,
+      "status_sesudah": "2026-10-20T19:00:00Z\n",
+      "sumber": "brone",
+      "tertahan": null
+    },
+    {
+      "dihubungi": true,
+      "hasil_run": "success",
+      "sekarang": "2026-10-20T17:30:00Z",
+      "status_sebelum": null,
+      "status_sesudah": "2026-10-20T17:30:00Z\n",
+      "sumber": "eling",
+      "tertahan": null
+    },
+    {
+      "dihubungi": false,
+      "hasil_run": "success",
+      "sekarang": "2026-10-21T03:10:05Z",
+      "status_sebelum": "2026-10-21T03:00:05Z\n",
+      "status_sesudah": "2026-10-21T03:00:05Z\n",
+      "sumber": "eling",
+      "tertahan": "cooldown"
+    },
+    {
+      "dihubungi": true,
+      "hasil_run": "success",
+      "sekarang": "2026-10-21T03:30:05Z",
+      "status_sebelum": "2026-10-21T03:00:05Z\n",
+      "status_sesudah": "2026-10-21T03:30:05Z\n",
+      "sumber": "eling",
+      "tertahan": null
+    },
+    {
+      "dihubungi": true,
+      "hasil_run": "failed",
+      "sekarang": "2026-10-21T03:00:05Z",
+      "status_sebelum": null,
+      "status_sesudah": null,
+      "sumber": "classroom",
+      "tertahan": null
+    },
+    {
+      "dihubungi": false,
+      "hasil_run": "failed",
+      "sekarang": "2026-10-21T03:01:05Z",
+      "status_sebelum": "2026-10-21T03:00:05Z\n",
+      "status_sesudah": "2026-10-21T03:00:05Z\n",
+      "sumber": "classroom",
+      "tertahan": "cooldown"
+    },
+    {
+      "dihubungi": true,
+      "hasil_run": "failed",
+      "sekarang": "2026-10-21T04:00:05Z",
+      "status_sebelum": "2026-10-21T03:00:05Z\n",
+      "status_sesudah": "2026-10-21T03:00:05Z\n",
+      "sumber": "classroom",
+      "tertahan": null
+    }
+  ],
+  "konstanta": {
+    "cooldown_detik": 1800,
+    "jendela_hindari_wib": {
+      "brone": [
+        23,
+        2
+      ]
+    }
+  }
+}

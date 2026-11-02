@@ -1,9 +1,13 @@
 package io.github.quazzong.gwado.sumber
 
+import java.time.Duration
+import java.time.Instant
 import java.time.LocalDateTime
 import java.time.OffsetDateTime
 import java.time.ZoneOffset
 import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.JsonPrimitive
+import kotlinx.serialization.json.contentOrNull
 
 /**
  * Parser Google Classroom: respons API mentah → kelas + tugas.
@@ -88,4 +92,17 @@ object Classroom {
         courseworkPerKelas: Map<String, JsonObject>,
         submissionsPerKelas: Map<String, JsonObject>,
     ) = HasilSumber(kelas(coursesMentah), tugas(courseworkPerKelas, submissionsPerKelas))
+
+    /** Jendela kelas (classroom.JENDELA_KELAS). */
+    val JENDELA_KELAS: Duration = Duration.ofDays(365)
+
+    /**
+     * Apakah tugas kelas ini perlu diambil (2 panggilan API per kelas). Batas inklusif.
+     * Catatan: updateTime = waktu terakhir PENGATURAN kelas diubah, bukan waktu tugas terakhir diposting.
+     */
+    fun perluDetail(kelas: JsonObject, sekarang: Instant): Boolean {
+        fun isi(k: String) = (kelas[k] as? JsonPrimitive)?.contentOrNull?.ifEmpty { null }
+        val t = isi("updateTime") ?: isi("creationTime") ?: return true
+        return OffsetDateTime.parse(t).toInstant() >= sekarang.minus(JENDELA_KELAS)
+    }
 }
