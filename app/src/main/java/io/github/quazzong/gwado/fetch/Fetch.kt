@@ -98,3 +98,6 @@ fun minta(
     }
     error("tidak tercapai")
 }
+
+/** minta asli sebagai nilai Minta (untuk parameter bawaan yang namanya juga "minta"). */
+val mintaBawaan: Minta = { url, data, headers -> minta(url, data, headers) }

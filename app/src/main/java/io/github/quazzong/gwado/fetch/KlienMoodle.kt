@@ -1,10 +1,20 @@
 package io.github.quazzong.gwado.fetch
 
+import io.github.quazzong.gwado.sumber.HasilSumber
+import io.github.quazzong.gwado.sumber.Moodle
+import io.github.quazzong.gwado.sumber.angka
+import io.github.quazzong.gwado.sumber.daftar
 import java.net.URLEncoder
+import java.time.Instant
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
+import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.contentOrNull
+import kotlinx.serialization.json.jsonObject
+import kotlinx.serialization.json.jsonPrimitive
+import kotlinx.serialization.json.long
+import kotlinx.serialization.json.putJsonArray
 
 /** _param_moodle: daftar dipecah jadi k[0], k[1], …; nilai lain jadi teks. */
 internal fun paramMoodle(param: List<Pair<String, Any>>): List<Pair<String, String>> =
@@ -41,4 +51,39 @@ class KlienMoodle(situs: String, private val token: String, private val minta: M
         }
         return r
     }
+}
+
+/**
+ * ambil_moodle (tanpa lampiran): semua kelas → assign + kuis → status assign dalam jendela → normalisasi.
+ * Blokir: panggil dari Dispatchers.IO.
+ */
+fun ambilMoodle(situs: String, token: String, sekarang: Instant, minta: Minta = mintaBawaan): HasilSumber {
+    val m = KlienMoodle(situs, token, minta)
+    val coursesAll = m.panggil(
+        "core_course_get_enrolled_courses_by_timeline_classification",
+        "classification" to "all", "limit" to 0,
+    ).jsonObject
+    val ids = coursesAll.daftar("courses").map { it.getValue("id").jsonPrimitive.content }
+    val (assignments, quizzes) = if (ids.isNotEmpty()) {
+        Pair(
+            m.panggil("mod_assign_get_assignments", "courseids" to ids).jsonObject,
+            m.panggil("mod_quiz_get_quizzes_by_courses", "courseids" to ids).jsonObject,
+        )
+    } else {
+        Pair(buildJsonObject { putJsonArray("courses") {} }, buildJsonObject { putJsonArray("quizzes") {} })
+    }
+    val status = mutableMapOf<Long, JsonObject>()
+    for (c in assignments.daftar("courses")) {
+        for (a in c.daftar("assignments")) {
+            if (!Moodle.perluDetail(a.angka("duedate"), sekarang)) continue
+            val id = a.getValue("id").jsonPrimitive.long
+            try {
+                status[id] = m.panggil("mod_assign_get_submission_status", "assignid" to id).jsonObject
+            } catch (e: FetchError) {
+                if (e.jenis != "lain") throw e
+                // status satu assign gagal: tugasnya tetap ada, hanya statusnya "tidak diketahui"
+            }
+        }
+    }
+    return Moodle.normalisasi(situs, coursesAll, assignments, quizzes, status)
 }
