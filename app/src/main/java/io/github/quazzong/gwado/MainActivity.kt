@@ -1,12 +1,11 @@
 package io.github.quazzong.gwado
 
-import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
-import android.util.Base64
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.result.IntentSenderRequest
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -19,15 +18,40 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.lifecycleScope
+import com.google.android.gms.auth.api.identity.AuthorizationRequest
+import com.google.android.gms.auth.api.identity.Identity
+import com.google.android.gms.common.api.ApiException
+import com.google.android.gms.common.api.Scope
 import io.github.quazzong.gwado.ui.theme.GwadoTheme
-import java.security.MessageDigest
-import java.util.UUID
+import java.net.HttpURLConnection
+import java.net.URL
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import org.json.JSONObject
 
-private const val SITUS = "https://eling.ub.ac.id"
+private val SCOPES = listOf(
+    Scope("https://www.googleapis.com/auth/classroom.courses.readonly"),
+    Scope("https://www.googleapis.com/auth/classroom.coursework.me.readonly"),
+)
 
 class MainActivity : ComponentActivity() {
     private var hasil by mutableStateOf("Belum ada hasil")
-    private val prefs by lazy { getPreferences(MODE_PRIVATE) }
+
+    private val izin = registerForActivityResult(ActivityResultContracts.StartIntentSenderForResult()) { res ->
+        val data = res.data
+        if (data == null) {
+            hasil = "Layar izin ditutup tanpa jawaban"
+            return@registerForActivityResult
+        }
+        try {
+            val r = Identity.getAuthorizationClient(this).getAuthorizationResultFromIntent(data)
+            pakai(r.accessToken, "setelah layar izin")
+        } catch (e: ApiException) {
+            hasil = "Izin dibatalkan/gagal (kode ${e.statusCode})"
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -39,58 +63,63 @@ class MainActivity : ComponentActivity() {
                         modifier = Modifier.padding(innerPadding).padding(16.dp),
                         verticalArrangement = Arrangement.spacedBy(12.dp)
                     ) {
-                        Text("Uji token Moodle (Eling)")
-                        Button(onClick = { mulaiLogin("gwado") }) { Text("Uji A: minta gwado://") }
-                        Button(onClick = { mulaiLogin("moodlemobile") }) { Text("Uji B: minta moodlemobile://") }
+                        Text("Uji Google Classroom")
+                        Button(onClick = { mulai() }) { Text("Minta izin + hitung kelas") }
                         Text(hasil)
                     }
                 }
             }
         }
-        tangani(intent)
     }
 
-    override fun onNewIntent(intent: Intent) {
-        super.onNewIntent(intent)
-        tangani(intent)
+    private fun mulai() {
+        hasil = "Meminta izin…"
+        val req = AuthorizationRequest.builder().setRequestedScopes(SCOPES).build()
+        Identity.getAuthorizationClient(this).authorize(req)
+            .addOnSuccessListener { r ->
+                val pi = r.pendingIntent
+                if (r.hasResolution() && pi != null) {
+                    izin.launch(IntentSenderRequest.Builder(pi.intentSender).build())
+                } else {
+                    pakai(r.accessToken, "tanpa layar (izin sudah ada)")
+                }
+            }
+            .addOnFailureListener { e ->
+                hasil = "Gagal meminta izin: " +
+                    ((e as? ApiException)?.let { "kode ${it.statusCode}" } ?: e.javaClass.simpleName)
+            }
     }
 
-    private fun mulaiLogin(skema: String) {
-        val passport = UUID.randomUUID().toString()
-        prefs.edit().putString("passport", passport).apply()
-        val url = Uri.parse("$SITUS/admin/tool/mobile/launch.php").buildUpon()
-            .appendQueryParameter("service", "moodle_mobile_app")
-            .appendQueryParameter("passport", passport)
-            .appendQueryParameter("urlscheme", skema)
-            .build()
-        hasil = "Menunggu login (minta $skema://)…"
-        startActivity(Intent(Intent.ACTION_VIEW, url))
-    }
-
-    private fun tangani(intent: Intent?) {
-        val data = intent?.data ?: return
-        val skema = data.scheme ?: return
-        if (skema != "moodlemobile" && skema != "gwado") return
-        val mentah = data.toString().substringAfter("token=", "")
-        if (mentah.isEmpty()) {
-            hasil = "Masuk lewat $skema://, tapi tanpa token"
+    private fun pakai(token: String?, jalur: String) {
+        if (token.isNullOrEmpty()) {
+            hasil = "Tidak dapat access token ($jalur)"
             return
         }
-        val bagian = try {
-            String(Base64.decode(mentah, Base64.DEFAULT)).split(":::")
-        } catch (e: IllegalArgumentException) {
-            hasil = "Masuk lewat $skema://, tapi token tidak bisa dibaca"
-            return
+        hasil = "Token didapat ($jalur), menghubungi Classroom…"
+        lifecycleScope.launch {
+            val teks = withContext(Dispatchers.IO) { hitungKelas(token) }
+            hasil = "Jalur: $jalur\n$teks"
         }
-        val passport = prefs.getString("passport", "").orEmpty()
-        val cocok = passport.isNotEmpty() && bagian.getOrNull(0) == md5(SITUS + passport)
-        val token = bagian.getOrNull(1).orEmpty()
-        hasil = "Ditangkap lewat: $skema://\n" +
-            "Tanda tangan cocok: ${if (cocok) "YA" else "TIDAK"}\n" +
-            "Panjang token: ${token.length} karakter\n" +
-            "Ada private token: ${if (bagian.size >= 3) "ya" else "tidak"}"
     }
 
-    private fun md5(s: String): String =
-        MessageDigest.getInstance("MD5").digest(s.toByteArray()).joinToString("") { "%02x".format(it) }
+    private fun hitungKelas(token: String): String {
+        val conn = URL("https://classroom.googleapis.com/v1/courses?studentId=me&courseStates=ACTIVE&pageSize=100")
+            .openConnection() as HttpURLConnection
+        conn.setRequestProperty("Authorization", "Bearer $token")
+        return try {
+            val kode = conn.responseCode
+            if (kode == 200) {
+                val json = JSONObject(conn.inputStream.bufferedReader().readText())
+                "Berhasil: ${json.optJSONArray("courses")?.length() ?: 0} kelas aktif"
+            } else {
+                val pesan = conn.errorStream?.bufferedReader()?.readText()
+                    ?.let { JSONObject(it).optJSONObject("error")?.optString("message") }
+                "Classroom menjawab HTTP $kode: ${pesan ?: "-"}"
+            }
+        } catch (e: Exception) {
+            "Gagal menghubungi Classroom: ${e.javaClass.simpleName}"
+        } finally {
+            conn.disconnect()
+        }
+    }
 }
