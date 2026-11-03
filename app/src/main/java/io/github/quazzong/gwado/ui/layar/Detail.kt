@@ -17,7 +17,13 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -42,6 +48,8 @@ import io.github.quazzong.gwado.db.Db
 import io.github.quazzong.gwado.db.Gudang
 import io.github.quazzong.gwado.tugas.BarisRiwayat
 import io.github.quazzong.gwado.tugas.DetailTugas
+import io.github.quazzong.gwado.tugas.TugasGalat
+import io.github.quazzong.gwado.tugas.hapusManual
 import io.github.quazzong.gwado.tugas.LABEL_STATUS
 import io.github.quazzong.gwado.tugas.ambilTugas
 import io.github.quazzong.gwado.tugas.linkSumber
@@ -57,6 +65,7 @@ import io.github.quazzong.gwado.ui.komponen.Letupan
 import io.github.quazzong.gwado.ui.komponen.Pita
 import io.github.quazzong.gwado.ui.komponen.TombolPermen
 import io.github.quazzong.gwado.ui.komponen.Taburan
+import io.github.quazzong.gwado.ui.komponen.TombolGarisIkon
 import io.github.quazzong.gwado.ui.komponen.TombolPlumIkon
 import io.github.quazzong.gwado.ui.komponen.gradasiCss
 import io.github.quazzong.gwado.ui.komponen.rememberSekarang
@@ -96,7 +105,7 @@ private fun Db.domainSumber(): List<String> =
 
 /** Layar detail satu tugas: info, deskripsi, riwayat, centang, dan buka di situs. */
 @Composable
-fun LayarDetail(id: String, onKembali: () -> Unit, onBerubah: () -> Unit) {
+fun LayarDetail(id: String, onKembali: () -> Unit, onBerubah: () -> Unit, onUbah: (String) -> Unit) {
     val w = GwadoTema.warna
     val konteks = LocalContext.current
     val tautan = LocalUriHandler.current
@@ -105,6 +114,9 @@ fun LayarDetail(id: String, onKembali: () -> Unit, onBerubah: () -> Unit) {
     var versi by remember { mutableIntStateOf(0) }
     var sibuk by remember { mutableStateOf(false) }
     var letup by remember { mutableIntStateOf(0) }
+    var menu by remember { mutableStateOf(false) }
+    var konfirmasi by remember { mutableStateOf(false) }
+    var galatHapus by remember { mutableStateOf(false) }
     val keadaan by produceState<Keadaan>(Keadaan.Memuat, id, versi) {
         value = try {
             Gudang.pakai(konteks) { db ->
@@ -124,8 +136,49 @@ fun LayarDetail(id: String, onKembali: () -> Unit, onBerubah: () -> Unit) {
             verticalAlignment = Alignment.CenterVertically,
         ) {
             TombolPlumIkon(R.drawable.ikon_kembali, "Kembali", onKembali)
-            Text("DETAIL TUGAS", style = Huruf.label, color = w.tintaRedup)
+            Text("DETAIL TUGAS", style = Huruf.label, color = w.tintaRedup, modifier = Modifier.weight(1f))
+            if ((keadaan as? Keadaan.Ada)?.isi?.tugas?.asal == "manual") {
+                Box {
+                    TombolGarisIkon(R.drawable.ikon_menu, "Menu tugas", { menu = true })
+                    DropdownMenu(
+                        expanded = menu,
+                        onDismissRequest = { menu = false },
+                        shape = Bentuk.kartu,
+                        containerColor = w.kartu,
+                        border = BorderStroke(Jarak.garis, w.garis),
+                    ) {
+                        DropdownMenuItem(
+                            text = { Text("Ubah", style = Huruf.isi.copy(fontWeight = FontWeight.W800), color = w.tinta) },
+                            onClick = { menu = false; onUbah(id) },
+                        )
+                        DropdownMenuItem(
+                            text = { Text("Hapus", style = Huruf.isi.copy(fontWeight = FontWeight.W800), color = w.galat) },
+                            onClick = { menu = false; konfirmasi = true },
+                        )
+                    }
+                }
+            }
         }
+        HapusDialog(
+            konfirmasi = konfirmasi,
+            galat = galatHapus,
+            onHapus = {
+                konfirmasi = false
+                cakupan.launch {
+                    try {
+                        Gudang.pakai(konteks) { it.hapusManual(id) }
+                        onBerubah()
+                        onKembali()
+                    } catch (e: TugasGalat) {
+                        galatHapus = true
+                    }
+                }
+            },
+            onTutup = {
+                konfirmasi = false
+                galatHapus = false
+            },
+        )
         when (val k = keadaan) {
             Keadaan.Memuat -> Unit
             Keadaan.TidakAda -> Pesan("Tugas tidak ditemukan", "Mungkin sudah dihapus.")
@@ -186,6 +239,34 @@ fun LayarDetail(id: String, onKembali: () -> Unit, onBerubah: () -> Unit) {
                 }
             }
         }
+    }
+}
+
+@Composable
+private fun HapusDialog(
+    konfirmasi: Boolean,
+    galat: Boolean,
+    onHapus: () -> Unit,
+    onTutup: () -> Unit,
+) {
+    val w = GwadoTema.warna
+    val warna = ButtonDefaults.textButtonColors(contentColor = w.tinta)
+    if (konfirmasi) {
+        AlertDialog(
+            onDismissRequest = onTutup,
+            title = { Text("Hapus tugas ini?", style = Huruf.judulBagian) },
+            text = { Text("Tugas, catatan, dan riwayatnya dihapus permanen dari HP.", style = Huruf.isi) },
+            confirmButton = { TextButton(onHapus, colors = ButtonDefaults.textButtonColors(contentColor = w.galat)) { Text("Hapus") } },
+            dismissButton = { TextButton(onTutup, colors = warna) { Text("Batal") } },
+        )
+    }
+    if (galat) {
+        AlertDialog(
+            onDismissRequest = onTutup,
+            title = { Text("Belum bisa dihapus", style = Huruf.judulBagian) },
+            text = { Text("Ada tugas lain yang ditandai sebagai duplikat tugas ini.", style = Huruf.isi) },
+            confirmButton = { TextButton(onTutup, colors = warna) { Text("Oke") } },
+        )
     }
 }
 

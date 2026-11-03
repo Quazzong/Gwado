@@ -1,0 +1,520 @@
+{
+  "skenario": [
+    {
+      "daftar_semua": [
+        {
+          "asal": "sumber",
+          "deadline": "2026-10-25T16:59:00Z",
+          "id": "s-e3e93f39cb1a7a0f",
+          "jenis": "assign",
+          "judul": "Tugas 1",
+          "matkul": "Pemrograman Lanjut",
+          "status": "todo",
+          "status_kumpul_situs": null,
+          "status_situs": "aktif",
+          "sumber": "Brone"
+        },
+        {
+          "asal": "manual",
+          "deadline": "2026-10-26T16:59:00Z",
+          "id": "$3",
+          "jenis": "manual",
+          "judul": "Latihan kalkulus",
+          "matkul": "Kalkulus Lanjut",
+          "status": "todo",
+          "status_kumpul_situs": null,
+          "status_situs": "aktif",
+          "sumber": null
+        },
+        {
+          "asal": "manual",
+          "deadline": "2026-10-27T16:59:00Z",
+          "id": "$4",
+          "jenis": "manual",
+          "judul": "Tugas mata kuliah situs",
+          "matkul": "MK 30",
+          "status": "todo",
+          "status_kumpul_situs": null,
+          "status_situs": "aktif",
+          "sumber": null
+        },
+        {
+          "asal": "manual",
+          "deadline": "2026-10-28T16:59:00Z",
+          "id": "$5",
+          "jenis": "manual",
+          "judul": "yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy",
+          "matkul": null,
+          "status": "todo",
+          "status_kumpul_situs": null,
+          "status_situs": "aktif",
+          "sumber": null
+        },
+        {
+          "asal": "manual",
+          "deadline": null,
+          "id": "$1",
+          "jenis": "manual",
+          "judul": "Laporan kelompok revisi",
+          "matkul": "Kalkulus Lanjut",
+          "status": "todo",
+          "status_kumpul_situs": null,
+          "status_situs": "aktif",
+          "sumber": null
+        }
+      ],
+      "hasil": [
+        {
+          "id": "$1"
+        },
+        {
+          "galat": true,
+          "kolom": null
+        },
+        {
+          "galat": true,
+          "kolom": null
+        },
+        {
+          "id": "$2"
+        },
+        {
+          "id": "$3"
+        },
+        {
+          "id": "$4"
+        },
+        {
+          "galat": true,
+          "kolom": "kode_mk"
+        },
+        {
+          "galat": true,
+          "kolom": "kode_mk"
+        },
+        {
+          "id": "$5"
+        },
+        {
+          "berubah": [
+            "judul",
+            "deadline",
+            "deskripsi",
+            "kode_mk_manual"
+          ]
+        },
+        {
+          "berubah": []
+        },
+        {
+          "berubah": [
+            "deadline"
+          ]
+        },
+        {
+          "galat": true,
+          "kolom": "judul"
+        },
+        {
+          "galat": true,
+          "kolom": null
+        },
+        {
+          "galat": true,
+          "kolom": null
+        },
+        {
+          "galat": true,
+          "kolom": "kode_mk"
+        },
+        {
+          "galat": true,
+          "kolom": null
+        },
+        {
+          "tandai": true
+        },
+        {
+          "judul": "Baca bab 5"
+        },
+        {
+          "galat": true,
+          "kolom": null
+        },
+        {
+          "judul": "Salinan"
+        },
+        {
+          "judul": "Induk"
+        },
+        {
+          "galat": true,
+          "kolom": null
+        },
+        {
+          "galat": true,
+          "kolom": null
+        }
+      ],
+      "langkah": [
+        {
+          "sql": "INSERT OR REPLACE INTO preferences (kunci, nilai) VALUES ('semester_kode', '20261'), ('semester_label', 'Ganjil 2026/2027'), ('semester_mulai', '2026-08-01')"
+        },
+        {
+          "isi": {
+            "courses": [
+              {
+                "dibuat": null,
+                "external_id": "10",
+                "kategori": "Ganjil 2026/2027",
+                "kode_mk": "ABC60010",
+                "mulai": null,
+                "nama": "MK 10",
+                "selesai": null,
+                "shortname": "ABC600010_2024|x|2026.1"
+              },
+              {
+                "dibuat": null,
+                "external_id": "20",
+                "kategori": "Genap 2025/2026",
+                "kode_mk": "ABC60020",
+                "mulai": null,
+                "nama": "MK 20",
+                "selesai": null,
+                "shortname": "ABC600020_2024|x|2026.1"
+              },
+              {
+                "dibuat": null,
+                "external_id": "30",
+                "kategori": "Ganjil 2026/2027",
+                "kode_mk": "ABC60030",
+                "mulai": null,
+                "nama": "MK 30",
+                "selesai": null,
+                "shortname": "ABC600030_2024|x|2026.1"
+              }
+            ],
+            "error": null,
+            "fetch_id": "brone-20261020T050000Z-000000",
+            "format": 1,
+            "mulai": "2026-10-20T05:00:00Z",
+            "selesai": "2026-10-20T05:00:05Z",
+            "status": "success",
+            "sumber": "brone",
+            "tasks": [
+              {
+                "course_external_id": "10",
+                "deadline": "2026-10-25T16:59:00Z",
+                "deskripsi": "",
+                "external_id": "assign:1",
+                "jenis": "assign",
+                "judul": "Tugas 1",
+                "link_id": "1",
+                "status_kumpul_situs": null,
+                "url": "https://brone.ub.ac.id/mod/assign/view.php?id=1"
+              }
+            ]
+          }
+        },
+        {
+          "sql": "INSERT INTO class_schedule (hari, mulai, selesai, kode_mk, matkul) VALUES (1, '08:00', '09:40', 'ABC60010', 'Pemrograman Lanjut')"
+        },
+        {
+          "sql": "INSERT INTO class_schedule (hari, mulai, selesai, kode_mk, matkul) VALUES (3, '08:00', '09:40', 'ABC60099', 'Kalkulus Lanjut')"
+        },
+        {
+          "tambah": {
+            "deadline": "2026-10-24T05:00:00Z",
+            "deskripsi": "  Kerjakan bab 1  ",
+            "judul": "  Laporan kelompok  ",
+            "kode_mk": "abc60010 "
+          },
+          "waktu": "2026-10-20T01:00:00Z"
+        },
+        {
+          "tambah": {
+            "deadline": null,
+            "deskripsi": null,
+            "judul": "   ",
+            "kode_mk": null
+          },
+          "waktu": "2026-10-20T01:00:00Z"
+        },
+        {
+          "tambah": {
+            "deadline": null,
+            "deskripsi": null,
+            "judul": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+            "kode_mk": null
+          },
+          "waktu": "2026-10-20T01:00:00Z"
+        },
+        {
+          "tambah": {
+            "deadline": null,
+            "deskripsi": null,
+            "judul": "Baca bab 5",
+            "kode_mk": null
+          },
+          "waktu": "2026-10-20T02:00:00Z"
+        },
+        {
+          "tambah": {
+            "deadline": "2026-10-26T16:59:00Z",
+            "deskripsi": null,
+            "judul": "Latihan kalkulus",
+            "kode_mk": "ABC60099"
+          },
+          "waktu": "2026-10-20T03:00:00Z"
+        },
+        {
+          "tambah": {
+            "deadline": "2026-10-27T16:59:00Z",
+            "deskripsi": null,
+            "judul": "Tugas mata kuliah situs",
+            "kode_mk": "ABC60030"
+          },
+          "waktu": "2026-10-20T04:00:00Z"
+        },
+        {
+          "tambah": {
+            "deadline": null,
+            "deskripsi": null,
+            "judul": "Semester lalu",
+            "kode_mk": "ABC60020"
+          },
+          "waktu": "2026-10-20T04:00:00Z"
+        },
+        {
+          "tambah": {
+            "deadline": null,
+            "deskripsi": null,
+            "judul": "Kode asal",
+            "kode_mk": "ABC69999"
+          },
+          "waktu": "2026-10-20T04:00:00Z"
+        },
+        {
+          "tambah": {
+            "deadline": "2026-10-28T16:59:00Z",
+            "deskripsi": null,
+            "judul": "yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy",
+            "kode_mk": null
+          },
+          "waktu": "2026-10-20T05:00:00Z"
+        },
+        {
+          "perubahan": {
+            "deadline": "2026-10-25T16:59:00Z",
+            "deskripsi": "",
+            "judul": "Laporan kelompok revisi",
+            "kode_mk": "abc60099"
+          },
+          "ubah": "$1",
+          "waktu": "2026-10-20T06:00:00Z"
+        },
+        {
+          "perubahan": {
+            "deskripsi": null,
+            "judul": "Laporan kelompok revisi"
+          },
+          "ubah": "$1",
+          "waktu": "2026-10-20T06:00:00Z"
+        },
+        {
+          "perubahan": {
+            "deadline": null
+          },
+          "ubah": "$1",
+          "waktu": "2026-10-20T07:00:00Z"
+        },
+        {
+          "perubahan": {
+            "judul": "  "
+          },
+          "ubah": "$1",
+          "waktu": "2026-10-20T07:00:00Z"
+        },
+        {
+          "perubahan": {
+            "warna": "x"
+          },
+          "ubah": "$1",
+          "waktu": "2026-10-20T07:00:00Z"
+        },
+        {
+          "perubahan": {
+            "judul": "x"
+          },
+          "ubah": "s-e3e93f39cb1a7a0f",
+          "waktu": "2026-10-20T07:00:00Z"
+        },
+        {
+          "perubahan": {
+            "kode_mk": "ABC69999"
+          },
+          "ubah": "$2",
+          "waktu": "2026-10-20T07:00:00Z"
+        },
+        {
+          "perubahan": {
+            "judul": "x"
+          },
+          "ubah": "m-tidakada",
+          "waktu": "2026-10-20T07:00:00Z"
+        },
+        {
+          "selesai": true,
+          "tandai": "$2",
+          "waktu": "2026-10-20T08:00:00Z"
+        },
+        {
+          "hapus": "$2"
+        },
+        {
+          "sql": "INSERT INTO tasks (id, jenis, judul, deadline, asal, first_seen, kode_mk_manual, duplikat_dari) VALUES ('m-00000009', 'manual', 'Induk', '2026-10-29T16:59:00Z', 'manual', '2026-10-20T00:00:00Z', NULL, NULL)"
+        },
+        {
+          "sql": "INSERT INTO tasks (id, jenis, judul, deadline, asal, first_seen, kode_mk_manual, duplikat_dari) VALUES ('m-0000000a', 'manual', 'Salinan', '2026-10-29T16:59:00Z', 'manual', '2026-10-20T00:00:00Z', NULL, 'm-00000009')"
+        },
+        {
+          "hapus": "m-00000009"
+        },
+        {
+          "hapus": "m-0000000a"
+        },
+        {
+          "hapus": "m-00000009"
+        },
+        {
+          "hapus": "s-e3e93f39cb1a7a0f"
+        },
+        {
+          "hapus": "m-tidakada"
+        }
+      ],
+      "nama": "dasar",
+      "task_changes": [
+        {
+          "field": "dibuat",
+          "nilai_baru": "Laporan kelompok",
+          "nilai_lama": null,
+          "oleh": "aku",
+          "task_id": "$1",
+          "waktu": "2026-10-20T01:00:00Z"
+        },
+        {
+          "field": "dibuat",
+          "nilai_baru": "Latihan kalkulus",
+          "nilai_lama": null,
+          "oleh": "aku",
+          "task_id": "$3",
+          "waktu": "2026-10-20T03:00:00Z"
+        },
+        {
+          "field": "dibuat",
+          "nilai_baru": "Tugas mata kuliah situs",
+          "nilai_lama": null,
+          "oleh": "aku",
+          "task_id": "$4",
+          "waktu": "2026-10-20T04:00:00Z"
+        },
+        {
+          "field": "dibuat",
+          "nilai_baru": "yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy",
+          "nilai_lama": null,
+          "oleh": "aku",
+          "task_id": "$5",
+          "waktu": "2026-10-20T05:00:00Z"
+        },
+        {
+          "field": "judul",
+          "nilai_baru": "Laporan kelompok revisi",
+          "nilai_lama": "Laporan kelompok",
+          "oleh": "aku",
+          "task_id": "$1",
+          "waktu": "2026-10-20T06:00:00Z"
+        },
+        {
+          "field": "deadline",
+          "nilai_baru": "2026-10-25T16:59:00Z",
+          "nilai_lama": "2026-10-24T05:00:00Z",
+          "oleh": "aku",
+          "task_id": "$1",
+          "waktu": "2026-10-20T06:00:00Z"
+        },
+        {
+          "field": "deskripsi",
+          "nilai_baru": null,
+          "nilai_lama": "Kerjakan bab 1",
+          "oleh": "aku",
+          "task_id": "$1",
+          "waktu": "2026-10-20T06:00:00Z"
+        },
+        {
+          "field": "kode_mk_manual",
+          "nilai_baru": "ABC60099",
+          "nilai_lama": "ABC60010",
+          "oleh": "aku",
+          "task_id": "$1",
+          "waktu": "2026-10-20T06:00:00Z"
+        },
+        {
+          "field": "deadline",
+          "nilai_baru": null,
+          "nilai_lama": "2026-10-25T16:59:00Z",
+          "oleh": "aku",
+          "task_id": "$1",
+          "waktu": "2026-10-20T07:00:00Z"
+        }
+      ],
+      "task_user_state": [],
+      "tasks": [
+        {
+          "asal": "manual",
+          "deadline": null,
+          "deskripsi": null,
+          "duplikat_dari": null,
+          "first_seen": "2026-10-20T01:00:00Z",
+          "id": "$1",
+          "jenis": "manual",
+          "judul": "Laporan kelompok revisi",
+          "kode_mk_manual": "ABC60099"
+        },
+        {
+          "asal": "manual",
+          "deadline": "2026-10-26T16:59:00Z",
+          "deskripsi": null,
+          "duplikat_dari": null,
+          "first_seen": "2026-10-20T03:00:00Z",
+          "id": "$3",
+          "jenis": "manual",
+          "judul": "Latihan kalkulus",
+          "kode_mk_manual": "ABC60099"
+        },
+        {
+          "asal": "manual",
+          "deadline": "2026-10-27T16:59:00Z",
+          "deskripsi": null,
+          "duplikat_dari": null,
+          "first_seen": "2026-10-20T04:00:00Z",
+          "id": "$4",
+          "jenis": "manual",
+          "judul": "Tugas mata kuliah situs",
+          "kode_mk_manual": "ABC60030"
+        },
+        {
+          "asal": "manual",
+          "deadline": "2026-10-28T16:59:00Z",
+          "deskripsi": null,
+          "duplikat_dari": null,
+          "first_seen": "2026-10-20T05:00:00Z",
+          "id": "$5",
+          "jenis": "manual",
+          "judul": "yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy",
+          "kode_mk_manual": null
+        }
+      ]
+    }
+  ]
+}

@@ -30,7 +30,7 @@ class MigrasiTest {
             val tabel = db.semua("SELECT name FROM sqlite_master WHERE type = 'table' ORDER BY name")
                 .map { it["name"] }
             assertEquals(
-                listOf("course_overrides", "courses", "preferences", "source_runs", "sources", "task_changes",
+                listOf("class_schedule", "course_overrides", "courses", "preferences", "source_runs", "sources", "task_changes",
                     "task_user_state", "tasks"),
                 tabel,
             )

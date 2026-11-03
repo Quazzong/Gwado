@@ -16,10 +16,13 @@ data class BarisTugas(
 )
 
 /**
- * Label mata kuliah: nama kelas situs; untuk tugas manual, nama kelas situs yang diikuti
- * dengan kode mata kuliah yang sama; terakhir kodenya sendiri.
+ * Label mata kuliah: nama di jadwal kuliah lewat kode MK; lalu nama kelas situs; untuk tugas
+ * manual, nama kelas situs yang diikuti dengan kode yang sama; terakhir kodenya sendiri.
  */
 internal const val SQL_MATKUL = """coalesce(
+         (SELECT j.matkul FROM class_schedule j
+          WHERE j.kode_mk = coalesce(t.kode_mk_manual, nullif(c.kode_mk, ''))
+          ORDER BY j.id LIMIT 1),
          c.nama,
          (SELECT k.nama FROM courses k
           WHERE k.kode_mk = t.kode_mk_manual AND k.diikuti = 1

@@ -65,7 +65,7 @@ WHERE t.id = ?
 """
 
 /** Waktu ke teks database (UTC, detik penuh). */
-private fun keDb(waktu: Instant): String = waktu.truncatedTo(ChronoUnit.SECONDS).toString()
+internal fun keDb(waktu: Instant): String = waktu.truncatedTo(ChronoUnit.SECONDS).toString()
 
 /** Satu tugas, atau null kalau ID-nya tidak ada. */
 fun Db.ambilTugas(id: String): DetailTugas? = satu(SQL_SATU, id)?.let {

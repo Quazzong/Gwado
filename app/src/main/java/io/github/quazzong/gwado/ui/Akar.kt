@@ -24,6 +24,7 @@ import io.github.quazzong.gwado.ui.komponen.ItemTab
 import io.github.quazzong.gwado.ui.komponen.TabBar
 import io.github.quazzong.gwado.ui.komponen.rememberSekarang
 import io.github.quazzong.gwado.ui.layar.Beranda
+import io.github.quazzong.gwado.ui.layar.LayarFormulir
 import io.github.quazzong.gwado.ui.layar.LayarDetail
 import io.github.quazzong.gwado.ui.layar.mendesak
 import io.github.quazzong.gwado.ui.tema.GwadoTema
@@ -38,21 +39,41 @@ data object Utama : NavKey
 @Serializable
 data class Detail(val id: String) : NavKey
 
+/** Formulir tugas manual: id null = tugas baru. */
+@Serializable
+data class Formulir(val id: String? = null) : NavKey
+
 private enum class Tab { TUGAS, LAYANAN }
 
 /** Akar tampilan: back stack layar, dimulai dari layar utama. */
 @Composable
 fun Akar(daftar: List<BarisTugas>, versi: Int, muatUlang: () -> Unit, layanan: @Composable () -> Unit) {
     val tumpukan = rememberNavBackStack(Utama)
+    val buka = { k: NavKey -> if (tumpukan.lastOrNull() != k) tumpukan.add(k) }
     NavDisplay(
         backStack = tumpukan,
         onBack = { tumpukan.removeLastOrNull() },
         entryProvider = entryProvider {
             entry<Utama> {
-                LayarUtama(daftar, versi, { id -> if (tumpukan.lastOrNull() != Detail(id)) tumpukan.add(Detail(id)) }, layanan)
+                LayarUtama(daftar, versi, { id -> buka(Detail(id)) }, { buka(Formulir()) }, layanan)
             }
             entry<Detail> { k ->
-                LayarDetail(k.id, onKembali = { tumpukan.removeLastOrNull() }, onBerubah = muatUlang)
+                LayarDetail(
+                    k.id,
+                    onKembali = { tumpukan.removeLastOrNull() },
+                    onBerubah = muatUlang,
+                    onUbah = { id -> buka(Formulir(id)) },
+                )
+            }
+            entry<Formulir> { k ->
+                LayarFormulir(
+                    k.id,
+                    onKembali = { tumpukan.removeLastOrNull() },
+                    onTersimpan = {
+                        muatUlang()
+                        tumpukan.removeLastOrNull()
+                    },
+                )
             }
         },
     )
@@ -63,6 +84,7 @@ private fun LayarUtama(
     daftar: List<BarisTugas>,
     versi: Int,
     bukaDetail: (String) -> Unit,
+    tambah: () -> Unit,
     layanan: @Composable () -> Unit,
 ) {
     val w = GwadoTema.warna
@@ -78,7 +100,7 @@ private fun LayarUtama(
         Box(Modifier.weight(1f).fillMaxWidth()) {
             penyimpan.SaveableStateProvider(tab) {
                 when (tab) {
-                    Tab.TUGAS -> Beranda(daftar, versi, sekarang, bukaDetail)
+                    Tab.TUGAS -> Beranda(daftar, versi, sekarang, bukaDetail, tambah)
                     Tab.LAYANAN -> layanan()
                 }
             }

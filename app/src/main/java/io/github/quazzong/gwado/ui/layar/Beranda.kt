@@ -1,6 +1,7 @@
 package io.github.quazzong.gwado.ui.layar
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -22,6 +23,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import io.github.quazzong.gwado.R
 import io.github.quazzong.gwado.beranda.kuliahMulai
 import io.github.quazzong.gwado.beranda.progresMinggu
 import io.github.quazzong.gwado.db.Db
@@ -31,6 +33,8 @@ import io.github.quazzong.gwado.tugas.BarisTugas
 import io.github.quazzong.gwado.tugas.daftarTugas
 import io.github.quazzong.gwado.ui.komponen.KartuTugas
 import io.github.quazzong.gwado.ui.komponen.Segmen
+import io.github.quazzong.gwado.ui.komponen.TombolGaris
+import io.github.quazzong.gwado.ui.komponen.TombolPlumIkon
 import io.github.quazzong.gwado.ui.komponen.Ubin
 import io.github.quazzong.gwado.ui.tema.GwadoTema
 import io.github.quazzong.gwado.ui.tema.Huruf
@@ -75,6 +79,7 @@ fun Beranda(
     versi: Int,
     sekarang: Instant,
     onBuka: (String) -> Unit,
+    onTambah: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val w = GwadoTema.warna
@@ -91,9 +96,10 @@ fun Beranda(
     val (sudah, belum) = tampil.partition(::terkumpul)
     val (atas, bawah) = belum.partition { mendesak(it, sekarang) }
 
+    Box(modifier.fillMaxSize()) {
     LazyColumn(
-        modifier.fillMaxSize(),
-        contentPadding = PaddingValues(Jarak.tepiLayar),
+        Modifier.fillMaxSize(),
+        contentPadding = PaddingValues(start = Jarak.tepiLayar, top = Jarak.tepiLayar, end = Jarak.tepiLayar, bottom = 80.dp),
         verticalArrangement = Arrangement.spacedBy(Jarak.s8),
     ) {
         item(key = "kepala") {
@@ -133,12 +139,20 @@ fun Beranda(
                         color = w.tintaRedup,
                         textAlign = TextAlign.Center,
                     )
+                    TombolGaris("Tugas manual", onTambah, Modifier.padding(top = Jarak.s12))
                 }
             }
         }
         bagian("Mendesak", atas, sekarang, onBuka)
         bagian("Nanti", bawah, sekarang, onBuka)
         bagian("Terkumpul di situs", sudah, sekarang, onBuka)
+    }
+    TombolPlumIkon(
+        R.drawable.ikon_tambah,
+        "Tambah tugas manual",
+        onTambah,
+        Modifier.align(Alignment.BottomEnd).padding(Jarak.tepiLayar),
+    )
     }
 }
 
