@@ -1,7 +1,9 @@
 package io.github.quazzong.gwado.ingest
 
 import io.github.quazzong.gwado.db.Db
-import io.github.quazzong.gwado.db.isiSemesterSementara
+import io.github.quazzong.gwado.semester.simpanSemester
+import io.github.quazzong.gwado.semester.tebakSemester
+import java.time.LocalDate
 import io.github.quazzong.gwado.db.migrasi
 import io.github.quazzong.gwado.fetch.FetchError
 import io.github.quazzong.gwado.tugas.daftarTugas
@@ -33,7 +35,7 @@ class BuatIsiTest {
     fun runGagalTercatatDanDaftarKosong() {
         Db.buka(":memory:").use { db ->
             db.migrasi()
-            db.isiSemesterSementara()
+            db.simpanSemester(tebakSemester(LocalDate.of(2026, 10, 20)))
             val h = db.proses(isiGagal("brone", MULAI, SELESAI, FetchError("token_ditolak", "invalidtoken")))
             assertEquals("failed", h.status)
             assertEquals(

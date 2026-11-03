@@ -24,12 +24,3 @@ object Gudang {
         return Db.buka(file.path).also { it.migrasi() }
     }
 }
-
-/**
- * SEMENTARA sampai GW7 (tebakan semester + konfirmasi pengguna): ingest butuh aturan semester.
- * Hanya mengisi kalau kosong, jadi tidak menimpa nilai yang nanti diatur pengguna.
- */
-fun Db.isiSemesterSementara() = exec(
-    "INSERT OR IGNORE INTO preferences (kunci, nilai) VALUES " +
-        "('semester_label', 'Ganjil 2026/2027'), ('semester_kode', '20261'), ('semester_mulai', '2026-08-01')",
-)

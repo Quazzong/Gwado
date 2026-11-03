@@ -13,10 +13,6 @@ data class BarisTugas(
     val statusSitus: String,
 )
 
-/**
- * SEMENTARA sampai GW8 (terjemahan tugas.py SERPER + golden): tugas manual dan tugas dari
- * mata kuliah yang diikuti; deadline terdekat dulu, tanpa deadline paling bawah.
- */
 fun Db.daftarTugas(): List<BarisTugas> = semua(
     """
     SELECT t.id, t.judul, s.nama AS sumber, c.nama AS kelas, t.jenis, t.deadline,

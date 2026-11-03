@@ -36,7 +36,6 @@ import com.google.android.gms.auth.api.identity.Identity
 import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.common.api.Scope
 import io.github.quazzong.gwado.db.Gudang
-import io.github.quazzong.gwado.db.isiSemesterSementara
 import io.github.quazzong.gwado.fetch.CatatanSukses
 import io.github.quazzong.gwado.fetch.FetchError
 import io.github.quazzong.gwado.fetch.HasilJob
@@ -53,6 +52,16 @@ import io.github.quazzong.gwado.masuk.BrankasKeystore
 import io.github.quazzong.gwado.masuk.HasilLogin
 import io.github.quazzong.gwado.masuk.alamatLogin
 import io.github.quazzong.gwado.masuk.bacaRedirect
+import io.github.quazzong.gwado.semester.LABEL_SEMESTER
+import io.github.quazzong.gwado.semester.Matkul
+import io.github.quazzong.gwado.semester.aturPengecualian
+import io.github.quazzong.gwado.semester.daftarMatkul
+import io.github.quazzong.gwado.semester.periksaSemester
+import io.github.quazzong.gwado.semester.ringkasanMatkul
+import io.github.quazzong.gwado.semester.semesterTersimpan
+import io.github.quazzong.gwado.semester.simpanSemester
+import io.github.quazzong.gwado.semester.tanggalWib
+import io.github.quazzong.gwado.semester.tebakSemester
 import io.github.quazzong.gwado.sumber.HasilSumber
 import io.github.quazzong.gwado.tugas.BarisTugas
 import io.github.quazzong.gwado.tugas.daftarTugas
@@ -81,12 +90,23 @@ private val SCOPES = listOf(
     Scope("https://www.googleapis.com/auth/classroom.coursework.me.readonly"),
 )
 
+private val PILIHAN_PENGECUALIAN: List<Pair<String?, String>> = listOf(
+    null to "Otomatis",
+    "ikuti" to "Ikuti",
+    "abaikan" to "Abaikan",
+)
+
 class MainActivity : ComponentActivity() {
     private val status = mutableStateMapOf<String, String>()
     private var daftar by mutableStateOf<List<BarisTugas>>(emptyList())
     private var sibuk by mutableStateOf(false)
     private var umum by mutableStateOf("")
     private var alamatTempel by mutableStateOf("")
+    private var semester by mutableStateOf<Map<String, String>?>(null)   // null = belum dikonfirmasi
+    private val isianSemester = mutableStateMapOf<String, String>()
+    private var lihatMatkul by mutableStateOf<String?>(null)              // sumber yang daftar matkulnya dibuka
+    private var matkulSumber by mutableStateOf<List<Matkul>>(emptyList())
+    private val matkul = mutableStateMapOf<String, String>()               // sumber → "N diikuti · M dilewati"
     private val prefs by lazy { getPreferences(MODE_PRIVATE) }
     private val brankas by lazy { BrankasKeystore(this) }
     private val catatan = object : CatatanSukses {
@@ -119,19 +139,45 @@ class MainActivity : ComponentActivity() {
                         modifier = Modifier.padding(innerPadding).padding(16.dp),
                         verticalArrangement = Arrangement.spacedBy(8.dp),
                     ) {
-                        Text("Gwado · uji database (GW6)")
+                        Text("Gwado · uji semester (GW7)")
+                        val sm = semester
+                        if (sm == null) {
+                            Text("Konfirmasi semester aktif (ditebak dari tanggal hari ini, betulkan kalau salah):")
+                            for ((kunci, label) in LABEL_SEMESTER) {
+                                OutlinedTextField(
+                                    value = isianSemester[kunci].orEmpty(),
+                                    onValueChange = { isianSemester[kunci] = it },
+                                    label = { Text(label) },
+                                    singleLine = true,
+                                    modifier = Modifier.fillMaxWidth(),
+                                )
+                            }
+                            Button(onClick = { simpanSemesterDariIsian() }) { Text("Simpan semester") }
+                        } else {
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Text(
+                                    "Semester ${sm["semester_label"]} · kode ${sm["semester_kode"]} · " +
+                                        "Classroom sejak ${sm["semester_mulai"]}",
+                                    style = MaterialTheme.typography.bodySmall,
+                                    modifier = Modifier.weight(1f),
+                                )
+                                TextButton(onClick = { ubahSemester(sm) }, enabled = !sibuk) { Text("Ubah") }
+                            }
+                        }
                         for (s in DAFTAR_SUMBER) {
                             Row(
                                 verticalAlignment = Alignment.CenterVertically,
                                 horizontalArrangement = Arrangement.spacedBy(8.dp),
                             ) {
                                 Text(s.label, modifier = Modifier.weight(1f))
-                                Button(onClick = { mulai(s) }, enabled = !sibuk) { Text("Ambil") }
+                                Button(onClick = { mulai(s) }, enabled = !sibuk && semester != null) { Text("Ambil") }
                                 if (s.situs != null) {
                                     TextButton(onClick = { lupakan(s) }, enabled = !sibuk) { Text("Lupakan") }
                                 }
+                                TextButton(onClick = { bukaMatkul(s.id) }, enabled = !sibuk) { Text("Matkul") }
                             }
                             Text(status[s.id] ?: "belum diambil", style = MaterialTheme.typography.bodySmall)
+                            matkul[s.id]?.let { Text("Mata kuliah: $it", style = MaterialTheme.typography.bodySmall) }
                         }
                         OutlinedTextField(
                             value = alamatTempel,
@@ -145,12 +191,41 @@ class MainActivity : ComponentActivity() {
                             enabled = !sibuk && alamatTempel.isNotBlank(),
                         ) { Text("Pakai alamat") }
                         if (umum.isNotEmpty()) Text(umum)
-                        Text("${daftar.size} tugas di database", style = MaterialTheme.typography.bodySmall)
-                        LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                            items(daftar, key = { it.id }) { t ->
-                                Column {
-                                    Text(t.judul)
-                                    Text(keterangan(t), style = MaterialTheme.typography.bodySmall)
+                        val ms = lihatMatkul
+                        if (ms == null) {
+                            Text("${daftar.size} tugas di database", style = MaterialTheme.typography.bodySmall)
+                            LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                                items(daftar, key = { it.id }) { t ->
+                                    Column {
+                                        Text(t.judul)
+                                        Text(keterangan(t), style = MaterialTheme.typography.bodySmall)
+                                    }
+                                }
+                            }
+                        } else {
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Text(
+                                    "Mata kuliah ${DAFTAR_SUMBER.first { it.id == ms }.label} · " +
+                                        "pengecualian berlaku saat Ambil berikutnya",
+                                    style = MaterialTheme.typography.bodySmall,
+                                    modifier = Modifier.weight(1f),
+                                )
+                                TextButton(onClick = { lihatMatkul = null }) { Text("Tutup") }
+                            }
+                            LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                                items(matkulSumber, key = { it.externalId }) { m ->
+                                    Column {
+                                        Text((if (m.diikuti) "✓ " else "– ") + m.nama)
+                                        Text(m.alasan.orEmpty(), style = MaterialTheme.typography.bodySmall)
+                                        Row {
+                                            for ((aksi, label) in PILIHAN_PENGECUALIAN) {
+                                                TextButton(
+                                                    onClick = { atur(ms, m.externalId, aksi) },
+                                                    enabled = m.aksi != aksi,
+                                                ) { Text(label) }
+                                            }
+                                        }
+                                    }
                                 }
                             }
                         }
@@ -160,10 +235,13 @@ class MainActivity : ComponentActivity() {
         }
         lifecycleScope.launch {
             umum = try {
-                daftar = Gudang.pakai(this@MainActivity) { db ->
-                    db.isiSemesterSementara()
-                    db.daftarTugas()
+                val (sm, d, r) = Gudang.pakai(this@MainActivity) { db ->
+                    Triple(db.semesterTersimpan(), db.daftarTugas(), db.ringkasanMatkul())
                 }
+                semester = sm
+                daftar = d
+                matkul.putAll(r)
+                if (sm == null) isianSemester.putAll(tebakSemester(tanggalWib(Instant.now())))
                 ""
             } catch (e: CancellationException) {
                 throw e
@@ -295,14 +373,58 @@ class MainActivity : ComponentActivity() {
             if (e.jenis == "token_ditolak" && s.situs != null) brankas.hapus(s.id)
             isiGagal(s.id, mulai, Instant.now(), e)                    // run gagal tetap dicatat
         }
-        val (h, baru) = Gudang.pakai(this) { db -> db.proses(isi) to db.daftarTugas() }
+        val (h, baru, r) = Gudang.pakai(this) { db -> Triple(db.proses(isi), db.daftarTugas(), db.ringkasanMatkul()) }
         daftar = baru
+        matkul.putAll(r)
+        lihatMatkul?.let { ms -> matkulSumber = Gudang.pakai(this) { it.daftarMatkul(ms) } }
         val e = isi.error
         return when {
             e == null -> "${h.status}: ${h.pesan}"
             e.jenis == "token_ditolak" -> "Gagal (token_ditolak): ${e.pesan}. Tekan Ambil untuk login ulang."
             else -> "Gagal (${e.jenis}): ${e.pesan}"
         }
+    }
+
+    private fun bukaMatkul(sumber: String) {
+        lifecycleScope.launch {
+            matkulSumber = Gudang.pakai(this@MainActivity) { it.daftarMatkul(sumber) }
+            lihatMatkul = sumber
+        }
+    }
+
+    private fun atur(sumber: String, externalId: String, aksi: String?) {
+        lifecycleScope.launch {
+            matkulSumber = Gudang.pakai(this@MainActivity) { db ->
+                db.aturPengecualian(sumber, externalId, aksi)
+                db.daftarMatkul(sumber)
+            }
+        }
+    }
+
+    private fun simpanSemesterDariIsian() {
+        val nilai = LABEL_SEMESTER.keys.associateWith { isianSemester[it].orEmpty().trim() }
+        periksaSemester(nilai)?.let {
+            umum = it
+            return
+        }
+        lifecycleScope.launch {
+            umum = try {
+                Gudang.pakai(this@MainActivity) { it.simpanSemester(nilai) }
+                semester = nilai
+                "Semester disimpan; berlaku mulai Ambil berikutnya."
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                "Semester tidak bisa disimpan: ${e.javaClass.simpleName}"
+            }
+        }
+    }
+
+    /** Buka lagi isian dengan nilai sekarang; Ambil mati sampai disimpan ulang. */
+    private fun ubahSemester(sekarang: Map<String, String>) {
+        isianSemester.clear()
+        isianSemester.putAll(sekarang)
+        semester = null
     }
 
     private fun pesanTertahan(s: Sumber, t: HasilJob.Tertahan): String = when (t.sebab) {

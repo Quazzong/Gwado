@@ -54,8 +54,19 @@ fun contentHash(t: Tugas): String =
         "${jsonTeks(k)}: ${jsonTeks(v)}"
     })
 
-/** Aturan semester aktif (§5.1 konteks): (1 = diikuti / 0 = dilewati, alasan). */
-fun diikuti(sumber: String, k: Kelas, aturan: Map<String, String>): Pair<Int, String> = when (sumber) {
+/**
+ * Apakah mata kuliah diikuti: (1 = diikuti / 0 = dilewati, alasan).
+ * aksi = pengecualian manual ("ikuti" / "abaikan"), menang atas aturan semester.
+ */
+fun diikuti(sumber: String, k: Kelas, aturan: Map<String, String>, aksi: String? = null): Pair<Int, String> =
+    when (aksi) {
+        "ikuti" -> 1 to "pengecualian manual: ikuti"
+        "abaikan" -> 0 to "pengecualian manual: abaikan"
+        else -> diikutiAturan(sumber, k, aturan)
+    }
+
+/** Aturan semester: Brone menurut kategori, Eling menurut shortname, Classroom menurut tanggal dibuat. */
+private fun diikutiAturan(sumber: String, k: Kelas, aturan: Map<String, String>): Pair<Int, String> = when (sumber) {
     "brone" -> {
         val label = aturan.getValue("semester_label")
         if (k.kategori == label) 1 to "kategori $label"
@@ -105,7 +116,11 @@ fun Db.proses(isi: Isi): HasilIngest = transaksi {
     }
 
     val aturan = aturanSemester()
-    val nilai = isi.hasil.kelas.map { k -> diikuti(sumber, k, aturan).let { (ikut, alasan) -> Triple(k, ikut, alasan) } }
+    val kecuali = semua("SELECT external_id, aksi FROM course_overrides WHERE source_id = ?", sumber)
+        .associate { it["external_id"] as String to it["aksi"] as String }
+    val nilai = isi.hasil.kelas.map { k ->
+        diikuti(sumber, k, aturan, kecuali[k.externalId]).let { (ikut, alasan) -> Triple(k, ikut, alasan) }
+    }
     val ikutEid = nilai.filter { it.second == 1 }.map { it.first.externalId }.toSet()
 
     val alasanPartial = cekPartial(isi, ikutEid)

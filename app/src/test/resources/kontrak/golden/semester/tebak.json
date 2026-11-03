@@ -1,0 +1,82 @@
+[
+  {
+    "hasil": {
+      "semester_kode": "20252",
+      "semester_label": "Genap 2025/2026",
+      "semester_mulai": "2026-02-01"
+    },
+    "tanggal": "2026-07-31"
+  },
+  {
+    "hasil": {
+      "semester_kode": "20261",
+      "semester_label": "Ganjil 2026/2027",
+      "semester_mulai": "2026-08-01"
+    },
+    "tanggal": "2026-08-01"
+  },
+  {
+    "hasil": {
+      "semester_kode": "20261",
+      "semester_label": "Ganjil 2026/2027",
+      "semester_mulai": "2026-08-01"
+    },
+    "tanggal": "2026-10-20"
+  },
+  {
+    "hasil": {
+      "semester_kode": "20261",
+      "semester_label": "Ganjil 2026/2027",
+      "semester_mulai": "2026-08-01"
+    },
+    "tanggal": "2026-12-31"
+  },
+  {
+    "hasil": {
+      "semester_kode": "20261",
+      "semester_label": "Ganjil 2026/2027",
+      "semester_mulai": "2026-08-01"
+    },
+    "tanggal": "2027-01-01"
+  },
+  {
+    "hasil": {
+      "semester_kode": "20261",
+      "semester_label": "Ganjil 2026/2027",
+      "semester_mulai": "2026-08-01"
+    },
+    "tanggal": "2027-01-31"
+  },
+  {
+    "hasil": {
+      "semester_kode": "20262",
+      "semester_label": "Genap 2026/2027",
+      "semester_mulai": "2027-02-01"
+    },
+    "tanggal": "2027-02-01"
+  },
+  {
+    "hasil": {
+      "semester_kode": "20262",
+      "semester_label": "Genap 2026/2027",
+      "semester_mulai": "2027-02-01"
+    },
+    "tanggal": "2027-07-31"
+  },
+  {
+    "hasil": {
+      "semester_kode": "20271",
+      "semester_label": "Ganjil 2027/2028",
+      "semester_mulai": "2027-08-01"
+    },
+    "tanggal": "2027-08-01"
+  },
+  {
+    "hasil": {
+      "semester_kode": "20272",
+      "semester_label": "Genap 2027/2028",
+      "semester_mulai": "2028-02-01"
+    },
+    "tanggal": "2028-02-29"
+  }
+]

@@ -22,15 +22,15 @@ class MigrasiTest {
     @Test
     fun migrasiMembuatSkemaDanSumber() {
         Db.buka(":memory:").use { db ->
-            assertEquals(listOf("0001_awal.sql"), db.migrasi())
+            assertEquals(MIGRASI, db.migrasi())
             assertEquals(emptyList<String>(), db.migrasi())          // kedua kali: tidak ada yang jalan
-            assertEquals(1L, db.satu("PRAGMA user_version")!!["user_version"])
+            assertEquals(MIGRASI.size.toLong(), db.satu("PRAGMA user_version")!!["user_version"])
             assertEquals(1L, db.satu("PRAGMA foreign_keys")!!["foreign_keys"])
 
             val tabel = db.semua("SELECT name FROM sqlite_master WHERE type = 'table' ORDER BY name")
                 .map { it["name"] }
             assertEquals(
-                listOf("courses", "preferences", "source_runs", "sources", "task_changes",
+                listOf("course_overrides", "courses", "preferences", "source_runs", "sources", "task_changes",
                     "task_user_state", "tasks"),
                 tabel,
             )
