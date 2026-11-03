@@ -42,14 +42,14 @@ private enum class Tab { TUGAS, LAYANAN }
 
 /** Akar tampilan: back stack layar, dimulai dari layar utama. */
 @Composable
-fun Akar(daftar: List<BarisTugas>, muatUlang: () -> Unit, layanan: @Composable () -> Unit) {
+fun Akar(daftar: List<BarisTugas>, versi: Int, muatUlang: () -> Unit, layanan: @Composable () -> Unit) {
     val tumpukan = rememberNavBackStack(Utama)
     NavDisplay(
         backStack = tumpukan,
         onBack = { tumpukan.removeLastOrNull() },
         entryProvider = entryProvider {
             entry<Utama> {
-                LayarUtama(daftar, { id -> if (tumpukan.lastOrNull() != Detail(id)) tumpukan.add(Detail(id)) }, layanan)
+                LayarUtama(daftar, versi, { id -> if (tumpukan.lastOrNull() != Detail(id)) tumpukan.add(Detail(id)) }, layanan)
             }
             entry<Detail> { k ->
                 LayarDetail(k.id, onKembali = { tumpukan.removeLastOrNull() }, onBerubah = muatUlang)
@@ -59,7 +59,12 @@ fun Akar(daftar: List<BarisTugas>, muatUlang: () -> Unit, layanan: @Composable (
 }
 
 @Composable
-private fun LayarUtama(daftar: List<BarisTugas>, bukaDetail: (String) -> Unit, layanan: @Composable () -> Unit) {
+private fun LayarUtama(
+    daftar: List<BarisTugas>,
+    versi: Int,
+    bukaDetail: (String) -> Unit,
+    layanan: @Composable () -> Unit,
+) {
     val w = GwadoTema.warna
     val sekarang = rememberSekarang()
     var tab by rememberSaveable { mutableStateOf(Tab.TUGAS) }
@@ -73,7 +78,7 @@ private fun LayarUtama(daftar: List<BarisTugas>, bukaDetail: (String) -> Unit, l
         Box(Modifier.weight(1f).fillMaxWidth()) {
             penyimpan.SaveableStateProvider(tab) {
                 when (tab) {
-                    Tab.TUGAS -> Beranda(daftar, sekarang, bukaDetail)
+                    Tab.TUGAS -> Beranda(daftar, versi, sekarang, bukaDetail)
                     Tab.LAYANAN -> layanan()
                 }
             }

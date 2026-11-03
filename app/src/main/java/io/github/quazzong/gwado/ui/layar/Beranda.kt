@@ -3,25 +3,44 @@ package io.github.quazzong.gwado.ui.layar
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.produceState
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
+import io.github.quazzong.gwado.beranda.kuliahMulai
+import io.github.quazzong.gwado.beranda.progresMinggu
+import io.github.quazzong.gwado.db.Db
+import io.github.quazzong.gwado.db.Gudang
+import io.github.quazzong.gwado.segar.jamSingkat
 import io.github.quazzong.gwado.tugas.BarisTugas
+import io.github.quazzong.gwado.tugas.daftarTugas
 import io.github.quazzong.gwado.ui.komponen.KartuTugas
+import io.github.quazzong.gwado.ui.komponen.Segmen
+import io.github.quazzong.gwado.ui.komponen.Ubin
 import io.github.quazzong.gwado.ui.tema.GwadoTema
 import io.github.quazzong.gwado.ui.tema.Huruf
 import io.github.quazzong.gwado.ui.tema.Jarak
 import io.github.quazzong.gwado.waktu.Makna
+import io.github.quazzong.gwado.waktu.WIB
 import io.github.quazzong.gwado.waktu.dariDb
 import io.github.quazzong.gwado.waktu.sisaChip
 import java.time.Instant
+import java.time.LocalDate
 
 /** Tugas belum dicentang yang situsnya mencatat sudah dikumpulkan. */
 internal fun terkumpul(t: BarisTugas): Boolean =
@@ -35,36 +54,88 @@ internal fun mendesak(t: BarisTugas, sekarang: Instant): Boolean =
     t.status != "done" && !terkumpul(t) &&
         (t.deadline?.let { sisaChip(dariDb(it), sekarang).makna != Makna.NORMAL } ?: false)
 
+private class DataKepala(val kuliahMulai: LocalDate?, val semua: List<BarisTugas>, val diambil: Instant?)
+
+/** Selesai run sukses terakhir dari sumber mana pun. */
+private fun Db.suksesTerakhir(): Instant? =
+    (satu("SELECT max(selesai) AS s FROM source_runs WHERE status = 'success'")?.get("s") as String?)?.let(::dariDb)
+
+/** Nama layanan di filter; nama panjang disingkat jadi huruf depan tiap kata (Google Classroom → GC). */
+private fun singkat(nama: String): String =
+    if (nama.length > 10 && ' ' in nama) nama.split(' ').filter { it.isNotEmpty() }.joinToString("") { it.take(1) } else nama
+
 /**
- * Daftar tugas: MENDESAK, lalu NANTI (tanpa deadline di akhirnya), lalu
- * TERKUMPUL DI SITUS. Tiap bagian tetap urut deadline. Ketuk kartu = buka detail.
+ * Beranda: kepala (minggu, hari, progres), ubin ringkasan, filter layanan, lalu tugas
+ * dalam bagian MENDESAK, NANTI (tanpa deadline di akhirnya), dan TERKUMPUL DI SITUS.
+ * [versi] naik setiap kali data di database berubah. Ketuk kartu = buka detail.
  */
 @Composable
-fun Beranda(daftar: List<BarisTugas>, sekarang: Instant, onBuka: (String) -> Unit, modifier: Modifier = Modifier) {
+fun Beranda(
+    daftar: List<BarisTugas>,
+    versi: Int,
+    sekarang: Instant,
+    onBuka: (String) -> Unit,
+    modifier: Modifier = Modifier,
+) {
     val w = GwadoTema.warna
-    if (daftar.isEmpty()) {
-        Column(
-            modifier.fillMaxSize().padding(Jarak.tepiLayar),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally,
-        ) {
-            Text("Belum ada tugas", style = Huruf.judulBagian, color = w.tinta)
-            Text(
-                "Tekan Ambil di tab Layanan untuk mengambil tugas dari situs kuliah.",
-                style = Huruf.isi,
-                color = w.tintaRedup,
-                textAlign = TextAlign.Center,
-            )
-        }
-        return
+    val konteks = LocalContext.current
+    val data by produceState<DataKepala?>(null, versi) {
+        value = runCatching {
+            Gudang.pakai(konteks) { db -> DataKepala(db.kuliahMulai(), db.daftarTugas(semua = true), db.suksesTerakhir()) }
+        }.getOrNull()
     }
-    val (sudah, belum) = daftar.partition(::terkumpul)
+    var filter by rememberSaveable { mutableStateOf<String?>(null) }
+    val layanan = daftar.map { it.sumber ?: "Manual" }.distinct().sortedBy { it == "Manual" }
+    val aktif = filter?.takeIf { it in layanan }
+    val tampil = if (aktif == null) daftar else daftar.filter { (it.sumber ?: "Manual") == aktif }
+    val (sudah, belum) = tampil.partition(::terkumpul)
     val (atas, bawah) = belum.partition { mendesak(it, sekarang) }
+
     LazyColumn(
         modifier.fillMaxSize(),
         contentPadding = PaddingValues(Jarak.tepiLayar),
         verticalArrangement = Arrangement.spacedBy(Jarak.s8),
     ) {
+        item(key = "kepala") {
+            KepalaBeranda(
+                sekarang,
+                data?.kuliahMulai,
+                progresMinggu(data?.semua.orEmpty(), sekarang.atOffset(WIB).toLocalDate()),
+            )
+        }
+        item(key = "ubin") {
+            Row(Modifier.fillMaxWidth().padding(top = Jarak.s4), horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                Ubin("Aktif", "${daftar.size}", Modifier.weight(1f))
+                Ubin("Mendesak", "${daftar.count { mendesak(it, sekarang) }}", Modifier.weight(1f))
+                Ubin("Diambil", data?.diambil?.let { jamSingkat(it, sekarang) } ?: "—", Modifier.weight(1f))
+            }
+        }
+        if (layanan.size > 1) {
+            item(key = "filter") {
+                Segmen(
+                    listOf<Pair<String?, String>>(null to "Semua") + layanan.map { it to singkat(it) },
+                    aktif = aktif,
+                    onPilih = { filter = it },
+                    modifier = Modifier.padding(vertical = Jarak.s4),
+                )
+            }
+        }
+        if (daftar.isEmpty()) {
+            item(key = "kosong") {
+                Column(
+                    Modifier.fillMaxWidth().padding(vertical = Jarak.s24),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                ) {
+                    Text("Belum ada tugas", style = Huruf.judulBagian, color = w.tinta)
+                    Text(
+                        "Tekan Ambil di tab Layanan untuk mengambil tugas dari situs kuliah.",
+                        style = Huruf.isi,
+                        color = w.tintaRedup,
+                        textAlign = TextAlign.Center,
+                    )
+                }
+            }
+        }
         bagian("Mendesak", atas, sekarang, onBuka)
         bagian("Nanti", bawah, sekarang, onBuka)
         bagian("Terkumpul di situs", sudah, sekarang, onBuka)

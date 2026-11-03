@@ -23,6 +23,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateMapOf
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -33,6 +34,8 @@ import com.google.android.gms.auth.api.identity.AuthorizationRequest
 import com.google.android.gms.auth.api.identity.Identity
 import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.common.api.Scope
+import io.github.quazzong.gwado.beranda.kuliahMulai
+import io.github.quazzong.gwado.beranda.simpanKuliahMulai
 import io.github.quazzong.gwado.db.Gudang
 import io.github.quazzong.gwado.fetch.CatatanSukses
 import io.github.quazzong.gwado.fetch.FetchError
@@ -67,6 +70,7 @@ import io.github.quazzong.gwado.ui.Akar
 import io.github.quazzong.gwado.ui.tema.GwadoTema
 import java.time.Duration
 import java.time.Instant
+import java.time.LocalDate
 import java.util.UUID
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
@@ -99,6 +103,8 @@ class MainActivity : ComponentActivity() {
     private var sibuk by mutableStateOf(false)
     private var umum by mutableStateOf("")
     private var alamatTempel by mutableStateOf("")
+    private var isianKuliah by mutableStateOf("")
+    private var versiData by mutableIntStateOf(0)
     private var semester by mutableStateOf<Map<String, String>?>(null)   // null = belum dikonfirmasi
     private val isianSemester = mutableStateMapOf<String, String>()
     private var lihatMatkul by mutableStateOf<String?>(null)              // sumber yang daftar matkulnya dibuka
@@ -131,7 +137,7 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             GwadoTema {
-                Akar(daftar = daftar, muatUlang = ::muatUlangDaftar) {
+                Akar(daftar = daftar, versi = versiData, muatUlang = ::muatUlangDaftar) {
                     Column(
                         modifier = Modifier.padding(16.dp),
                         verticalArrangement = Arrangement.spacedBy(8.dp),
@@ -159,6 +165,19 @@ class MainActivity : ComponentActivity() {
                                 )
                                 TextButton(onClick = { ubahSemester(sm) }, enabled = !sibuk) { Text("Ubah") }
                             }
+                        }
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        ) {
+                            OutlinedTextField(
+                                value = isianKuliah,
+                                onValueChange = { isianKuliah = it },
+                                label = { Text("Kuliah pertama (YYYY-MM-DD)") },
+                                singleLine = true,
+                                modifier = Modifier.weight(1f),
+                            )
+                            TextButton(onClick = { simpanKuliah() }, enabled = !sibuk) { Text("Simpan") }
                         }
                         for (s in DAFTAR_SUMBER) {
                             Row(
@@ -228,6 +247,8 @@ class MainActivity : ComponentActivity() {
                 }
                 semester = sm
                 daftar = d
+                versiData++
+                isianKuliah = Gudang.pakai(this@MainActivity) { it.kuliahMulai() }?.toString().orEmpty()
                 matkul.putAll(r)
                 if (sm == null) isianSemester.putAll(tebakSemester(tanggalWib(Instant.now())))
                 ""
@@ -241,9 +262,27 @@ class MainActivity : ComponentActivity() {
         if (savedInstanceState == null) intentMasuk(intent)
     }
 
+    /** Simpan tanggal kuliah pertama (kosong = hapus), lalu muat ulang beranda. */
+    private fun simpanKuliah() {
+        val teks = isianKuliah.trim()
+        val tanggal = if (teks.isEmpty()) null else runCatching { LocalDate.parse(teks) }.getOrNull()
+        if (teks.isNotEmpty() && tanggal == null) {
+            umum = "Tanggal kuliah pertama harus berbentuk YYYY-MM-DD, misalnya 2026-08-24"
+            return
+        }
+        lifecycleScope.launch {
+            Gudang.pakai(this@MainActivity) { it.simpanKuliahMulai(tanggal) }
+            umum = if (tanggal == null) "Tanggal kuliah pertama dihapus" else "Tanggal kuliah pertama disimpan"
+            muatUlangDaftar()
+        }
+    }
+
     /** Baca ulang daftar dari database, misalnya setelah centang di layar detail. */
     private fun muatUlangDaftar() {
-        lifecycleScope.launch { daftar = Gudang.pakai(this@MainActivity) { it.daftarTugas() } }
+        lifecycleScope.launch {
+            daftar = Gudang.pakai(this@MainActivity) { it.daftarTugas() }
+            versiData++
+        }
     }
 
     override fun onNewIntent(intent: Intent) {
@@ -368,6 +407,7 @@ class MainActivity : ComponentActivity() {
         }
         val (h, baru, r) = Gudang.pakai(this) { db -> Triple(db.proses(isi), db.daftarTugas(), db.ringkasanMatkul()) }
         daftar = baru
+        versiData++
         matkul.putAll(r)
         lihatMatkul?.let { ms -> matkulSumber = Gudang.pakai(this) { it.daftarMatkul(ms) } }
         val e = isi.error
