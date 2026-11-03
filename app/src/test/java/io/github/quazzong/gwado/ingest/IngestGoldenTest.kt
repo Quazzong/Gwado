@@ -34,7 +34,7 @@ private val DUMP = mapOf(
 
 private fun JsonObject.teks(k: String): String? = getValue(k).jsonPrimitive.contentOrNull
 
-private fun keIsi(o: JsonObject): Isi {
+internal fun keIsi(o: JsonObject): Isi {
     val e = o["error"]?.takeUnless { it is JsonNull }?.jsonObject
     return Isi(
         fetchId = o.teks("fetch_id")!!,

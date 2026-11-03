@@ -1,0 +1,32 @@
+[
+  {
+    "jam": "Sen 2 Nov 23.59",
+    "tanpa_jam": "Sen 2 Nov 2026",
+    "waktu": "2026-11-02T16:59:00Z"
+  },
+  {
+    "jam": "Sel 3 Nov 12.00",
+    "tanpa_jam": "Sel 3 Nov 2026",
+    "waktu": "2026-11-03T05:00:00Z"
+  },
+  {
+    "jam": "Jum 1 Jan 00.00",
+    "tanpa_jam": "Jum 1 Jan 2027",
+    "waktu": "2026-12-31T17:00:00Z"
+  },
+  {
+    "jam": "Sen 4 Mei 10.07",
+    "tanpa_jam": "Sen 4 Mei 2026",
+    "waktu": "2026-05-04T03:07:00Z"
+  },
+  {
+    "jam": "Sen 17 Agu 06.59",
+    "tanpa_jam": "Sen 17 Agu 2026",
+    "waktu": "2026-08-16T23:59:59Z"
+  },
+  {
+    "jam": "Sel 29 Feb 17.30",
+    "tanpa_jam": "Sel 29 Feb 2028",
+    "waktu": "2028-02-29T10:30:00Z"
+  }
+]

@@ -442,7 +442,7 @@ class MainActivity : ComponentActivity() {
 
     private fun keterangan(t: BarisTugas): String = listOfNotNull(
         t.sumber,
-        t.kelas,
+        t.matkul,
         t.jenis,
         t.deadline ?: "tanpa deadline",
         t.statusKumpulSitus?.let { "situs: $it" },

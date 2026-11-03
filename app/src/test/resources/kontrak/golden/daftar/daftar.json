@@ -1,0 +1,1751 @@
+{
+  "skenario": [
+    {
+      "daftar": [
+        {
+          "asal": "sumber",
+          "deadline": "2026-10-22T16:59:00Z",
+          "id": "s-e0fe56a17daf3214",
+          "jenis": "assign",
+          "judul": "Tugas 3",
+          "matkul": "MK 10",
+          "status": "todo",
+          "status_kumpul_situs": "terkumpul",
+          "status_situs": "aktif",
+          "sumber": "Brone"
+        },
+        {
+          "asal": "sumber",
+          "deadline": "2026-10-23T16:59:00Z",
+          "id": "s-634d0d92d9926d1d",
+          "jenis": "assign",
+          "judul": "Kuis sama",
+          "matkul": "MK 10",
+          "status": "todo",
+          "status_kumpul_situs": null,
+          "status_situs": "aktif",
+          "sumber": "Brone"
+        },
+        {
+          "asal": "sumber",
+          "deadline": "2026-10-23T16:59:00Z",
+          "id": "s-72f615eb4fd1c199",
+          "jenis": "assign",
+          "judul": "Kuis sama",
+          "matkul": "MK 10",
+          "status": "todo",
+          "status_kumpul_situs": null,
+          "status_situs": "aktif",
+          "sumber": "Brone"
+        },
+        {
+          "asal": "manual",
+          "deadline": "2026-10-24T05:00:00Z",
+          "id": "m-00000001",
+          "jenis": "manual",
+          "judul": "Laporan kelompok",
+          "matkul": "MK 10",
+          "status": "todo",
+          "status_kumpul_situs": null,
+          "status_situs": "aktif",
+          "sumber": null
+        },
+        {
+          "asal": "sumber",
+          "deadline": "2026-10-24T16:59:00Z",
+          "id": "s-8f7abcd412c27664",
+          "jenis": "coursework",
+          "judul": "Tugas 1",
+          "matkul": "MK 777",
+          "status": "todo",
+          "status_kumpul_situs": null,
+          "status_situs": "aktif",
+          "sumber": "Google Classroom"
+        },
+        {
+          "asal": "sumber",
+          "deadline": "2026-10-25T16:59:00Z",
+          "id": "s-e3e93f39cb1a7a0f",
+          "jenis": "assign",
+          "judul": "Tugas 1",
+          "matkul": "MK 10",
+          "status": "todo",
+          "status_kumpul_situs": null,
+          "status_situs": "aktif",
+          "sumber": "Brone"
+        },
+        {
+          "asal": "sumber",
+          "deadline": "2026-10-25T16:59:00Z",
+          "id": "s-508351d7e30b6073",
+          "jenis": "assign",
+          "judul": "Tugas 8",
+          "matkul": "MK 10",
+          "status": "doing",
+          "status_kumpul_situs": "draf",
+          "status_situs": "aktif",
+          "sumber": "Brone"
+        },
+        {
+          "asal": "manual",
+          "deadline": "2026-10-30T16:59:00Z",
+          "id": "m-00000003",
+          "jenis": "manual",
+          "judul": "Revisi proposal",
+          "matkul": "ABC69999",
+          "status": "todo",
+          "status_kumpul_situs": null,
+          "status_situs": "aktif",
+          "sumber": null
+        },
+        {
+          "asal": "manual",
+          "deadline": null,
+          "id": "m-00000002",
+          "jenis": "manual",
+          "judul": "Baca bab 5",
+          "matkul": null,
+          "status": "todo",
+          "status_kumpul_situs": null,
+          "status_situs": "aktif",
+          "sumber": null
+        },
+        {
+          "asal": "manual",
+          "deadline": null,
+          "id": "m-00000004",
+          "jenis": "manual",
+          "judul": "Catatan semester lalu",
+          "matkul": "ABC60020",
+          "status": "todo",
+          "status_kumpul_situs": null,
+          "status_situs": "aktif",
+          "sumber": null
+        },
+        {
+          "asal": "sumber",
+          "deadline": null,
+          "id": "s-979c3d102ccb72ed",
+          "jenis": "assign",
+          "judul": "Tugas 2",
+          "matkul": "MK 10",
+          "status": "todo",
+          "status_kumpul_situs": null,
+          "status_situs": "aktif",
+          "sumber": "Brone"
+        }
+      ],
+      "daftar_semua": [
+        {
+          "asal": "manual",
+          "deadline": "2026-10-21T16:59:00Z",
+          "id": "m-00000006",
+          "jenis": "manual",
+          "judul": "Sudah dikumpul",
+          "matkul": null,
+          "status": "done",
+          "status_kumpul_situs": null,
+          "status_situs": "aktif",
+          "sumber": null
+        },
+        {
+          "asal": "sumber",
+          "deadline": "2026-10-22T16:59:00Z",
+          "id": "s-e0fe56a17daf3214",
+          "jenis": "assign",
+          "judul": "Tugas 3",
+          "matkul": "MK 10",
+          "status": "todo",
+          "status_kumpul_situs": "terkumpul",
+          "status_situs": "aktif",
+          "sumber": "Brone"
+        },
+        {
+          "asal": "sumber",
+          "deadline": "2026-10-23T16:59:00Z",
+          "id": "s-634d0d92d9926d1d",
+          "jenis": "assign",
+          "judul": "Kuis sama",
+          "matkul": "MK 10",
+          "status": "todo",
+          "status_kumpul_situs": null,
+          "status_situs": "aktif",
+          "sumber": "Brone"
+        },
+        {
+          "asal": "sumber",
+          "deadline": "2026-10-23T16:59:00Z",
+          "id": "s-72f615eb4fd1c199",
+          "jenis": "assign",
+          "judul": "Kuis sama",
+          "matkul": "MK 10",
+          "status": "todo",
+          "status_kumpul_situs": null,
+          "status_situs": "aktif",
+          "sumber": "Brone"
+        },
+        {
+          "asal": "manual",
+          "deadline": "2026-10-24T05:00:00Z",
+          "id": "m-00000001",
+          "jenis": "manual",
+          "judul": "Laporan kelompok",
+          "matkul": "MK 10",
+          "status": "todo",
+          "status_kumpul_situs": null,
+          "status_situs": "aktif",
+          "sumber": null
+        },
+        {
+          "asal": "sumber",
+          "deadline": "2026-10-24T16:59:00Z",
+          "id": "s-8f7abcd412c27664",
+          "jenis": "coursework",
+          "judul": "Tugas 1",
+          "matkul": "MK 777",
+          "status": "todo",
+          "status_kumpul_situs": null,
+          "status_situs": "aktif",
+          "sumber": "Google Classroom"
+        },
+        {
+          "asal": "sumber",
+          "deadline": "2026-10-25T16:59:00Z",
+          "id": "s-e3e93f39cb1a7a0f",
+          "jenis": "assign",
+          "judul": "Tugas 1",
+          "matkul": "MK 10",
+          "status": "todo",
+          "status_kumpul_situs": null,
+          "status_situs": "aktif",
+          "sumber": "Brone"
+        },
+        {
+          "asal": "sumber",
+          "deadline": "2026-10-25T16:59:00Z",
+          "id": "s-a37554ff47f42562",
+          "jenis": "assign",
+          "judul": "Tugas 6",
+          "matkul": "MK 10",
+          "status": "todo",
+          "status_kumpul_situs": null,
+          "status_situs": "hilang",
+          "sumber": "Brone"
+        },
+        {
+          "asal": "sumber",
+          "deadline": "2026-10-25T16:59:00Z",
+          "id": "s-dc62a7bccb59697c",
+          "jenis": "assign",
+          "judul": "Tugas 7",
+          "matkul": "MK 10",
+          "status": "done",
+          "status_kumpul_situs": null,
+          "status_situs": "aktif",
+          "sumber": "Brone"
+        },
+        {
+          "asal": "sumber",
+          "deadline": "2026-10-25T16:59:00Z",
+          "id": "s-508351d7e30b6073",
+          "jenis": "assign",
+          "judul": "Tugas 8",
+          "matkul": "MK 10",
+          "status": "doing",
+          "status_kumpul_situs": "draf",
+          "status_situs": "aktif",
+          "sumber": "Brone"
+        },
+        {
+          "asal": "manual",
+          "deadline": "2026-10-30T16:59:00Z",
+          "id": "m-00000003",
+          "jenis": "manual",
+          "judul": "Revisi proposal",
+          "matkul": "ABC69999",
+          "status": "todo",
+          "status_kumpul_situs": null,
+          "status_situs": "aktif",
+          "sumber": null
+        },
+        {
+          "asal": "manual",
+          "deadline": null,
+          "id": "m-00000002",
+          "jenis": "manual",
+          "judul": "Baca bab 5",
+          "matkul": null,
+          "status": "todo",
+          "status_kumpul_situs": null,
+          "status_situs": "aktif",
+          "sumber": null
+        },
+        {
+          "asal": "manual",
+          "deadline": null,
+          "id": "m-00000004",
+          "jenis": "manual",
+          "judul": "Catatan semester lalu",
+          "matkul": "ABC60020",
+          "status": "todo",
+          "status_kumpul_situs": null,
+          "status_situs": "aktif",
+          "sumber": null
+        },
+        {
+          "asal": "sumber",
+          "deadline": null,
+          "id": "s-979c3d102ccb72ed",
+          "jenis": "assign",
+          "judul": "Tugas 2",
+          "matkul": "MK 10",
+          "status": "todo",
+          "status_kumpul_situs": null,
+          "status_situs": "aktif",
+          "sumber": "Brone"
+        }
+      ],
+      "langkah": [
+        {
+          "sql": "INSERT OR REPLACE INTO preferences (kunci, nilai) VALUES ('semester_kode', '20261'), ('semester_label', 'Ganjil 2026/2027'), ('semester_mulai', '2026-08-01')"
+        },
+        {
+          "isi": {
+            "courses": [
+              {
+                "dibuat": null,
+                "external_id": "10",
+                "kategori": "Ganjil 2026/2027",
+                "kode_mk": "ABC60010",
+                "mulai": null,
+                "nama": "MK 10",
+                "selesai": null,
+                "shortname": "ABC600010_2024|x|2026.1"
+              },
+              {
+                "dibuat": null,
+                "external_id": "20",
+                "kategori": "Genap 2025/2026",
+                "kode_mk": "ABC60020",
+                "mulai": null,
+                "nama": "MK 20",
+                "selesai": null,
+                "shortname": "ABC600020_2024|x|2026.1"
+              }
+            ],
+            "error": null,
+            "fetch_id": "brone-20261020T050000Z-000000",
+            "format": 1,
+            "mulai": "2026-10-20T05:00:00Z",
+            "selesai": "2026-10-20T05:00:05Z",
+            "status": "success",
+            "sumber": "brone",
+            "tasks": [
+              {
+                "course_external_id": "10",
+                "deadline": "2026-10-25T16:59:00Z",
+                "deskripsi": "",
+                "external_id": "assign:1",
+                "jenis": "assign",
+                "judul": "Tugas 1",
+                "link_id": "1",
+                "status_kumpul_situs": null,
+                "url": "https://brone.ub.ac.id/mod/assign/view.php?id=1"
+              },
+              {
+                "course_external_id": "10",
+                "deadline": null,
+                "deskripsi": "",
+                "external_id": "assign:2",
+                "jenis": "assign",
+                "judul": "Tugas 2",
+                "link_id": "2",
+                "status_kumpul_situs": null,
+                "url": "https://brone.ub.ac.id/mod/assign/view.php?id=2"
+              },
+              {
+                "course_external_id": "10",
+                "deadline": "2026-10-22T16:59:00Z",
+                "deskripsi": "",
+                "external_id": "assign:3",
+                "jenis": "assign",
+                "judul": "Tugas 3",
+                "link_id": "3",
+                "status_kumpul_situs": "terkumpul",
+                "url": "https://brone.ub.ac.id/mod/assign/view.php?id=3"
+              },
+              {
+                "course_external_id": "10",
+                "deadline": "2026-10-23T16:59:00Z",
+                "deskripsi": "",
+                "external_id": "assign:4",
+                "jenis": "assign",
+                "judul": "Kuis sama",
+                "link_id": "4",
+                "status_kumpul_situs": null,
+                "url": "https://brone.ub.ac.id/mod/assign/view.php?id=4"
+              },
+              {
+                "course_external_id": "10",
+                "deadline": "2026-10-23T16:59:00Z",
+                "deskripsi": "",
+                "external_id": "assign:5",
+                "jenis": "assign",
+                "judul": "Kuis sama",
+                "link_id": "5",
+                "status_kumpul_situs": null,
+                "url": "https://brone.ub.ac.id/mod/assign/view.php?id=5"
+              },
+              {
+                "course_external_id": "10",
+                "deadline": "2026-10-25T16:59:00Z",
+                "deskripsi": "",
+                "external_id": "assign:6",
+                "jenis": "assign",
+                "judul": "Tugas 6",
+                "link_id": "6",
+                "status_kumpul_situs": null,
+                "url": "https://brone.ub.ac.id/mod/assign/view.php?id=6"
+              },
+              {
+                "course_external_id": "10",
+                "deadline": "2026-10-25T16:59:00Z",
+                "deskripsi": "",
+                "external_id": "assign:7",
+                "jenis": "assign",
+                "judul": "Tugas 7",
+                "link_id": "7",
+                "status_kumpul_situs": null,
+                "url": "https://brone.ub.ac.id/mod/assign/view.php?id=7"
+              },
+              {
+                "course_external_id": "10",
+                "deadline": "2026-10-25T16:59:00Z",
+                "deskripsi": "",
+                "external_id": "assign:8",
+                "jenis": "assign",
+                "judul": "Tugas 8",
+                "link_id": "8",
+                "status_kumpul_situs": "draf",
+                "url": "https://brone.ub.ac.id/mod/assign/view.php?id=8"
+              },
+              {
+                "course_external_id": "20",
+                "deadline": "2026-10-25T16:59:00Z",
+                "deskripsi": "",
+                "external_id": "assign:9",
+                "jenis": "assign",
+                "judul": "Tugas 9",
+                "link_id": "9",
+                "status_kumpul_situs": null,
+                "url": "https://brone.ub.ac.id/mod/assign/view.php?id=9"
+              }
+            ]
+          }
+        },
+        {
+          "isi": {
+            "courses": [
+              {
+                "dibuat": "2026-09-02T07:16:05Z",
+                "external_id": "777",
+                "kategori": "ACTIVE",
+                "kode_mk": null,
+                "mulai": null,
+                "nama": "MK 777",
+                "selesai": null,
+                "shortname": null
+              }
+            ],
+            "error": null,
+            "fetch_id": "classroom-20261020T050000Z-000000",
+            "format": 1,
+            "mulai": "2026-10-20T05:00:00Z",
+            "selesai": "2026-10-20T05:00:05Z",
+            "status": "success",
+            "sumber": "classroom",
+            "tasks": [
+              {
+                "course_external_id": "777",
+                "deadline": "2026-10-24T16:59:00Z",
+                "deskripsi": "",
+                "external_id": "5551",
+                "jenis": "coursework",
+                "judul": "Tugas 1",
+                "link_id": null,
+                "status_kumpul_situs": null,
+                "url": "https://classroom.google.com/c/x"
+              }
+            ]
+          }
+        },
+        {
+          "sql": "UPDATE tasks SET status_situs = 'hilang' WHERE id = (SELECT id FROM tasks WHERE source_id = 'brone' AND external_id = 'assign:6')"
+        },
+        {
+          "sql": "INSERT INTO task_user_state (task_id, status, done_at) SELECT id, 'done', '2026-10-21T00:00:00Z' FROM tasks WHERE id = (SELECT id FROM tasks WHERE source_id = 'brone' AND external_id = 'assign:7')"
+        },
+        {
+          "sql": "INSERT INTO task_user_state (task_id, status, done_at) SELECT id, 'doing', NULL FROM tasks WHERE id = (SELECT id FROM tasks WHERE source_id = 'brone' AND external_id = 'assign:8')"
+        },
+        {
+          "sql": "INSERT INTO tasks (id, jenis, judul, deadline, asal, first_seen, kode_mk_manual, duplikat_dari) VALUES ('m-00000001', 'manual', 'Laporan kelompok', '2026-10-24T05:00:00Z', 'manual', '2026-10-20T00:00:00Z', 'ABC60010', NULL)"
+        },
+        {
+          "sql": "INSERT INTO tasks (id, jenis, judul, deadline, asal, first_seen, kode_mk_manual, duplikat_dari) VALUES ('m-00000002', 'manual', 'Baca bab 5', NULL, 'manual', '2026-10-20T00:00:00Z', NULL, NULL)"
+        },
+        {
+          "sql": "INSERT INTO tasks (id, jenis, judul, deadline, asal, first_seen, kode_mk_manual, duplikat_dari) VALUES ('m-00000003', 'manual', 'Revisi proposal', '2026-10-30T16:59:00Z', 'manual', '2026-10-20T00:00:00Z', 'ABC69999', NULL)"
+        },
+        {
+          "sql": "INSERT INTO tasks (id, jenis, judul, deadline, asal, first_seen, kode_mk_manual, duplikat_dari) VALUES ('m-00000004', 'manual', 'Catatan semester lalu', NULL, 'manual', '2026-10-20T00:00:00Z', 'ABC60020', NULL)"
+        },
+        {
+          "sql": "INSERT INTO tasks (id, jenis, judul, deadline, asal, first_seen, kode_mk_manual, duplikat_dari) VALUES ('m-00000005', 'manual', 'Tugas 1 dari grup WA', '2026-10-25T16:59:00Z', 'manual', '2026-10-20T00:00:00Z', NULL, (SELECT id FROM tasks WHERE source_id = 'brone' AND external_id = 'assign:1'))"
+        },
+        {
+          "sql": "INSERT INTO tasks (id, jenis, judul, deadline, asal, first_seen, kode_mk_manual, duplikat_dari) VALUES ('m-00000006', 'manual', 'Sudah dikumpul', '2026-10-21T16:59:00Z', 'manual', '2026-10-20T00:00:00Z', NULL, NULL)"
+        },
+        {
+          "sql": "INSERT INTO task_user_state (task_id, status, done_at) SELECT id, 'done', '2026-10-21T00:00:00Z' FROM tasks WHERE id = 'm-00000006'"
+        }
+      ],
+      "nama": "dasar"
+    },
+    {
+      "daftar": [
+        {
+          "asal": "sumber",
+          "deadline": "2026-10-25T16:59:00Z",
+          "id": "s-72f615eb4fd1c199",
+          "jenis": "assign",
+          "judul": "Tugas 5",
+          "matkul": "MK 30",
+          "status": "todo",
+          "status_kumpul_situs": null,
+          "status_situs": "aktif",
+          "sumber": "Brone"
+        }
+      ],
+      "daftar_semua": [
+        {
+          "asal": "sumber",
+          "deadline": "2026-10-25T16:59:00Z",
+          "id": "s-72f615eb4fd1c199",
+          "jenis": "assign",
+          "judul": "Tugas 5",
+          "matkul": "MK 30",
+          "status": "todo",
+          "status_kumpul_situs": null,
+          "status_situs": "aktif",
+          "sumber": "Brone"
+        }
+      ],
+      "langkah": [
+        {
+          "sql": "INSERT OR REPLACE INTO preferences (kunci, nilai) VALUES ('semester_kode', '20261'), ('semester_label', 'Ganjil 2026/2027'), ('semester_mulai', '2026-08-01')"
+        },
+        {
+          "isi": {
+            "courses": [
+              {
+                "dibuat": null,
+                "external_id": "10",
+                "kategori": "Ganjil 2026/2027",
+                "kode_mk": null,
+                "mulai": null,
+                "nama": "MK 10",
+                "selesai": null,
+                "shortname": "ABC600010_2024|x|2026.1"
+              },
+              {
+                "dibuat": null,
+                "external_id": "20",
+                "kategori": "Genap 2025/2026",
+                "kode_mk": null,
+                "mulai": null,
+                "nama": "MK 20",
+                "selesai": null,
+                "shortname": "ABC600020_2024|x|2026.1"
+              }
+            ],
+            "error": null,
+            "fetch_id": "brone-20261020T050000Z-000000",
+            "format": 1,
+            "mulai": "2026-10-20T05:00:00Z",
+            "selesai": "2026-10-20T05:00:05Z",
+            "status": "success",
+            "sumber": "brone",
+            "tasks": [
+              {
+                "course_external_id": "10",
+                "deadline": "2026-10-25T16:59:00Z",
+                "deskripsi": "",
+                "external_id": "assign:1",
+                "jenis": "assign",
+                "judul": "Tugas 1",
+                "link_id": "1",
+                "status_kumpul_situs": null,
+                "url": "https://brone.ub.ac.id/mod/assign/view.php?id=1"
+              },
+              {
+                "course_external_id": "10",
+                "deadline": "2026-10-25T16:59:00Z",
+                "deskripsi": "",
+                "external_id": "assign:2",
+                "jenis": "assign",
+                "judul": "Tugas 2",
+                "link_id": "2",
+                "status_kumpul_situs": null,
+                "url": "https://brone.ub.ac.id/mod/assign/view.php?id=2"
+              },
+              {
+                "course_external_id": "20",
+                "deadline": "2026-10-25T16:59:00Z",
+                "deskripsi": "",
+                "external_id": "assign:9",
+                "jenis": "assign",
+                "judul": "Tugas 9",
+                "link_id": "9",
+                "status_kumpul_situs": null,
+                "url": "https://brone.ub.ac.id/mod/assign/view.php?id=9"
+              }
+            ]
+          }
+        },
+        {
+          "sql": "INSERT OR REPLACE INTO preferences (kunci, nilai) VALUES ('semester_kode', '20261'), ('semester_label', 'Genap 2026/2027'), ('semester_mulai', '2026-08-01')"
+        },
+        {
+          "isi": {
+            "courses": [
+              {
+                "dibuat": null,
+                "external_id": "10",
+                "kategori": "Ganjil 2026/2027",
+                "kode_mk": null,
+                "mulai": null,
+                "nama": "MK 10",
+                "selesai": null,
+                "shortname": "ABC600010_2024|x|2026.1"
+              },
+              {
+                "dibuat": null,
+                "external_id": "30",
+                "kategori": "Genap 2026/2027",
+                "kode_mk": null,
+                "mulai": null,
+                "nama": "MK 30",
+                "selesai": null,
+                "shortname": "ABC600030_2024|x|2026.1"
+              }
+            ],
+            "error": null,
+            "fetch_id": "brone-20261020T100000Z-000001",
+            "format": 1,
+            "mulai": "2026-10-20T10:00:00Z",
+            "selesai": "2026-10-20T10:00:05Z",
+            "status": "success",
+            "sumber": "brone",
+            "tasks": [
+              {
+                "course_external_id": "10",
+                "deadline": "2026-10-25T16:59:00Z",
+                "deskripsi": "",
+                "external_id": "assign:1",
+                "jenis": "assign",
+                "judul": "Tugas 1",
+                "link_id": "1",
+                "status_kumpul_situs": null,
+                "url": "https://brone.ub.ac.id/mod/assign/view.php?id=1"
+              },
+              {
+                "course_external_id": "30",
+                "deadline": "2026-10-25T16:59:00Z",
+                "deskripsi": "",
+                "external_id": "assign:5",
+                "jenis": "assign",
+                "judul": "Tugas 5",
+                "link_id": "5",
+                "status_kumpul_situs": null,
+                "url": "https://brone.ub.ac.id/mod/assign/view.php?id=5"
+              }
+            ]
+          }
+        }
+      ],
+      "nama": "ganti_semester"
+    },
+    {
+      "daftar": [
+        {
+          "asal": "sumber",
+          "deadline": "2026-09-25T03:00:00Z",
+          "id": "s-332ed174abcdac47",
+          "jenis": "quiz",
+          "judul": "Kuis 1: Variabel dan Tipe Data",
+          "matkul": "Pemrograman Dasar",
+          "status": "todo",
+          "status_kumpul_situs": null,
+          "status_situs": "aktif",
+          "sumber": "Brone"
+        },
+        {
+          "asal": "sumber",
+          "deadline": "2026-09-30T16:59:00Z",
+          "id": "s-918b4b60f1d96b57",
+          "jenis": "assign",
+          "judul": "Laporan Praktikum 1",
+          "matkul": "Praktikum Pemrograman Dasar",
+          "status": "todo",
+          "status_kumpul_situs": "belum",
+          "status_situs": "aktif",
+          "sumber": "Brone"
+        },
+        {
+          "asal": "sumber",
+          "deadline": "2026-09-30T16:59:00Z",
+          "id": "s-5ad213006987eba4",
+          "jenis": "coursework",
+          "judul": "Revisi Essay",
+          "matkul": "Bahasa Inggris Kelas A",
+          "status": "todo",
+          "status_kumpul_situs": "terkumpul",
+          "status_situs": "aktif",
+          "sumber": "Google Classroom"
+        },
+        {
+          "asal": "sumber",
+          "deadline": "2026-10-09T16:59:00Z",
+          "id": "s-8e99e834ac04adf0",
+          "jenis": "assign",
+          "judul": "Tugas 1: Algoritma & Flowchart",
+          "matkul": "Pemrograman Dasar",
+          "status": "todo",
+          "status_kumpul_situs": "terkumpul",
+          "status_situs": "aktif",
+          "sumber": "Brone"
+        },
+        {
+          "asal": "sumber",
+          "deadline": "2026-10-15T16:59:00Z",
+          "id": "s-7fddf457e12f59bb",
+          "jenis": "assign",
+          "judul": "Laporan Praktikum 2 — Percabangan",
+          "matkul": "Praktikum Pemrograman Dasar",
+          "status": "todo",
+          "status_kumpul_situs": "draf",
+          "status_situs": "aktif",
+          "sumber": "Brone"
+        },
+        {
+          "asal": "sumber",
+          "deadline": "2026-10-16T16:00:00Z",
+          "id": "s-1a33456cfa54cb2c",
+          "jenis": "coursework",
+          "judul": "Reading Summary",
+          "matkul": "Bahasa Inggris Kelas A",
+          "status": "todo",
+          "status_kumpul_situs": "belum",
+          "status_situs": "aktif",
+          "sumber": "Google Classroom"
+        },
+        {
+          "asal": "sumber",
+          "deadline": "2026-10-20T00:00:00Z",
+          "id": "s-6b0f644992bc553b",
+          "jenis": "assign",
+          "judul": "Essay: My Learning Goals",
+          "matkul": "Bahasa Inggris Akademik",
+          "status": "todo",
+          "status_kumpul_situs": "terkumpul",
+          "status_situs": "aktif",
+          "sumber": "Eling"
+        },
+        {
+          "asal": "sumber",
+          "deadline": "2026-10-23T00:00:00Z",
+          "id": "s-e346ecd470bef2c2",
+          "jenis": "coursework",
+          "judul": "Speaking Practice Recording",
+          "matkul": "Bahasa Inggris Kelas A",
+          "status": "todo",
+          "status_kumpul_situs": "belum",
+          "status_situs": "aktif",
+          "sumber": "Google Classroom"
+        },
+        {
+          "asal": "sumber",
+          "deadline": "2026-10-30T00:00:00Z",
+          "id": "s-5c80e5c407397f96",
+          "jenis": "coursework",
+          "judul": "Listening Journal",
+          "matkul": "Bahasa Inggris Kelas A",
+          "status": "todo",
+          "status_kumpul_situs": "belum",
+          "status_situs": "aktif",
+          "sumber": "Google Classroom"
+        },
+        {
+          "asal": "sumber",
+          "deadline": "2026-11-02T09:30:00Z",
+          "id": "s-f1c7870af067a2ce",
+          "jenis": "coursework",
+          "judul": "Pilih Topik Riset",
+          "matkul": "Klub Riset Mahasiswa",
+          "status": "todo",
+          "status_kumpul_situs": null,
+          "status_situs": "aktif",
+          "sumber": "Google Classroom"
+        },
+        {
+          "asal": "sumber",
+          "deadline": "2026-11-20T16:59:00Z",
+          "id": "s-1a66ee904157d5ca",
+          "jenis": "coursework",
+          "judul": "Proposal Singkat",
+          "matkul": "Klub Riset Mahasiswa",
+          "status": "todo",
+          "status_kumpul_situs": null,
+          "status_situs": "aktif",
+          "sumber": "Google Classroom"
+        },
+        {
+          "asal": "sumber",
+          "deadline": null,
+          "id": "s-ec2f6de7dd80f809",
+          "jenis": "quiz",
+          "judul": "Kuis Latihan (tanpa batas waktu)",
+          "matkul": "Pemrograman Dasar",
+          "status": "todo",
+          "status_kumpul_situs": null,
+          "status_situs": "aktif",
+          "sumber": "Brone"
+        },
+        {
+          "asal": "sumber",
+          "deadline": null,
+          "id": "s-e3f2606524b9fd84",
+          "jenis": "coursework",
+          "judul": "Portfolio (kapan saja)",
+          "matkul": "Bahasa Inggris Kelas A",
+          "status": "todo",
+          "status_kumpul_situs": null,
+          "status_situs": "aktif",
+          "sumber": "Google Classroom"
+        },
+        {
+          "asal": "sumber",
+          "deadline": null,
+          "id": "s-86392d0f51d363ab",
+          "jenis": "assign",
+          "judul": "Refleksi Mingguan",
+          "matkul": "Pemrograman Dasar",
+          "status": "todo",
+          "status_kumpul_situs": "belum",
+          "status_situs": "aktif",
+          "sumber": "Brone"
+        }
+      ],
+      "daftar_semua": [
+        {
+          "asal": "sumber",
+          "deadline": "2026-09-25T03:00:00Z",
+          "id": "s-332ed174abcdac47",
+          "jenis": "quiz",
+          "judul": "Kuis 1: Variabel dan Tipe Data",
+          "matkul": "Pemrograman Dasar",
+          "status": "todo",
+          "status_kumpul_situs": null,
+          "status_situs": "aktif",
+          "sumber": "Brone"
+        },
+        {
+          "asal": "sumber",
+          "deadline": "2026-09-30T16:59:00Z",
+          "id": "s-918b4b60f1d96b57",
+          "jenis": "assign",
+          "judul": "Laporan Praktikum 1",
+          "matkul": "Praktikum Pemrograman Dasar",
+          "status": "todo",
+          "status_kumpul_situs": "belum",
+          "status_situs": "aktif",
+          "sumber": "Brone"
+        },
+        {
+          "asal": "sumber",
+          "deadline": "2026-09-30T16:59:00Z",
+          "id": "s-5ad213006987eba4",
+          "jenis": "coursework",
+          "judul": "Revisi Essay",
+          "matkul": "Bahasa Inggris Kelas A",
+          "status": "todo",
+          "status_kumpul_situs": "terkumpul",
+          "status_situs": "aktif",
+          "sumber": "Google Classroom"
+        },
+        {
+          "asal": "sumber",
+          "deadline": "2026-10-09T16:59:00Z",
+          "id": "s-8e99e834ac04adf0",
+          "jenis": "assign",
+          "judul": "Tugas 1: Algoritma & Flowchart",
+          "matkul": "Pemrograman Dasar",
+          "status": "todo",
+          "status_kumpul_situs": "terkumpul",
+          "status_situs": "aktif",
+          "sumber": "Brone"
+        },
+        {
+          "asal": "sumber",
+          "deadline": "2026-10-09T16:59:00Z",
+          "id": "s-0788f8f1bd8dcc33",
+          "jenis": "coursework",
+          "judul": "Vocabulary Quiz Prep",
+          "matkul": "Bahasa Inggris Kelas A",
+          "status": "done",
+          "status_kumpul_situs": "terkumpul",
+          "status_situs": "aktif",
+          "sumber": "Google Classroom"
+        },
+        {
+          "asal": "sumber",
+          "deadline": "2026-10-15T16:59:00Z",
+          "id": "s-7fddf457e12f59bb",
+          "jenis": "assign",
+          "judul": "Laporan Praktikum 2 — Percabangan",
+          "matkul": "Praktikum Pemrograman Dasar",
+          "status": "todo",
+          "status_kumpul_situs": "draf",
+          "status_situs": "aktif",
+          "sumber": "Brone"
+        },
+        {
+          "asal": "sumber",
+          "deadline": "2026-10-16T16:00:00Z",
+          "id": "s-1a33456cfa54cb2c",
+          "jenis": "coursework",
+          "judul": "Reading Summary",
+          "matkul": "Bahasa Inggris Kelas A",
+          "status": "todo",
+          "status_kumpul_situs": "belum",
+          "status_situs": "aktif",
+          "sumber": "Google Classroom"
+        },
+        {
+          "asal": "sumber",
+          "deadline": "2026-10-20T00:00:00Z",
+          "id": "s-6b0f644992bc553b",
+          "jenis": "assign",
+          "judul": "Essay: My Learning Goals",
+          "matkul": "Bahasa Inggris Akademik",
+          "status": "todo",
+          "status_kumpul_situs": "terkumpul",
+          "status_situs": "aktif",
+          "sumber": "Eling"
+        },
+        {
+          "asal": "sumber",
+          "deadline": "2026-10-23T00:00:00Z",
+          "id": "s-e346ecd470bef2c2",
+          "jenis": "coursework",
+          "judul": "Speaking Practice Recording",
+          "matkul": "Bahasa Inggris Kelas A",
+          "status": "todo",
+          "status_kumpul_situs": "belum",
+          "status_situs": "aktif",
+          "sumber": "Google Classroom"
+        },
+        {
+          "asal": "sumber",
+          "deadline": "2026-10-30T00:00:00Z",
+          "id": "s-5c80e5c407397f96",
+          "jenis": "coursework",
+          "judul": "Listening Journal",
+          "matkul": "Bahasa Inggris Kelas A",
+          "status": "todo",
+          "status_kumpul_situs": "belum",
+          "status_situs": "aktif",
+          "sumber": "Google Classroom"
+        },
+        {
+          "asal": "sumber",
+          "deadline": "2026-11-02T09:30:00Z",
+          "id": "s-f1c7870af067a2ce",
+          "jenis": "coursework",
+          "judul": "Pilih Topik Riset",
+          "matkul": "Klub Riset Mahasiswa",
+          "status": "todo",
+          "status_kumpul_situs": null,
+          "status_situs": "aktif",
+          "sumber": "Google Classroom"
+        },
+        {
+          "asal": "sumber",
+          "deadline": "2026-11-20T16:59:00Z",
+          "id": "s-1a66ee904157d5ca",
+          "jenis": "coursework",
+          "judul": "Proposal Singkat",
+          "matkul": "Klub Riset Mahasiswa",
+          "status": "todo",
+          "status_kumpul_situs": null,
+          "status_situs": "aktif",
+          "sumber": "Google Classroom"
+        },
+        {
+          "asal": "sumber",
+          "deadline": null,
+          "id": "s-ec2f6de7dd80f809",
+          "jenis": "quiz",
+          "judul": "Kuis Latihan (tanpa batas waktu)",
+          "matkul": "Pemrograman Dasar",
+          "status": "todo",
+          "status_kumpul_situs": null,
+          "status_situs": "aktif",
+          "sumber": "Brone"
+        },
+        {
+          "asal": "sumber",
+          "deadline": null,
+          "id": "s-e3f2606524b9fd84",
+          "jenis": "coursework",
+          "judul": "Portfolio (kapan saja)",
+          "matkul": "Bahasa Inggris Kelas A",
+          "status": "todo",
+          "status_kumpul_situs": null,
+          "status_situs": "aktif",
+          "sumber": "Google Classroom"
+        },
+        {
+          "asal": "sumber",
+          "deadline": null,
+          "id": "s-86392d0f51d363ab",
+          "jenis": "assign",
+          "judul": "Refleksi Mingguan",
+          "matkul": "Pemrograman Dasar",
+          "status": "todo",
+          "status_kumpul_situs": "belum",
+          "status_situs": "aktif",
+          "sumber": "Brone"
+        }
+      ],
+      "langkah": [
+        {
+          "sql": "INSERT OR REPLACE INTO preferences (kunci, nilai) VALUES ('semester_kode', '20261'), ('semester_label', 'Ganjil 2026/2027'), ('semester_mulai', '2026-08-01')"
+        },
+        {
+          "isi": {
+            "courses": [
+              {
+                "dibuat": null,
+                "external_id": "101",
+                "kategori": "Ganjil 2026/2027",
+                "kode_mk": "ABC60001",
+                "mulai": "2026-08-24T00:00:00Z",
+                "nama": "Pemrograman Dasar",
+                "selesai": "2026-12-31T00:00:00Z",
+                "shortname": "ABC60001_2025|101.01.01|2026.1"
+              },
+              {
+                "dibuat": null,
+                "external_id": "102",
+                "kategori": "Ganjil 2026/2027",
+                "kode_mk": "ABC60011",
+                "mulai": "2026-08-24T00:00:00Z",
+                "nama": "Praktikum Pemrograman Dasar",
+                "selesai": "2026-12-31T00:00:00Z",
+                "shortname": "ABC60011_2025|101.01.02|2026.1"
+              },
+              {
+                "dibuat": null,
+                "external_id": "103",
+                "kategori": "Genap 2025/2026",
+                "kode_mk": "ABC60002",
+                "mulai": "2026-02-16T00:00:00Z",
+                "nama": "Matematika Diskrit",
+                "selesai": "2026-06-30T00:00:00Z",
+                "shortname": "ABC60002_2025|101.01.01|2025.2"
+              },
+              {
+                "dibuat": null,
+                "external_id": "104",
+                "kategori": "Umum",
+                "kode_mk": null,
+                "mulai": null,
+                "nama": "Informasi Akademik Fakultas",
+                "selesai": null,
+                "shortname": "INFO-FAKULTAS"
+              },
+              {
+                "dibuat": null,
+                "external_id": "105",
+                "kategori": "Ganjil 2026/2027",
+                "kode_mk": null,
+                "mulai": "2026-08-24T00:00:00Z",
+                "nama": "Kapita Selekta",
+                "selesai": null,
+                "shortname": "XABC60003_2025|ABC600031"
+              }
+            ],
+            "error": null,
+            "fetch_id": "brone-20261020T050000Z-000000",
+            "format": 1,
+            "mulai": "2026-10-20T05:00:00Z",
+            "selesai": "2026-10-20T05:00:05Z",
+            "status": "success",
+            "sumber": "brone",
+            "tasks": [
+              {
+                "course_external_id": "101",
+                "deadline": "2026-10-09T16:59:00Z",
+                "deskripsi": "Kerjakan soal berikut:\nBab 1 & 2\nLatihan 3\nKumpulkan dalam PDF.\nTerima kasih.",
+                "external_id": "assign:201",
+                "jenis": "assign",
+                "judul": "Tugas 1: Algoritma & Flowchart",
+                "link_id": "1201",
+                "status_kumpul_situs": "terkumpul",
+                "url": "https://brone.ub.ac.id/mod/assign/view.php?id=1201"
+              },
+              {
+                "course_external_id": "101",
+                "deadline": null,
+                "deskripsi": "",
+                "external_id": "assign:202",
+                "jenis": "assign",
+                "judul": "Refleksi Mingguan",
+                "link_id": "1202",
+                "status_kumpul_situs": "belum",
+                "url": "https://brone.ub.ac.id/mod/assign/view.php?id=1202"
+              },
+              {
+                "course_external_id": "102",
+                "deadline": "2026-10-15T16:59:00Z",
+                "deskripsi": "Upload laporan + kode program (format .zip). Batas revisi 2× saja.",
+                "external_id": "assign:203",
+                "jenis": "assign",
+                "judul": "Laporan Praktikum 2 — Percabangan",
+                "link_id": "1203",
+                "status_kumpul_situs": "draf",
+                "url": "https://brone.ub.ac.id/mod/assign/view.php?id=1203"
+              },
+              {
+                "course_external_id": "102",
+                "deadline": "2026-09-30T16:59:00Z",
+                "deskripsi": "Revisi sesuai catatan.",
+                "external_id": "assign:204",
+                "jenis": "assign",
+                "judul": "Laporan Praktikum 1",
+                "link_id": "1204",
+                "status_kumpul_situs": "belum",
+                "url": "https://brone.ub.ac.id/mod/assign/view.php?id=1204"
+              },
+              {
+                "course_external_id": "103",
+                "deadline": "2026-06-10T16:59:00Z",
+                "deskripsi": "Lihat modul.",
+                "external_id": "assign:205",
+                "jenis": "assign",
+                "judul": "Tugas Akhir Semester",
+                "link_id": "1205",
+                "status_kumpul_situs": null,
+                "url": "https://brone.ub.ac.id/mod/assign/view.php?id=1205"
+              },
+              {
+                "course_external_id": "104",
+                "deadline": "2026-11-30T16:59:00Z",
+                "deskripsi": "Isi survei.",
+                "external_id": "assign:206",
+                "jenis": "assign",
+                "judul": "Survei Kepuasan Layanan",
+                "link_id": "1206",
+                "status_kumpul_situs": null,
+                "url": "https://brone.ub.ac.id/mod/assign/view.php?id=1206"
+              },
+              {
+                "course_external_id": "101",
+                "deadline": "2026-09-25T03:00:00Z",
+                "deskripsi": "Waktu pengerjaan 60 menit.",
+                "external_id": "quiz:301",
+                "jenis": "quiz",
+                "judul": "Kuis 1: Variabel dan Tipe Data",
+                "link_id": "1301",
+                "status_kumpul_situs": null,
+                "url": "https://brone.ub.ac.id/mod/quiz/view.php?id=1301"
+              },
+              {
+                "course_external_id": "101",
+                "deadline": null,
+                "deskripsi": "",
+                "external_id": "quiz:302",
+                "jenis": "quiz",
+                "judul": "Kuis Latihan (tanpa batas waktu)",
+                "link_id": "1302",
+                "status_kumpul_situs": null,
+                "url": "https://brone.ub.ac.id/mod/quiz/view.php?id=1302"
+              },
+              {
+                "course_external_id": "103",
+                "deadline": "2026-06-05T02:00:00Z",
+                "deskripsi": "",
+                "external_id": "quiz:303",
+                "jenis": "quiz",
+                "judul": "Kuis Akhir Matematika Diskrit",
+                "link_id": "1303",
+                "status_kumpul_situs": null,
+                "url": "https://brone.ub.ac.id/mod/quiz/view.php?id=1303"
+              }
+            ]
+          }
+        },
+        {
+          "isi": {
+            "courses": [
+              {
+                "dibuat": null,
+                "external_id": "101",
+                "kategori": "Praktikum",
+                "kode_mk": "ABC60005",
+                "mulai": "2026-08-24T00:00:00Z",
+                "nama": "Bahasa Inggris Akademik",
+                "selesai": "2027-01-15T00:00:00Z",
+                "shortname": "ABC60005_20261_A"
+              },
+              {
+                "dibuat": null,
+                "external_id": "150",
+                "kategori": "Praktikum",
+                "kode_mk": "ABC60006",
+                "mulai": "2026-08-24T00:00:00Z",
+                "nama": "Etika Profesi",
+                "selesai": "2027-01-15T00:00:00Z",
+                "shortname": "ABC60006_20252_C"
+              }
+            ],
+            "error": null,
+            "fetch_id": "eling-20261020T050000Z-000000",
+            "format": 1,
+            "mulai": "2026-10-20T05:00:00Z",
+            "selesai": "2026-10-20T05:00:05Z",
+            "status": "success",
+            "sumber": "eling",
+            "tasks": [
+              {
+                "course_external_id": "101",
+                "deadline": "2026-10-20T00:00:00Z",
+                "deskripsi": "Write 300 words.\nUse APA style.",
+                "external_id": "assign:201",
+                "jenis": "assign",
+                "judul": "Essay: My Learning Goals",
+                "link_id": "2201",
+                "status_kumpul_situs": "terkumpul",
+                "url": "https://eling.ub.ac.id/mod/assign/view.php?id=2201"
+              },
+              {
+                "course_external_id": "150",
+                "deadline": "2026-11-03T16:59:00Z",
+                "deskripsi": "Analisis kasus pada modul 2.",
+                "external_id": "assign:207",
+                "jenis": "assign",
+                "judul": "Studi Kasus Etika",
+                "link_id": "2207",
+                "status_kumpul_situs": "belum",
+                "url": "https://eling.ub.ac.id/mod/assign/view.php?id=2207"
+              }
+            ]
+          }
+        },
+        {
+          "isi": {
+            "courses": [
+              {
+                "dibuat": "2026-08-20T03:15:42Z",
+                "external_id": "100000000001",
+                "kategori": "ACTIVE",
+                "kode_mk": null,
+                "mulai": null,
+                "nama": "Bahasa Inggris Kelas A",
+                "selesai": null,
+                "shortname": "Kelas A"
+              },
+              {
+                "dibuat": "2026-08-21T04:00:00Z",
+                "external_id": "100000000002",
+                "kategori": "ACTIVE",
+                "kode_mk": null,
+                "mulai": null,
+                "nama": "Klub Riset Mahasiswa",
+                "selesai": null,
+                "shortname": null
+              },
+              {
+                "dibuat": "2025-08-18T03:00:00Z",
+                "external_id": "100000000003",
+                "kategori": "ARCHIVED",
+                "kode_mk": null,
+                "mulai": null,
+                "nama": "Bahasa Inggris Dasar",
+                "selesai": null,
+                "shortname": "Kelas B"
+              }
+            ],
+            "error": null,
+            "fetch_id": "classroom-20261020T050000Z-000000",
+            "format": 1,
+            "mulai": "2026-10-20T05:00:00Z",
+            "selesai": "2026-10-20T05:00:05Z",
+            "status": "success",
+            "sumber": "classroom",
+            "tasks": [
+              {
+                "course_external_id": "100000000001",
+                "deadline": "2026-10-09T16:59:00Z",
+                "deskripsi": "Pelajari daftar kata di unit 3.\n\nBawa catatan ke kelas.",
+                "external_id": "300000000001",
+                "jenis": "coursework",
+                "judul": "Vocabulary Quiz Prep",
+                "link_id": null,
+                "status_kumpul_situs": "terkumpul",
+                "url": "https://classroom.google.com/c/Q100000000001/a/W300000000001/details"
+              },
+              {
+                "course_external_id": "100000000001",
+                "deadline": "2026-10-16T16:00:00Z",
+                "deskripsi": "Ringkas artikel dalam 1 halaman.",
+                "external_id": "300000000002",
+                "jenis": "coursework",
+                "judul": "Reading Summary",
+                "link_id": null,
+                "status_kumpul_situs": "belum",
+                "url": "https://classroom.google.com/c/Q100000000001/a/W300000000002/details"
+              },
+              {
+                "course_external_id": "100000000001",
+                "deadline": "2026-10-23T00:00:00Z",
+                "deskripsi": "",
+                "external_id": "300000000003",
+                "jenis": "coursework",
+                "judul": "Speaking Practice Recording",
+                "link_id": null,
+                "status_kumpul_situs": "belum",
+                "url": "https://classroom.google.com/c/Q100000000001/a/W300000000003/details"
+              },
+              {
+                "course_external_id": "100000000001",
+                "deadline": "2026-10-30T00:00:00Z",
+                "deskripsi": "Isi jurnal setiap minggu.",
+                "external_id": "300000000004",
+                "jenis": "coursework",
+                "judul": "Listening Journal",
+                "link_id": null,
+                "status_kumpul_situs": "belum",
+                "url": "https://classroom.google.com/c/Q100000000001/a/W300000000004/details"
+              },
+              {
+                "course_external_id": "100000000001",
+                "deadline": null,
+                "deskripsi": "Kumpulkan sebelum akhir semester.",
+                "external_id": "300000000005",
+                "jenis": "coursework",
+                "judul": "Portfolio (kapan saja)",
+                "link_id": null,
+                "status_kumpul_situs": null,
+                "url": "https://classroom.google.com/c/Q100000000001/a/W300000000005/details"
+              },
+              {
+                "course_external_id": "100000000001",
+                "deadline": "2026-09-30T16:59:00Z",
+                "deskripsi": "Perbaiki sesuai komentar.",
+                "external_id": "300000000006",
+                "jenis": "coursework",
+                "judul": "Revisi Essay",
+                "link_id": null,
+                "status_kumpul_situs": "terkumpul",
+                "url": "https://classroom.google.com/c/Q100000000001/a/W300000000006/details"
+              },
+              {
+                "course_external_id": "100000000002",
+                "deadline": "2026-11-02T09:30:00Z",
+                "deskripsi": "",
+                "external_id": "300000000007",
+                "jenis": "coursework",
+                "judul": "Pilih Topik Riset",
+                "link_id": null,
+                "status_kumpul_situs": null,
+                "url": "https://classroom.google.com/c/Q100000000002/a/W300000000007/details"
+              },
+              {
+                "course_external_id": "100000000002",
+                "deadline": "2026-11-20T16:59:00Z",
+                "deskripsi": "Maksimal 2 halaman.",
+                "external_id": "300000000008",
+                "jenis": "coursework",
+                "judul": "Proposal Singkat",
+                "link_id": null,
+                "status_kumpul_situs": null,
+                "url": "https://classroom.google.com/c/Q100000000002/a/W300000000008/details"
+              }
+            ]
+          }
+        },
+        {
+          "isi": {
+            "courses": [
+              {
+                "dibuat": null,
+                "external_id": "101",
+                "kategori": "Ganjil 2026/2027",
+                "kode_mk": "ABC60001",
+                "mulai": "2026-08-24T00:00:00Z",
+                "nama": "Pemrograman Dasar",
+                "selesai": "2026-12-31T00:00:00Z",
+                "shortname": "ABC60001_2025|101.01.01|2026.1"
+              },
+              {
+                "dibuat": null,
+                "external_id": "102",
+                "kategori": "Ganjil 2026/2027",
+                "kode_mk": "ABC60011",
+                "mulai": "2026-08-24T00:00:00Z",
+                "nama": "Praktikum Pemrograman Dasar",
+                "selesai": "2026-12-31T00:00:00Z",
+                "shortname": "ABC60011_2025|101.01.02|2026.1"
+              },
+              {
+                "dibuat": null,
+                "external_id": "103",
+                "kategori": "Genap 2025/2026",
+                "kode_mk": "ABC60002",
+                "mulai": "2026-02-16T00:00:00Z",
+                "nama": "Matematika Diskrit",
+                "selesai": "2026-06-30T00:00:00Z",
+                "shortname": "ABC60002_2025|101.01.01|2025.2"
+              },
+              {
+                "dibuat": null,
+                "external_id": "104",
+                "kategori": "Umum",
+                "kode_mk": null,
+                "mulai": null,
+                "nama": "Informasi Akademik Fakultas",
+                "selesai": null,
+                "shortname": "INFO-FAKULTAS"
+              },
+              {
+                "dibuat": null,
+                "external_id": "105",
+                "kategori": "Ganjil 2026/2027",
+                "kode_mk": null,
+                "mulai": "2026-08-24T00:00:00Z",
+                "nama": "Kapita Selekta",
+                "selesai": null,
+                "shortname": "XABC60003_2025|ABC600031"
+              }
+            ],
+            "error": null,
+            "fetch_id": "brone-20261020T100000Z-000001",
+            "format": 1,
+            "mulai": "2026-10-20T10:00:00Z",
+            "selesai": "2026-10-20T10:00:05Z",
+            "status": "success",
+            "sumber": "brone",
+            "tasks": [
+              {
+                "course_external_id": "101",
+                "deadline": "2026-10-09T16:59:00Z",
+                "deskripsi": "Kerjakan soal berikut:\nBab 1 & 2\nLatihan 3\nKumpulkan dalam PDF.\nTerima kasih.",
+                "external_id": "assign:201",
+                "jenis": "assign",
+                "judul": "Tugas 1: Algoritma & Flowchart",
+                "link_id": "1201",
+                "status_kumpul_situs": "terkumpul",
+                "url": "https://brone.ub.ac.id/mod/assign/view.php?id=1201"
+              },
+              {
+                "course_external_id": "101",
+                "deadline": null,
+                "deskripsi": "",
+                "external_id": "assign:202",
+                "jenis": "assign",
+                "judul": "Refleksi Mingguan",
+                "link_id": "1202",
+                "status_kumpul_situs": "belum",
+                "url": "https://brone.ub.ac.id/mod/assign/view.php?id=1202"
+              },
+              {
+                "course_external_id": "102",
+                "deadline": "2026-10-15T16:59:00Z",
+                "deskripsi": "Upload laporan + kode program (format .zip). Batas revisi 2× saja.",
+                "external_id": "assign:203",
+                "jenis": "assign",
+                "judul": "Laporan Praktikum 2 — Percabangan",
+                "link_id": "1203",
+                "status_kumpul_situs": "draf",
+                "url": "https://brone.ub.ac.id/mod/assign/view.php?id=1203"
+              },
+              {
+                "course_external_id": "102",
+                "deadline": "2026-09-30T16:59:00Z",
+                "deskripsi": "Revisi sesuai catatan.",
+                "external_id": "assign:204",
+                "jenis": "assign",
+                "judul": "Laporan Praktikum 1",
+                "link_id": "1204",
+                "status_kumpul_situs": "belum",
+                "url": "https://brone.ub.ac.id/mod/assign/view.php?id=1204"
+              },
+              {
+                "course_external_id": "103",
+                "deadline": "2026-06-10T16:59:00Z",
+                "deskripsi": "Lihat modul.",
+                "external_id": "assign:205",
+                "jenis": "assign",
+                "judul": "Tugas Akhir Semester",
+                "link_id": "1205",
+                "status_kumpul_situs": null,
+                "url": "https://brone.ub.ac.id/mod/assign/view.php?id=1205"
+              },
+              {
+                "course_external_id": "104",
+                "deadline": "2026-11-30T16:59:00Z",
+                "deskripsi": "Isi survei.",
+                "external_id": "assign:206",
+                "jenis": "assign",
+                "judul": "Survei Kepuasan Layanan",
+                "link_id": "1206",
+                "status_kumpul_situs": null,
+                "url": "https://brone.ub.ac.id/mod/assign/view.php?id=1206"
+              },
+              {
+                "course_external_id": "101",
+                "deadline": "2026-09-25T03:00:00Z",
+                "deskripsi": "Waktu pengerjaan 60 menit.",
+                "external_id": "quiz:301",
+                "jenis": "quiz",
+                "judul": "Kuis 1: Variabel dan Tipe Data",
+                "link_id": "1301",
+                "status_kumpul_situs": null,
+                "url": "https://brone.ub.ac.id/mod/quiz/view.php?id=1301"
+              },
+              {
+                "course_external_id": "101",
+                "deadline": null,
+                "deskripsi": "",
+                "external_id": "quiz:302",
+                "jenis": "quiz",
+                "judul": "Kuis Latihan (tanpa batas waktu)",
+                "link_id": "1302",
+                "status_kumpul_situs": null,
+                "url": "https://brone.ub.ac.id/mod/quiz/view.php?id=1302"
+              },
+              {
+                "course_external_id": "103",
+                "deadline": "2026-06-05T02:00:00Z",
+                "deskripsi": "",
+                "external_id": "quiz:303",
+                "jenis": "quiz",
+                "judul": "Kuis Akhir Matematika Diskrit",
+                "link_id": "1303",
+                "status_kumpul_situs": null,
+                "url": "https://brone.ub.ac.id/mod/quiz/view.php?id=1303"
+              }
+            ]
+          }
+        },
+        {
+          "isi": {
+            "courses": [
+              {
+                "dibuat": null,
+                "external_id": "101",
+                "kategori": "Praktikum",
+                "kode_mk": "ABC60005",
+                "mulai": "2026-08-24T00:00:00Z",
+                "nama": "Bahasa Inggris Akademik",
+                "selesai": "2027-01-15T00:00:00Z",
+                "shortname": "ABC60005_20261_A"
+              },
+              {
+                "dibuat": null,
+                "external_id": "150",
+                "kategori": "Praktikum",
+                "kode_mk": "ABC60006",
+                "mulai": "2026-08-24T00:00:00Z",
+                "nama": "Etika Profesi",
+                "selesai": "2027-01-15T00:00:00Z",
+                "shortname": "ABC60006_20252_C"
+              }
+            ],
+            "error": null,
+            "fetch_id": "eling-20261020T100000Z-000001",
+            "format": 1,
+            "mulai": "2026-10-20T10:00:00Z",
+            "selesai": "2026-10-20T10:00:05Z",
+            "status": "success",
+            "sumber": "eling",
+            "tasks": [
+              {
+                "course_external_id": "101",
+                "deadline": "2026-10-20T00:00:00Z",
+                "deskripsi": "Write 300 words.\nUse APA style.",
+                "external_id": "assign:201",
+                "jenis": "assign",
+                "judul": "Essay: My Learning Goals",
+                "link_id": "2201",
+                "status_kumpul_situs": "terkumpul",
+                "url": "https://eling.ub.ac.id/mod/assign/view.php?id=2201"
+              },
+              {
+                "course_external_id": "150",
+                "deadline": "2026-11-03T16:59:00Z",
+                "deskripsi": "Analisis kasus pada modul 2.",
+                "external_id": "assign:207",
+                "jenis": "assign",
+                "judul": "Studi Kasus Etika",
+                "link_id": "2207",
+                "status_kumpul_situs": "belum",
+                "url": "https://eling.ub.ac.id/mod/assign/view.php?id=2207"
+              }
+            ]
+          }
+        },
+        {
+          "isi": {
+            "courses": [
+              {
+                "dibuat": "2026-08-20T03:15:42Z",
+                "external_id": "100000000001",
+                "kategori": "ACTIVE",
+                "kode_mk": null,
+                "mulai": null,
+                "nama": "Bahasa Inggris Kelas A",
+                "selesai": null,
+                "shortname": "Kelas A"
+              },
+              {
+                "dibuat": "2026-08-21T04:00:00Z",
+                "external_id": "100000000002",
+                "kategori": "ACTIVE",
+                "kode_mk": null,
+                "mulai": null,
+                "nama": "Klub Riset Mahasiswa",
+                "selesai": null,
+                "shortname": null
+              },
+              {
+                "dibuat": "2025-08-18T03:00:00Z",
+                "external_id": "100000000003",
+                "kategori": "ARCHIVED",
+                "kode_mk": null,
+                "mulai": null,
+                "nama": "Bahasa Inggris Dasar",
+                "selesai": null,
+                "shortname": "Kelas B"
+              }
+            ],
+            "error": null,
+            "fetch_id": "classroom-20261020T100000Z-000001",
+            "format": 1,
+            "mulai": "2026-10-20T10:00:00Z",
+            "selesai": "2026-10-20T10:00:05Z",
+            "status": "success",
+            "sumber": "classroom",
+            "tasks": [
+              {
+                "course_external_id": "100000000001",
+                "deadline": "2026-10-09T16:59:00Z",
+                "deskripsi": "Pelajari daftar kata di unit 3.\n\nBawa catatan ke kelas.",
+                "external_id": "300000000001",
+                "jenis": "coursework",
+                "judul": "Vocabulary Quiz Prep",
+                "link_id": null,
+                "status_kumpul_situs": "terkumpul",
+                "url": "https://classroom.google.com/c/Q100000000001/a/W300000000001/details"
+              },
+              {
+                "course_external_id": "100000000001",
+                "deadline": "2026-10-16T16:00:00Z",
+                "deskripsi": "Ringkas artikel dalam 1 halaman.",
+                "external_id": "300000000002",
+                "jenis": "coursework",
+                "judul": "Reading Summary",
+                "link_id": null,
+                "status_kumpul_situs": "belum",
+                "url": "https://classroom.google.com/c/Q100000000001/a/W300000000002/details"
+              },
+              {
+                "course_external_id": "100000000001",
+                "deadline": "2026-10-23T00:00:00Z",
+                "deskripsi": "",
+                "external_id": "300000000003",
+                "jenis": "coursework",
+                "judul": "Speaking Practice Recording",
+                "link_id": null,
+                "status_kumpul_situs": "belum",
+                "url": "https://classroom.google.com/c/Q100000000001/a/W300000000003/details"
+              },
+              {
+                "course_external_id": "100000000001",
+                "deadline": "2026-10-30T00:00:00Z",
+                "deskripsi": "Isi jurnal setiap minggu.",
+                "external_id": "300000000004",
+                "jenis": "coursework",
+                "judul": "Listening Journal",
+                "link_id": null,
+                "status_kumpul_situs": "belum",
+                "url": "https://classroom.google.com/c/Q100000000001/a/W300000000004/details"
+              },
+              {
+                "course_external_id": "100000000001",
+                "deadline": null,
+                "deskripsi": "Kumpulkan sebelum akhir semester.",
+                "external_id": "300000000005",
+                "jenis": "coursework",
+                "judul": "Portfolio (kapan saja)",
+                "link_id": null,
+                "status_kumpul_situs": null,
+                "url": "https://classroom.google.com/c/Q100000000001/a/W300000000005/details"
+              },
+              {
+                "course_external_id": "100000000001",
+                "deadline": "2026-09-30T16:59:00Z",
+                "deskripsi": "Perbaiki sesuai komentar.",
+                "external_id": "300000000006",
+                "jenis": "coursework",
+                "judul": "Revisi Essay",
+                "link_id": null,
+                "status_kumpul_situs": "terkumpul",
+                "url": "https://classroom.google.com/c/Q100000000001/a/W300000000006/details"
+              },
+              {
+                "course_external_id": "100000000002",
+                "deadline": "2026-11-02T09:30:00Z",
+                "deskripsi": "",
+                "external_id": "300000000007",
+                "jenis": "coursework",
+                "judul": "Pilih Topik Riset",
+                "link_id": null,
+                "status_kumpul_situs": null,
+                "url": "https://classroom.google.com/c/Q100000000002/a/W300000000007/details"
+              },
+              {
+                "course_external_id": "100000000002",
+                "deadline": "2026-11-20T16:59:00Z",
+                "deskripsi": "Maksimal 2 halaman.",
+                "external_id": "300000000008",
+                "jenis": "coursework",
+                "judul": "Proposal Singkat",
+                "link_id": null,
+                "status_kumpul_situs": null,
+                "url": "https://classroom.google.com/c/Q100000000002/a/W300000000008/details"
+              }
+            ]
+          }
+        },
+        {
+          "sql": "INSERT INTO task_user_state (task_id, status, done_at) SELECT id, 'done', '2026-10-21T00:00:00Z' FROM tasks WHERE id = (SELECT id FROM tasks ORDER BY id LIMIT 1)"
+        }
+      ],
+      "nama": "fixture_tiga_sumber"
+    }
+  ]
+}
