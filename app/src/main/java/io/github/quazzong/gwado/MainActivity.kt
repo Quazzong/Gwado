@@ -11,7 +11,6 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -20,7 +19,6 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.getValue
@@ -65,7 +63,8 @@ import io.github.quazzong.gwado.semester.tebakSemester
 import io.github.quazzong.gwado.sumber.HasilSumber
 import io.github.quazzong.gwado.tugas.BarisTugas
 import io.github.quazzong.gwado.tugas.daftarTugas
-import io.github.quazzong.gwado.ui.theme.GwadoTheme
+import io.github.quazzong.gwado.ui.Akar
+import io.github.quazzong.gwado.ui.tema.GwadoTema
 import java.time.Duration
 import java.time.Instant
 import java.util.UUID
@@ -73,8 +72,6 @@ import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-
-// GW6: tiga sumber → ingest → database lokal; daftar dibaca dari database. Tampilan polos sampai GW8.
 
 /** situs null = Classroom (token dari AuthorizationClient, bukan login SSO). */
 private class Sumber(val id: String, val label: String, val situs: String? = null)
@@ -133,13 +130,12 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            GwadoTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
+            GwadoTema {
+                Akar(daftar = daftar, muatUlang = ::muatUlangDaftar) {
                     Column(
-                        modifier = Modifier.padding(innerPadding).padding(16.dp),
+                        modifier = Modifier.padding(16.dp),
                         verticalArrangement = Arrangement.spacedBy(8.dp),
                     ) {
-                        Text("Gwado · uji semester (GW7)")
                         val sm = semester
                         if (sm == null) {
                             Text("Konfirmasi semester aktif (ditebak dari tanggal hari ini, betulkan kalau salah):")
@@ -194,14 +190,6 @@ class MainActivity : ComponentActivity() {
                         val ms = lihatMatkul
                         if (ms == null) {
                             Text("${daftar.size} tugas di database", style = MaterialTheme.typography.bodySmall)
-                            LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                                items(daftar, key = { it.id }) { t ->
-                                    Column {
-                                        Text(t.judul)
-                                        Text(keterangan(t), style = MaterialTheme.typography.bodySmall)
-                                    }
-                                }
-                            }
                         } else {
                             Row(verticalAlignment = Alignment.CenterVertically) {
                                 Text(
@@ -251,6 +239,11 @@ class MainActivity : ComponentActivity() {
         }
         // Hanya saat pertama dibuat: rotasi layar mengirim intent yang sama lagi (passport sudah terpakai).
         if (savedInstanceState == null) intentMasuk(intent)
+    }
+
+    /** Baca ulang daftar dari database, misalnya setelah centang di layar detail. */
+    private fun muatUlangDaftar() {
+        lifecycleScope.launch { daftar = Gudang.pakai(this@MainActivity) { it.daftarTugas() } }
     }
 
     override fun onNewIntent(intent: Intent) {
@@ -440,12 +433,4 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-    private fun keterangan(t: BarisTugas): String = listOfNotNull(
-        t.sumber,
-        t.matkul,
-        t.jenis,
-        t.deadline ?: "tanpa deadline",
-        t.statusKumpulSitus?.let { "situs: $it" },
-        "hilang di situs".takeIf { t.statusSitus == "hilang" },
-    ).joinToString(" · ")
 }

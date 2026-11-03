@@ -19,7 +19,7 @@ data class BarisTugas(
  * Label mata kuliah: nama kelas situs; untuk tugas manual, nama kelas situs yang diikuti
  * dengan kode mata kuliah yang sama; terakhir kodenya sendiri.
  */
-private const val SQL_MATKUL = """coalesce(
+internal const val SQL_MATKUL = """coalesce(
          c.nama,
          (SELECT k.nama FROM courses k
           WHERE k.kode_mk = t.kode_mk_manual AND k.diikuti = 1

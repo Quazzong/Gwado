@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.compose)
+    alias(libs.plugins.kotlin.serialization)
 }
 
 val versiSqlite = "2.7.1"  // sqlite, sqlite-bundled, dan .so test (GW6b) harus satu versi
@@ -39,6 +40,8 @@ android {
 }
 
 dependencies {
+    implementation(libs.androidx.navigation3.runtime)
+    implementation(libs.androidx.navigation3.ui)
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.9.0")
     implementation("androidx.sqlite:sqlite:$versiSqlite")
     implementation("androidx.sqlite:sqlite-bundled:$versiSqlite")
