@@ -13,8 +13,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.lifecycleScope
 import com.google.android.gms.auth.api.identity.AuthorizationRequest
-import com.google.android.gms.auth.api.identity.AuthorizationResult
 import com.google.android.gms.auth.api.identity.Identity
+import com.google.android.gms.auth.api.identity.RevokeAccessRequest
+import com.google.android.gms.tasks.Task
 import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.common.api.Scope
 import io.github.quazzong.gwado.db.Gudang
@@ -50,13 +51,22 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.withContext
 
-/** Layanan yang didukung. situs null = Classroom (token dari layar izin Google, bukan login SSO). */
-class Layanan(val id: String, val label: String, val situs: String? = null)
+/**
+ * Layanan yang didukung. situs null = Classroom (token dari layar izin Google, bukan login SSO).
+ * nama = nama lengkap di tabel sources; keterangan = satu baris di lembar Tambah layanan.
+ */
+class Layanan(
+    val id: String,
+    val label: String,
+    val keterangan: String,
+    val situs: String? = null,
+    val nama: String = label,
+)
 
 val DAFTAR_LAYANAN = listOf(
-    Layanan("brone", "Brone", "https://brone.ub.ac.id"),
-    Layanan("eling", "Eling", "https://eling.ub.ac.id"),
-    Layanan("classroom", "Classroom"),
+    Layanan("brone", "Brone", "Tugas dan kuis kuliah dari Moodle UB", "https://brone.ub.ac.id"),
+    Layanan("eling", "Eling", "Tugas praktikum dari Moodle UB", "https://eling.ub.ac.id"),
+    Layanan("classroom", "Classroom", "Kelas yang dibuat dosen di Classroom", nama = "Google Classroom"),
 )
 
 private val SCOPES = listOf(
@@ -92,6 +102,12 @@ class Pengambil(private val activity: ComponentActivity, private val onBerubah: 
     var hasilTerakhir by mutableStateOf<HasilAmbil?>(null)
         private set
 
+    /** Login Moodle terakhir yang berhasil: (id layanan, nomor urut). Layar login menutup diri saat nilainya berganti. */
+    var loginBerhasil by mutableStateOf<Pair<String, Int>?>(null)
+        private set
+
+    private var nomorLogin = 0
+
     private var nomorAmbil = 0
 
     private val prefs by lazy { activity.getPreferences(Context.MODE_PRIVATE) }
@@ -117,6 +133,21 @@ class Pengambil(private val activity: ComponentActivity, private val onBerubah: 
     }
 
     suspend fun tersambung(): Set<String> = daftarTersambung().map { it.layanan.id }.toSet()
+
+    /** Layanan yang didukung tapi belum tersambung (termasuk yang pernah dimatikan), urut daftar layanan. */
+    suspend fun belumTersambung(): List<Layanan> {
+        val ada = tersambung()
+        return DAFTAR_LAYANAN.filter { it.id !in ada }
+    }
+
+    /** Sambungkan layanan: nyalakan lagi kalau pernah dimatikan, lalu Ambil. Moodle tanpa token membuka login. */
+    fun tambah(l: Layanan) = luncurkan {
+        status[l.id] = aman {
+            Gudang.pakai(activity) { it.aturAktif(l.id, true) }
+            satu(l, bolehLogin = true)
+        }
+        onBerubah()
+    }
 
     /** Ambil satu layanan; Moodle tanpa token membuka login di browser. */
     fun ambil(l: Layanan) = luncurkan { status[l.id] = aman { satu(l, bolehLogin = true) } }
@@ -151,12 +182,35 @@ class Pengambil(private val activity: ComponentActivity, private val onBerubah: 
         onBerubah()
     }
 
-    /** Alamat moodlemobile:// dari browser (atau ditempel): simpan token, lalu langsung ambil. */
-    fun tangani(alamat: String) {
+    /**
+     * Matikan layanan: token Moodle dihapus atau izin Google dicabut, lalu sumbernya tidak
+     * diambil lagi. Tugas yang sudah tersimpan tetap ada.
+     */
+    fun matikan(l: Layanan) = luncurkan {
+        val catatanCabut = if (l.situs == null) {
+            cabutGoogle()
+        } else {
+            brankas.hapus(l.id)
+            null
+        }
+        pesan = aman {
+            Gudang.pakai(activity) { it.aturAktif(l.id, false) }
+            catatanCabut ?: "${l.label} dimatikan. Tugas yang sudah diambil tetap ada."
+        }
+        status.remove(l.id)
+        onBerubah()
+    }
+
+    /**
+     * Alamat moodlemobile:// dari browser (atau ditempel): simpan token, lalu langsung ambil.
+     * untuk = layanan di layar tempel, tempat pesan ditampilkan kalau belum ada login yang berjalan.
+     */
+    fun tangani(alamat: String, untuk: String? = null) {
         val l = DAFTAR_LAYANAN.find { it.id == prefs.getString("login_sumber", null) }
         val situs = l?.situs
         if (l == null || situs == null) {
-            pesan = "Tidak ada login Moodle yang sedang berjalan. Tekan Ambil di Brone/Eling dulu."
+            val teks = "Tidak ada login Moodle yang sedang berjalan. Tekan Buka halaman login dulu."
+            if (untuk != null) status[untuk] = teks else pesan = teks
             return
         }
         when (val h = bacaRedirect(alamat, situs, prefs.getString("passport", "").orEmpty())) {
@@ -169,6 +223,7 @@ class Pengambil(private val activity: ComponentActivity, private val onBerubah: 
                 } catch (e: Exception) {
                     "Token ${l.label} tidak bisa disimpan (${e.javaClass.simpleName}); dipakai sekali saja."
                 }
+                loginBerhasil = l.id to ++nomorLogin
                 luncurkan { status[l.id] = aman { ambilDanSimpan(l) { ambilMoodle(situs, h.token, Instant.now()) } } }
             }
         }
@@ -211,7 +266,7 @@ class Pengambil(private val activity: ComponentActivity, private val onBerubah: 
         return when {
             token != null -> ambilDanSimpan(l) { ambilMoodle(situs, token, Instant.now()) }
             bolehLogin -> mulaiLogin(l, situs)
-            else -> "Perlu login: tekan Ambil di ${l.label}"
+            else -> "Perlu login: tekan Login di kartu ${l.label}"
         }
     }
 
@@ -227,11 +282,7 @@ class Pengambil(private val activity: ComponentActivity, private val onBerubah: 
         val klien = Identity.getAuthorizationClient(activity)
         val permintaan = AuthorizationRequest.builder().setRequestedScopes(SCOPES).build()
         val r = try {
-            suspendCancellableCoroutine<AuthorizationResult> { k ->
-                klien.authorize(permintaan)
-                    .addOnSuccessListener { k.resume(it) }
-                    .addOnFailureListener { k.resumeWithException(it) }
-            }
+            tunggu(klien.authorize(permintaan))
         } catch (e: ApiException) {
             throw GagalIzin("Gagal meminta izin Google (kode ${e.statusCode})")
         }
@@ -250,6 +301,27 @@ class Pengambil(private val activity: ComponentActivity, private val onBerubah: 
             r
         }
         return hasil.accessToken?.takeIf { it.isNotEmpty() } ?: throw GagalIzin("Tidak dapat access token Google")
+    }
+
+    /**
+     * Cabut izin Classroom tanpa layar. null kalau berhasil atau memang belum ada izin;
+     * selain itu kalimat petunjuk untuk pengguna.
+     */
+    private suspend fun cabutGoogle(): String? {
+        val manual = "Classroom dimatikan, tapi izin Google belum bisa dicabut dari sini. " +
+            "Cabut lewat myaccount.google.com/permissions kalau perlu."
+        val klien = Identity.getAuthorizationClient(activity)
+        return try {
+            val r = tunggu(klien.authorize(AuthorizationRequest.builder().setRequestedScopes(SCOPES).build()))
+            if (r.hasResolution()) return null                 // belum ada izin: tidak ada yang dicabut
+            val akun = r.toGoogleSignInAccount()?.account ?: return manual
+            tunggu(klien.revokeAccess(RevokeAccessRequest.builder().setAccount(akun).setScopes(SCOPES).build()))
+            null
+        } catch (e: CancellationException) {
+            throw e
+        } catch (e: Exception) {
+            manual
+        }
     }
 
     /** Fetch, Isi, ingest. Teks kosong kalau run tercatat; selain itu alasan situs tidak dihubungi. */
@@ -282,4 +354,10 @@ class Pengambil(private val activity: ComponentActivity, private val onBerubah: 
             "${l.label} baru saja diambil, situs tidak dihubungi. Coba lagi dalam $sisa."
         }
     }
+}
+
+/** Tunggu hasil Task Play services di dalam coroutine. */
+private suspend fun <T> tunggu(t: Task<T>): T = suspendCancellableCoroutine { k ->
+    t.addOnSuccessListener { k.resume(it) }
+        .addOnFailureListener { k.resumeWithException(it) }
 }

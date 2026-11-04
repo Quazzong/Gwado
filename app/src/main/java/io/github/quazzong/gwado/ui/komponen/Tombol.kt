@@ -1,6 +1,12 @@
 package io.github.quazzong.gwado.ui.komponen
 
+import androidx.annotation.DrawableRes
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.size
+import androidx.compose.material3.Icon
+import androidx.compose.ui.res.painterResource
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -57,9 +63,9 @@ fun TombolPlum(teks: String, onClick: () -> Unit, modifier: Modifier = Modifier)
     }
 }
 
-/** Tombol bergaris tanpa isi warna, untuk Ubah, Lewati, menu. */
+/** Tombol bergaris tanpa isi warna, untuk Ubah, Lewati, menu. ikon opsional di kiri teks. */
 @Composable
-fun TombolGaris(teks: String, onClick: () -> Unit, modifier: Modifier = Modifier) {
+fun TombolGaris(teks: String, onClick: () -> Unit, modifier: Modifier = Modifier, @DrawableRes ikon: Int? = null) {
     val w = GwadoTema.warna
     Kotak(
         modifier = modifier.defaultMinSize(minHeight = Jarak.sentuh + Jarak.bayanganKecil),
@@ -70,6 +76,9 @@ fun TombolGaris(teks: String, onClick: () -> Unit, modifier: Modifier = Modifier
         rataIsi = Alignment.Center,
         onClick = onClick,
     ) {
-        Text(teks, style = Huruf.meta.copy(fontWeight = FontWeight.W800), color = w.tinta)
+        Row(horizontalArrangement = Arrangement.spacedBy(6.dp), verticalAlignment = Alignment.CenterVertically) {
+            if (ikon != null) Icon(painterResource(ikon), contentDescription = null, tint = w.tinta, modifier = Modifier.size(16.dp))
+            Text(teks, style = Huruf.meta.copy(fontWeight = FontWeight.W800), color = w.tinta)
+        }
     }
 }

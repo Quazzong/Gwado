@@ -26,6 +26,8 @@ import io.github.quazzong.gwado.ui.komponen.TabBar
 import io.github.quazzong.gwado.ui.komponen.rememberSekarang
 import io.github.quazzong.gwado.ui.layar.Beranda
 import io.github.quazzong.gwado.ui.layar.LayarKalender
+import io.github.quazzong.gwado.ui.layar.LayarMatkul
+import io.github.quazzong.gwado.ui.layar.LayarSemester
 import io.github.quazzong.gwado.ui.layar.LayarFormulir
 import io.github.quazzong.gwado.ui.layar.LayarDetail
 import io.github.quazzong.gwado.ui.layar.mendesak
@@ -45,6 +47,18 @@ data class Detail(val id: String) : NavKey
 @Serializable
 data class Formulir(val id: String? = null) : NavKey
 
+/** Login Moodle satu layanan lewat browser, menutupi tab bar. */
+@Serializable
+data class Masuk(val id: String) : NavKey
+
+/** Daftar mata kuliah satu layanan beserta pengecualian manualnya. */
+@Serializable
+data class DaftarMatkul(val sumber: String) : NavKey
+
+/** Ubah semester aktif dan tanggal kuliah pertama. */
+@Serializable
+data object AturSemester : NavKey
+
 private enum class Tab { TUGAS, KALENDER, LAYANAN }
 
 /** Akar tampilan: back stack layar, dimulai dari layar utama. */
@@ -56,7 +70,8 @@ fun Akar(
     menyegarkan: Boolean,
     onSegarkan: () -> Unit,
     hasilAmbil: HasilAmbil?,
-    layanan: @Composable () -> Unit,
+    layanan: @Composable (buka: (NavKey) -> Unit) -> Unit,
+    masuk: @Composable (id: String, onKembali: () -> Unit) -> Unit,
 ) {
     val tumpukan = rememberNavBackStack(Utama)
     val buka = { k: NavKey -> if (tumpukan.lastOrNull() != k) tumpukan.add(k) }
@@ -65,7 +80,9 @@ fun Akar(
         onBack = { tumpukan.removeLastOrNull() },
         entryProvider = entryProvider {
             entry<Utama> {
-                LayarUtama(daftar, versi, { id -> buka(Detail(id)) }, { buka(Formulir()) }, menyegarkan, onSegarkan, hasilAmbil, layanan)
+                LayarUtama(daftar, versi, { id -> buka(Detail(id)) }, { buka(Formulir()) }, menyegarkan, onSegarkan, hasilAmbil) {
+                    layanan(buka)
+                }
             }
             entry<Detail> { k ->
                 LayarDetail(
@@ -78,6 +95,17 @@ fun Akar(
             entry<Formulir> { k ->
                 LayarFormulir(
                     k.id,
+                    onKembali = { tumpukan.removeLastOrNull() },
+                    onTersimpan = {
+                        muatUlang()
+                        tumpukan.removeLastOrNull()
+                    },
+                )
+            }
+            entry<Masuk> { k -> masuk(k.id) { tumpukan.removeLastOrNull() } }
+            entry<DaftarMatkul> { k -> LayarMatkul(k.sumber, onKembali = { tumpukan.removeLastOrNull() }) }
+            entry<AturSemester> {
+                LayarSemester(
                     onKembali = { tumpukan.removeLastOrNull() },
                     onTersimpan = {
                         muatUlang()
