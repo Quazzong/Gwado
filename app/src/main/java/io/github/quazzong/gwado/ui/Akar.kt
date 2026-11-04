@@ -19,6 +19,7 @@ import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.ui.NavDisplay
 import io.github.quazzong.gwado.R
+import io.github.quazzong.gwado.layanan.HasilAmbil
 import io.github.quazzong.gwado.tugas.BarisTugas
 import io.github.quazzong.gwado.ui.komponen.ItemTab
 import io.github.quazzong.gwado.ui.komponen.TabBar
@@ -48,7 +49,15 @@ private enum class Tab { TUGAS, KALENDER, LAYANAN }
 
 /** Akar tampilan: back stack layar, dimulai dari layar utama. */
 @Composable
-fun Akar(daftar: List<BarisTugas>, versi: Int, muatUlang: () -> Unit, layanan: @Composable () -> Unit) {
+fun Akar(
+    daftar: List<BarisTugas>,
+    versi: Int,
+    muatUlang: () -> Unit,
+    menyegarkan: Boolean,
+    onSegarkan: () -> Unit,
+    hasilAmbil: HasilAmbil?,
+    layanan: @Composable () -> Unit,
+) {
     val tumpukan = rememberNavBackStack(Utama)
     val buka = { k: NavKey -> if (tumpukan.lastOrNull() != k) tumpukan.add(k) }
     NavDisplay(
@@ -56,7 +65,7 @@ fun Akar(daftar: List<BarisTugas>, versi: Int, muatUlang: () -> Unit, layanan: @
         onBack = { tumpukan.removeLastOrNull() },
         entryProvider = entryProvider {
             entry<Utama> {
-                LayarUtama(daftar, versi, { id -> buka(Detail(id)) }, { buka(Formulir()) }, layanan)
+                LayarUtama(daftar, versi, { id -> buka(Detail(id)) }, { buka(Formulir()) }, menyegarkan, onSegarkan, hasilAmbil, layanan)
             }
             entry<Detail> { k ->
                 LayarDetail(
@@ -86,6 +95,9 @@ private fun LayarUtama(
     versi: Int,
     bukaDetail: (String) -> Unit,
     tambah: () -> Unit,
+    menyegarkan: Boolean,
+    onSegarkan: () -> Unit,
+    hasilAmbil: HasilAmbil?,
     layanan: @Composable () -> Unit,
 ) {
     val w = GwadoTema.warna
@@ -102,7 +114,10 @@ private fun LayarUtama(
         Box(Modifier.weight(1f).fillMaxWidth()) {
             penyimpan.SaveableStateProvider(tab) {
                 when (tab) {
-                    Tab.TUGAS -> Beranda(daftar, versi, sekarang, bukaDetail, tambah)
+                    Tab.TUGAS -> Beranda(
+                        daftar, versi, sekarang, bukaDetail, tambah, menyegarkan, onSegarkan, hasilAmbil,
+                        onBukaLayanan = { tab = Tab.LAYANAN },
+                    )
                     Tab.KALENDER -> LayarKalender(daftar, versi, sekarang, bukaDetail)
                     Tab.LAYANAN -> layanan()
                 }

@@ -11,7 +11,22 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Text
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
+import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableIntStateOf
+import io.github.quazzong.gwado.layanan.HasilAmbil
+import io.github.quazzong.gwado.segar.SumberTerakhir
+import io.github.quazzong.gwado.segar.Tingkat
+import io.github.quazzong.gwado.segar.banner
+import io.github.quazzong.gwado.segar.statusSumber
+import io.github.quazzong.gwado.segar.sumberTerakhir
+import io.github.quazzong.gwado.ui.komponen.KueTarik
+import io.github.quazzong.gwado.ui.komponen.Pita
+import io.github.quazzong.gwado.ui.komponen.TombolPermen
+import kotlinx.coroutines.delay
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -58,7 +73,12 @@ internal fun mendesak(t: BarisTugas, sekarang: Instant): Boolean =
     t.status != "done" && !terkumpul(t) &&
         (t.deadline?.let { sisaChip(dariDb(it), sekarang).makna != Makna.NORMAL } ?: false)
 
-private class DataKepala(val kuliahMulai: LocalDate?, val semua: List<BarisTugas>, val diambil: Instant?)
+private class DataKepala(
+    val kuliahMulai: LocalDate?,
+    val semua: List<BarisTugas>,
+    val diambil: Instant?,
+    val sumber: List<SumberTerakhir>,
+)
 
 /** Selesai run sukses terakhir dari sumber mana pun. */
 private fun Db.suksesTerakhir(): Instant? =
@@ -73,6 +93,7 @@ private fun singkat(nama: String): String =
  * dalam bagian MENDESAK, NANTI (tanpa deadline di akhirnya), dan TERKUMPUL DI SITUS.
  * [versi] naik setiap kali data di database berubah. Ketuk kartu = buka detail.
  */
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun Beranda(
     daftar: List<BarisTugas>,
@@ -80,13 +101,17 @@ fun Beranda(
     sekarang: Instant,
     onBuka: (String) -> Unit,
     onTambah: () -> Unit,
+    menyegarkan: Boolean = false,
+    onSegarkan: () -> Unit = {},
+    hasilAmbil: HasilAmbil? = null,
+    onBukaLayanan: () -> Unit = {},
     modifier: Modifier = Modifier,
 ) {
     val w = GwadoTema.warna
     val konteks = LocalContext.current
     val data by produceState<DataKepala?>(null, versi) {
         value = runCatching {
-            Gudang.pakai(konteks) { db -> DataKepala(db.kuliahMulai(), db.daftarTugas(semua = true), db.suksesTerakhir()) }
+            Gudang.pakai(konteks) { db -> DataKepala(db.kuliahMulai(), db.daftarTugas(semua = true), db.suksesTerakhir(), db.sumberTerakhir()) }
         }.getOrNull()
     }
     var filter by rememberSaveable { mutableStateOf<String?>(null) }
@@ -95,8 +120,25 @@ fun Beranda(
     val tampil = if (aktif == null) daftar else daftar.filter { (it.sumber ?: "Manual") == aktif }
     val (sudah, belum) = tampil.partition(::terkumpul)
     val (atas, bawah) = belum.partition { mendesak(it, sekarang) }
+    val stSumber = data?.sumber?.filter { it.status != null }?.let { statusSumber(it, sekarang) }.orEmpty()
+    val pitaSumber = banner(stSumber)
+    var dilihat by rememberSaveable { mutableIntStateOf(0) }
+    val hasilBaru = hasilAmbil?.takeIf { it.nomor > dilihat && it.pesan.isNotEmpty() }
+    LaunchedEffect(hasilBaru?.nomor) {
+        if (hasilBaru != null) {
+            delay(6000)
+            dilihat = hasilBaru.nomor
+        }
+    }
+    val tarik = rememberPullToRefreshState()
 
-    Box(modifier.fillMaxSize()) {
+    PullToRefreshBox(
+        isRefreshing = menyegarkan,
+        onRefresh = onSegarkan,
+        modifier = modifier.fillMaxSize(),
+        state = tarik,
+        indicator = { KueTarik(tarik, menyegarkan, Modifier.align(Alignment.TopCenter)) },
+    ) {
     LazyColumn(
         Modifier.fillMaxSize(),
         contentPadding = PaddingValues(start = Jarak.tepiLayar, top = Jarak.tepiLayar, end = Jarak.tepiLayar, bottom = 80.dp),
@@ -108,6 +150,19 @@ fun Beranda(
                 data?.kuliahMulai,
                 progresMinggu(data?.semua.orEmpty(), sekarang.atOffset(WIB).toLocalDate()),
             )
+        }
+        if (pitaSumber != null) {
+            item(key = "pita-sumber") {
+                val masalah = stSumber.filter { it.tingkat != Tingkat.NORMAL }
+                Pita(
+                    masalah.joinToString(", ", postfix = ". Ketuk untuk membuka Layanan.") { "${it.nama} ${chipStatus(it).first}" },
+                    merah = pitaSumber.tingkat == Tingkat.MERAH,
+                    onClick = onBukaLayanan,
+                )
+            }
+        }
+        if (hasilBaru != null) {
+            item(key = "pita-ambil") { Pita(hasilBaru.pesan.joinToString("\n")) }
         }
         item(key = "ubin") {
             Row(Modifier.fillMaxWidth().padding(top = Jarak.s4), horizontalArrangement = Arrangement.spacedBy(6.dp)) {
@@ -134,12 +189,13 @@ fun Beranda(
                 ) {
                     Text("Belum ada tugas", style = Huruf.judulBagian, color = w.tinta)
                     Text(
-                        "Tekan Ambil di tab Layanan untuk mengambil tugas dari situs kuliah.",
+                        "Tarik ke bawah, atau tekan Ambil sekarang, untuk mengambil tugas dari situs kuliah.",
                         style = Huruf.isi,
                         color = w.tintaRedup,
                         textAlign = TextAlign.Center,
                     )
-                    TombolGaris("Tugas manual", onTambah, Modifier.padding(top = Jarak.s12))
+                    TombolPermen(if (menyegarkan) "Mengambil…" else "Ambil sekarang", onSegarkan, Modifier.padding(top = Jarak.s12))
+                    TombolGaris("Tugas manual", onTambah, Modifier.padding(top = Jarak.s8))
                 }
             }
         }

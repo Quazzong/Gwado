@@ -1,0 +1,609 @@
+{
+  "skenario": [
+    {
+      "banner": {
+        "pesan": [
+          "Brone · belum ada data",
+          "Classroom · belum ada data",
+          "Eling · belum ada data"
+        ],
+        "warna": "kuning"
+      },
+      "langkah": [],
+      "nama": "belum_ada_data",
+      "sekarang": "2026-11-03T05:00:00Z",
+      "status": [
+        {
+          "id": "brone",
+          "label": "belum ada data",
+          "nama": "Brone",
+          "pesan": "Brone · belum ada data",
+          "warna": "kuning"
+        },
+        {
+          "id": "classroom",
+          "label": "belum ada data",
+          "nama": "Classroom",
+          "pesan": "Classroom · belum ada data",
+          "warna": "kuning"
+        },
+        {
+          "id": "eling",
+          "label": "belum ada data",
+          "nama": "Eling",
+          "pesan": "Eling · belum ada data",
+          "warna": "kuning"
+        }
+      ],
+      "sumber_terakhir": [
+        {
+          "error_singkat": null,
+          "id": "brone",
+          "nama": "Brone",
+          "selesai": null,
+          "status": null,
+          "sukses_terakhir": null
+        },
+        {
+          "error_singkat": null,
+          "id": "classroom",
+          "nama": "Google Classroom",
+          "selesai": null,
+          "status": null,
+          "sukses_terakhir": null
+        },
+        {
+          "error_singkat": null,
+          "id": "eling",
+          "nama": "Eling",
+          "selesai": null,
+          "status": null,
+          "sukses_terakhir": null
+        }
+      ]
+    },
+    {
+      "banner": {
+        "pesan": [
+          "Classroom · token ditolak — login ulang Google",
+          "Eling · token ditolak — ambil ulang token lewat browser"
+        ],
+        "warna": "merah"
+      },
+      "langkah": [
+        {
+          "sql": "INSERT INTO source_runs (source_id, fetch_id, mulai, selesai, status, jumlah_tugas, error_singkat) VALUES ('brone', 'brone-000001', '2026-11-03T03:02:00Z', '2026-11-03T03:02:05Z', 'success', 0, NULL)"
+        },
+        {
+          "sql": "INSERT INTO source_runs (source_id, fetch_id, mulai, selesai, status, jumlah_tugas, error_singkat) VALUES ('eling', 'eling-000001', '2026-11-02T13:01:00Z', '2026-11-02T13:01:05Z', 'success', 0, NULL)"
+        },
+        {
+          "sql": "INSERT INTO source_runs (source_id, fetch_id, mulai, selesai, status, jumlah_tugas, error_singkat) VALUES ('eling', 'eling-000002', '2026-11-03T03:01:00Z', '2026-11-03T03:01:05Z', 'failed', NULL, 'token_ditolak: invalidtoken (token kedaluwarsa, ambil ulang)')"
+        },
+        {
+          "sql": "INSERT INTO source_runs (source_id, fetch_id, mulai, selesai, status, jumlah_tugas, error_singkat) VALUES ('classroom', 'classroom-000001', '2026-11-03T03:03:00Z', '2026-11-03T03:03:05Z', 'failed', NULL, 'token_ditolak: invalid_grant (login ulang Google)')"
+        }
+      ],
+      "nama": "normal_dan_token",
+      "sekarang": "2026-11-03T05:00:00Z",
+      "status": [
+        {
+          "id": "brone",
+          "label": "10.02",
+          "nama": "Brone",
+          "pesan": null,
+          "warna": ""
+        },
+        {
+          "id": "classroom",
+          "label": "token ditolak",
+          "nama": "Classroom",
+          "pesan": "Classroom · token ditolak — login ulang Google",
+          "warna": "merah"
+        },
+        {
+          "id": "eling",
+          "label": "token ditolak",
+          "nama": "Eling",
+          "pesan": "Eling · token ditolak — ambil ulang token lewat browser",
+          "warna": "merah"
+        }
+      ],
+      "sumber_terakhir": [
+        {
+          "error_singkat": null,
+          "id": "brone",
+          "nama": "Brone",
+          "selesai": "2026-11-03T03:02:05Z",
+          "status": "success",
+          "sukses_terakhir": "2026-11-03T03:02:05Z"
+        },
+        {
+          "error_singkat": "token_ditolak: invalid_grant (login ulang Google)",
+          "id": "classroom",
+          "nama": "Google Classroom",
+          "selesai": "2026-11-03T03:03:05Z",
+          "status": "failed",
+          "sukses_terakhir": null
+        },
+        {
+          "error_singkat": "token_ditolak: invalidtoken (token kedaluwarsa, ambil ulang)",
+          "id": "eling",
+          "nama": "Eling",
+          "selesai": "2026-11-03T03:01:05Z",
+          "status": "failed",
+          "sukses_terakhir": "2026-11-02T13:01:05Z"
+        }
+      ]
+    },
+    {
+      "banner": {
+        "pesan": [
+          "Brone · gagal diambil 10.00 · data terakhir Jum 20.00",
+          "Classroom · data basi · sukses terakhir 20 Okt 20.00",
+          "Eling · hasil 10.01 mencurigakan · data lama tetap dipakai"
+        ],
+        "warna": "merah"
+      },
+      "langkah": [
+        {
+          "sql": "INSERT INTO source_runs (source_id, fetch_id, mulai, selesai, status, jumlah_tugas, error_singkat) VALUES ('brone', 'brone-000001', '2026-10-30T13:00:00Z', '2026-10-30T13:00:05Z', 'success', 0, NULL)"
+        },
+        {
+          "sql": "INSERT INTO source_runs (source_id, fetch_id, mulai, selesai, status, jumlah_tugas, error_singkat) VALUES ('brone', 'brone-000002', '2026-11-03T03:00:00Z', '2026-11-03T03:00:05Z', 'failed', NULL, 'jaringan: timeout')"
+        },
+        {
+          "sql": "INSERT INTO source_runs (source_id, fetch_id, mulai, selesai, status, jumlah_tugas, error_singkat) VALUES ('eling', 'eling-000001', '2026-11-03T03:01:00Z', '2026-11-03T03:01:05Z', 'partial', NULL, 'kelas diikuti hilang semua')"
+        },
+        {
+          "sql": "INSERT INTO source_runs (source_id, fetch_id, mulai, selesai, status, jumlah_tugas, error_singkat) VALUES ('classroom', 'classroom-000001', '2026-10-20T13:00:00Z', '2026-10-20T13:00:05Z', 'success', 0, NULL)"
+        }
+      ],
+      "nama": "gagal_partial_basi",
+      "sekarang": "2026-11-03T05:00:00Z",
+      "status": [
+        {
+          "id": "brone",
+          "label": "gagal",
+          "nama": "Brone",
+          "pesan": "Brone · gagal diambil 10.00 · data terakhir Jum 20.00",
+          "warna": "merah"
+        },
+        {
+          "id": "classroom",
+          "label": "basi",
+          "nama": "Classroom",
+          "pesan": "Classroom · data basi · sukses terakhir 20 Okt 20.00",
+          "warna": "kuning"
+        },
+        {
+          "id": "eling",
+          "label": "perlu dicek",
+          "nama": "Eling",
+          "pesan": "Eling · hasil 10.01 mencurigakan · data lama tetap dipakai",
+          "warna": "kuning"
+        }
+      ],
+      "sumber_terakhir": [
+        {
+          "error_singkat": "jaringan: timeout",
+          "id": "brone",
+          "nama": "Brone",
+          "selesai": "2026-11-03T03:00:05Z",
+          "status": "failed",
+          "sukses_terakhir": "2026-10-30T13:00:05Z"
+        },
+        {
+          "error_singkat": null,
+          "id": "classroom",
+          "nama": "Google Classroom",
+          "selesai": "2026-10-20T13:00:05Z",
+          "status": "success",
+          "sukses_terakhir": "2026-10-20T13:00:05Z"
+        },
+        {
+          "error_singkat": "kelas diikuti hilang semua",
+          "id": "eling",
+          "nama": "Eling",
+          "selesai": "2026-11-03T03:01:05Z",
+          "status": "partial",
+          "sukses_terakhir": null
+        }
+      ]
+    },
+    {
+      "banner": {
+        "pesan": [
+          "Brone · gagal diambil 10.00 · data terakhir belum ada",
+          "Classroom · belum ada data",
+          "Eling · belum ada data"
+        ],
+        "warna": "merah"
+      },
+      "langkah": [
+        {
+          "sql": "INSERT INTO source_runs (source_id, fetch_id, mulai, selesai, status, jumlah_tugas, error_singkat) VALUES ('brone', 'brone-000001', '2026-11-03T03:00:00Z', '2026-11-03T03:00:05Z', 'failed', NULL, 'lain: HTTP 500')"
+        }
+      ],
+      "nama": "gagal_tanpa_sukses",
+      "sekarang": "2026-11-03T05:00:00Z",
+      "status": [
+        {
+          "id": "brone",
+          "label": "gagal",
+          "nama": "Brone",
+          "pesan": "Brone · gagal diambil 10.00 · data terakhir belum ada",
+          "warna": "merah"
+        },
+        {
+          "id": "classroom",
+          "label": "belum ada data",
+          "nama": "Classroom",
+          "pesan": "Classroom · belum ada data",
+          "warna": "kuning"
+        },
+        {
+          "id": "eling",
+          "label": "belum ada data",
+          "nama": "Eling",
+          "pesan": "Eling · belum ada data",
+          "warna": "kuning"
+        }
+      ],
+      "sumber_terakhir": [
+        {
+          "error_singkat": "lain: HTTP 500",
+          "id": "brone",
+          "nama": "Brone",
+          "selesai": "2026-11-03T03:00:05Z",
+          "status": "failed",
+          "sukses_terakhir": null
+        },
+        {
+          "error_singkat": null,
+          "id": "classroom",
+          "nama": "Google Classroom",
+          "selesai": null,
+          "status": null,
+          "sukses_terakhir": null
+        },
+        {
+          "error_singkat": null,
+          "id": "eling",
+          "nama": "Eling",
+          "selesai": null,
+          "status": null,
+          "sukses_terakhir": null
+        }
+      ]
+    },
+    {
+      "banner": {
+        "pesan": [
+          "Brone · gagal diambil 10.00 · data terakhir 10.00",
+          "Classroom · belum ada data",
+          "Eling · belum ada data"
+        ],
+        "warna": "merah"
+      },
+      "langkah": [
+        {
+          "sql": "INSERT INTO source_runs (source_id, fetch_id, mulai, selesai, status, jumlah_tugas, error_singkat) VALUES ('brone', 'brone-000001', '2026-11-03T03:00:00Z', '2026-11-03T03:00:05Z', 'success', 0, NULL)"
+        },
+        {
+          "sql": "INSERT INTO source_runs (source_id, fetch_id, mulai, selesai, status, jumlah_tugas, error_singkat) VALUES ('brone', 'brone-000002', '2026-11-03T03:00:00Z', '2026-11-03T03:00:05Z', 'failed', NULL, 'jaringan: timeout')"
+        }
+      ],
+      "nama": "run_mulai_sama_urut_id",
+      "sekarang": "2026-11-03T05:00:00Z",
+      "status": [
+        {
+          "id": "brone",
+          "label": "gagal",
+          "nama": "Brone",
+          "pesan": "Brone · gagal diambil 10.00 · data terakhir 10.00",
+          "warna": "merah"
+        },
+        {
+          "id": "classroom",
+          "label": "belum ada data",
+          "nama": "Classroom",
+          "pesan": "Classroom · belum ada data",
+          "warna": "kuning"
+        },
+        {
+          "id": "eling",
+          "label": "belum ada data",
+          "nama": "Eling",
+          "pesan": "Eling · belum ada data",
+          "warna": "kuning"
+        }
+      ],
+      "sumber_terakhir": [
+        {
+          "error_singkat": "jaringan: timeout",
+          "id": "brone",
+          "nama": "Brone",
+          "selesai": "2026-11-03T03:00:05Z",
+          "status": "failed",
+          "sukses_terakhir": "2026-11-03T03:00:05Z"
+        },
+        {
+          "error_singkat": null,
+          "id": "classroom",
+          "nama": "Google Classroom",
+          "selesai": null,
+          "status": null,
+          "sukses_terakhir": null
+        },
+        {
+          "error_singkat": null,
+          "id": "eling",
+          "nama": "Eling",
+          "selesai": null,
+          "status": null,
+          "sukses_terakhir": null
+        }
+      ]
+    },
+    {
+      "banner": {
+        "pesan": [
+          "Classroom · belum ada data"
+        ],
+        "warna": "kuning"
+      },
+      "langkah": [
+        {
+          "sql": "UPDATE sources SET aktif = 0 WHERE id = 'eling'"
+        },
+        {
+          "sql": "INSERT INTO source_runs (source_id, fetch_id, mulai, selesai, status, jumlah_tugas, error_singkat) VALUES ('brone', 'brone-000001', '2026-11-03T03:02:00Z', '2026-11-03T03:02:05Z', 'success', 0, NULL)"
+        },
+        {
+          "sql": "INSERT INTO source_runs (source_id, fetch_id, mulai, selesai, status, jumlah_tugas, error_singkat) VALUES ('eling', 'eling-000001', '2026-11-03T03:02:00Z', '2026-11-03T03:02:05Z', 'failed', NULL, 'token_ditolak: invalidtoken (token kedaluwarsa, ambil ulang)')"
+        }
+      ],
+      "nama": "sumber_nonaktif",
+      "sekarang": "2026-11-03T05:00:00Z",
+      "status": [
+        {
+          "id": "brone",
+          "label": "10.02",
+          "nama": "Brone",
+          "pesan": null,
+          "warna": ""
+        },
+        {
+          "id": "classroom",
+          "label": "belum ada data",
+          "nama": "Classroom",
+          "pesan": "Classroom · belum ada data",
+          "warna": "kuning"
+        }
+      ],
+      "sumber_terakhir": [
+        {
+          "error_singkat": null,
+          "id": "brone",
+          "nama": "Brone",
+          "selesai": "2026-11-03T03:02:05Z",
+          "status": "success",
+          "sukses_terakhir": "2026-11-03T03:02:05Z"
+        },
+        {
+          "error_singkat": null,
+          "id": "classroom",
+          "nama": "Google Classroom",
+          "selesai": null,
+          "status": null,
+          "sukses_terakhir": null
+        }
+      ]
+    },
+    {
+      "banner": {
+        "pesan": [
+          "Brone · data basi · sukses terakhir Sen 19.59",
+          "Classroom · belum ada data"
+        ],
+        "warna": "kuning"
+      },
+      "langkah": [
+        {
+          "sql": "INSERT INTO source_runs (source_id, fetch_id, mulai, selesai, status, jumlah_tugas, error_singkat) VALUES ('brone', 'brone-000001', '2026-11-02T12:59:00Z', '2026-11-02T12:59:05Z', 'success', 0, NULL)"
+        },
+        {
+          "sql": "INSERT INTO source_runs (source_id, fetch_id, mulai, selesai, status, jumlah_tugas, error_singkat) VALUES ('eling', 'eling-000001', '2026-11-02T13:00:00Z', '2026-11-02T13:00:05Z', 'success', 0, NULL)"
+        }
+      ],
+      "nama": "basi_sebelum_tenggang",
+      "sekarang": "2026-11-03T03:14:00Z",
+      "status": [
+        {
+          "id": "brone",
+          "label": "basi",
+          "nama": "Brone",
+          "pesan": "Brone · data basi · sukses terakhir Sen 19.59",
+          "warna": "kuning"
+        },
+        {
+          "id": "classroom",
+          "label": "belum ada data",
+          "nama": "Classroom",
+          "pesan": "Classroom · belum ada data",
+          "warna": "kuning"
+        },
+        {
+          "id": "eling",
+          "label": "Sen 20.00",
+          "nama": "Eling",
+          "pesan": null,
+          "warna": ""
+        }
+      ],
+      "sumber_terakhir": [
+        {
+          "error_singkat": null,
+          "id": "brone",
+          "nama": "Brone",
+          "selesai": "2026-11-02T12:59:05Z",
+          "status": "success",
+          "sukses_terakhir": "2026-11-02T12:59:05Z"
+        },
+        {
+          "error_singkat": null,
+          "id": "classroom",
+          "nama": "Google Classroom",
+          "selesai": null,
+          "status": null,
+          "sukses_terakhir": null
+        },
+        {
+          "error_singkat": null,
+          "id": "eling",
+          "nama": "Eling",
+          "selesai": "2026-11-02T13:00:05Z",
+          "status": "success",
+          "sukses_terakhir": "2026-11-02T13:00:05Z"
+        }
+      ]
+    },
+    {
+      "banner": {
+        "pesan": [
+          "Classroom · belum ada data",
+          "Eling · data basi · sukses terakhir 04.59"
+        ],
+        "warna": "kuning"
+      },
+      "langkah": [
+        {
+          "sql": "INSERT INTO source_runs (source_id, fetch_id, mulai, selesai, status, jumlah_tugas, error_singkat) VALUES ('brone', 'brone-000001', '2026-11-02T22:59:00Z', '2026-11-02T22:59:05Z', 'success', 0, NULL)"
+        },
+        {
+          "sql": "INSERT INTO source_runs (source_id, fetch_id, mulai, selesai, status, jumlah_tugas, error_singkat) VALUES ('eling', 'eling-000001', '2026-11-02T21:59:00Z', '2026-11-02T21:59:05Z', 'success', 0, NULL)"
+        }
+      ],
+      "nama": "basi_sesudah_tenggang",
+      "sekarang": "2026-11-03T03:15:00Z",
+      "status": [
+        {
+          "id": "brone",
+          "label": "05.59",
+          "nama": "Brone",
+          "pesan": null,
+          "warna": ""
+        },
+        {
+          "id": "classroom",
+          "label": "belum ada data",
+          "nama": "Classroom",
+          "pesan": "Classroom · belum ada data",
+          "warna": "kuning"
+        },
+        {
+          "id": "eling",
+          "label": "basi",
+          "nama": "Eling",
+          "pesan": "Eling · data basi · sukses terakhir 04.59",
+          "warna": "kuning"
+        }
+      ],
+      "sumber_terakhir": [
+        {
+          "error_singkat": null,
+          "id": "brone",
+          "nama": "Brone",
+          "selesai": "2026-11-02T22:59:05Z",
+          "status": "success",
+          "sukses_terakhir": "2026-11-02T22:59:05Z"
+        },
+        {
+          "error_singkat": null,
+          "id": "classroom",
+          "nama": "Google Classroom",
+          "selesai": null,
+          "status": null,
+          "sukses_terakhir": null
+        },
+        {
+          "error_singkat": null,
+          "id": "eling",
+          "nama": "Eling",
+          "selesai": "2026-11-02T21:59:05Z",
+          "status": "success",
+          "sukses_terakhir": "2026-11-02T21:59:05Z"
+        }
+      ]
+    },
+    {
+      "banner": {
+        "pesan": [
+          "Classroom · belum ada data",
+          "Eling · data basi · sukses terakhir Sen 14.59"
+        ],
+        "warna": "kuning"
+      },
+      "langkah": [
+        {
+          "sql": "INSERT INTO source_runs (source_id, fetch_id, mulai, selesai, status, jumlah_tugas, error_singkat) VALUES ('brone', 'brone-000001', '2026-11-02T08:00:00Z', '2026-11-02T08:00:05Z', 'success', 0, NULL)"
+        },
+        {
+          "sql": "INSERT INTO source_runs (source_id, fetch_id, mulai, selesai, status, jumlah_tugas, error_singkat) VALUES ('eling', 'eling-000001', '2026-11-02T07:59:00Z', '2026-11-02T07:59:05Z', 'success', 0, NULL)"
+        }
+      ],
+      "nama": "lewat_tengah_malam",
+      "sekarang": "2026-11-02T17:30:00Z",
+      "status": [
+        {
+          "id": "brone",
+          "label": "Sen 15.00",
+          "nama": "Brone",
+          "pesan": null,
+          "warna": ""
+        },
+        {
+          "id": "classroom",
+          "label": "belum ada data",
+          "nama": "Classroom",
+          "pesan": "Classroom · belum ada data",
+          "warna": "kuning"
+        },
+        {
+          "id": "eling",
+          "label": "basi",
+          "nama": "Eling",
+          "pesan": "Eling · data basi · sukses terakhir Sen 14.59",
+          "warna": "kuning"
+        }
+      ],
+      "sumber_terakhir": [
+        {
+          "error_singkat": null,
+          "id": "brone",
+          "nama": "Brone",
+          "selesai": "2026-11-02T08:00:05Z",
+          "status": "success",
+          "sukses_terakhir": "2026-11-02T08:00:05Z"
+        },
+        {
+          "error_singkat": null,
+          "id": "classroom",
+          "nama": "Google Classroom",
+          "selesai": null,
+          "status": null,
+          "sukses_terakhir": null
+        },
+        {
+          "error_singkat": null,
+          "id": "eling",
+          "nama": "Eling",
+          "selesai": "2026-11-02T07:59:05Z",
+          "status": "success",
+          "sukses_terakhir": "2026-11-02T07:59:05Z"
+        }
+      ]
+    }
+  ]
+}
