@@ -62,3 +62,41 @@ fun progresMinggu(semua: List<BarisTugas>, hariIni: LocalDate): Progres {
         total = mingguIni.size,
     )
 }
+
+/**
+ * Tugas yang beres: dicentang pengguna, atau terkumpul di situs dan masih ada di situs.
+ * Centang tetap milik pengguna; status situs hanya ikut menentukan tampilan.
+ */
+fun beres(t: BarisTugas): Boolean =
+    t.status == "done" || (t.statusKumpulSitus == "terkumpul" && t.statusSitus == "aktif")
+
+/**
+ * Tugas beres yang deadline-nya (tanggal WIB) jatuh di minggu ini, Senin–Minggu, untuk
+ * bagian SELESAI di beranda. Sama dengan yang dihitung selesai oleh [progresMinggu].
+ * Masukan: daftarTugas(semua = true).
+ */
+fun selesaiMinggu(semua: List<BarisTugas>, hariIni: LocalDate): List<BarisTugas> {
+    val awal = senin(hariIni)
+    val akhir = awal.plusDays(6)
+    return semua.filter { t ->
+        beres(t) && t.deadline?.let { dariDb(it).atOffset(WIB).toLocalDate() in awal..akhir } == true
+    }
+}
+
+/** Semua tugas beres, deadline terbaru dulu, tanpa deadline di akhir. Masukan: daftarTugas(semua = true). */
+fun semuaSelesai(semua: List<BarisTugas>): List<BarisTugas> =
+    semua.filter(::beres).sortedWith(
+        compareBy<BarisTugas> { it.deadline == null }.thenByDescending { it.deadline?.let(::dariDb) },
+    )
+
+/**
+ * Saring daftar tugas: layanan (null = semua; tugas manual bernama "Manual") dan kata yang dicari
+ * di judul atau mata kuliah, tanpa membedakan huruf besar-kecil. Kata kosong = tanpa pencarian.
+ */
+fun saring(daftar: List<BarisTugas>, kata: String, layanan: String?): List<BarisTugas> {
+    val k = kata.trim()
+    return daftar.filter { t ->
+        (layanan == null || (t.sumber ?: "Manual") == layanan) &&
+            (k.isEmpty() || t.judul.contains(k, ignoreCase = true) || t.matkul?.contains(k, ignoreCase = true) == true)
+    }
+}

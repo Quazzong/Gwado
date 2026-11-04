@@ -14,6 +14,8 @@ import androidx.lifecycle.lifecycleScope
 import io.github.quazzong.gwado.beranda.kuliahMulai
 import io.github.quazzong.gwado.db.Gudang
 import io.github.quazzong.gwado.layanan.Pengambil
+import io.github.quazzong.gwado.segar.statusSumber
+import io.github.quazzong.gwado.segar.sumberTerakhir
 import io.github.quazzong.gwado.semester.ringkasanMatkul
 import io.github.quazzong.gwado.semester.semesterTersimpan
 import io.github.quazzong.gwado.semester.simpanSemester
@@ -30,6 +32,7 @@ import io.github.quazzong.gwado.ui.layar.LayarLayanan
 import io.github.quazzong.gwado.ui.layar.LayarMasuk
 import io.github.quazzong.gwado.ui.layar.LayarSiapkan
 import io.github.quazzong.gwado.ui.tema.GwadoTema
+import java.time.Instant
 import java.time.LocalDate
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.launch
@@ -40,6 +43,7 @@ private class DataLayar(
     val kuliah: LocalDate?,
     val daftar: List<BarisTugas>,
     val matkul: Map<String, String>,
+    val ditolak: Boolean,
 )
 
 class MainActivity : ComponentActivity() {
@@ -49,6 +53,7 @@ class MainActivity : ComponentActivity() {
     private var semester by mutableStateOf<Map<String, String>?>(null)   // null = belum dikonfirmasi
     private var kuliah by mutableStateOf<LocalDate?>(null)
     private val matkul = mutableStateMapOf<String, String>()               // sumber → "N diikuti · M dilewati"
+    private var lencanaLayanan by mutableStateOf(false)                    // ada layanan yang menolak login/izin
     private var tampilSiapkan by mutableStateOf(false)                     // layar Siapkan Gwado menggantikan tab
     private val pengambil = Pengambil(this, onBerubah = { muatUlangDaftar() })
 
@@ -64,6 +69,8 @@ class MainActivity : ComponentActivity() {
                     menyegarkan = pengambil.sibuk,
                     onSegarkan = { pengambil.ambilSemua() },
                     hasilAmbil = pengambil.hasilTerakhir,
+                    ditahan = pengambil.ditahan,
+                    lencanaLayanan = lencanaLayanan,
                     layanan = { buka ->
                         LayarLayanan(
                             pengambil, versiData, semester, kuliah, matkul,
@@ -97,12 +104,17 @@ class MainActivity : ComponentActivity() {
         lifecycleScope.launch {
             umum = try {
                 val d = Gudang.pakai(this@MainActivity) { db ->
-                    DataLayar(db.semesterTersimpan(), db.kuliahMulai(), db.daftarTugas(), db.ringkasanMatkul())
+                    DataLayar(
+                        db.semesterTersimpan(), db.kuliahMulai(), db.daftarTugas(), db.ringkasanMatkul(),
+                        statusSumber(db.sumberTerakhir().filter { it.status != null }, Instant.now())
+                            .any { it.label == "token ditolak" },
+                    )
                 }
                 semester = d.semester
                 kuliah = d.kuliah
                 daftar = d.daftar
                 matkul.putAll(d.matkul)
+                lencanaLayanan = d.ditolak
                 versiData++
                 ""
             } catch (e: CancellationException) {

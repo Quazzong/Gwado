@@ -21,6 +21,16 @@ import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableIntStateOf
 import io.github.quazzong.gwado.layanan.HasilAmbil
+import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.unit.sp
+import io.github.quazzong.gwado.fetch.SebabTertahan
+import io.github.quazzong.gwado.layanan.DAFTAR_LAYANAN
+import io.github.quazzong.gwado.segar.StatusSumber
+import io.github.quazzong.gwado.ui.komponen.Kotak
+import io.github.quazzong.gwado.ui.komponen.TombolPlum
+import java.time.Duration
+import io.github.quazzong.gwado.layanan.Tahan
 import io.github.quazzong.gwado.segar.SumberTerakhir
 import io.github.quazzong.gwado.segar.Tingkat
 import io.github.quazzong.gwado.segar.banner
@@ -47,6 +57,8 @@ import androidx.compose.ui.unit.dp
 import io.github.quazzong.gwado.R
 import io.github.quazzong.gwado.beranda.kuliahMulai
 import io.github.quazzong.gwado.beranda.progresMinggu
+import io.github.quazzong.gwado.beranda.beres
+import io.github.quazzong.gwado.beranda.selesaiMinggu
 import io.github.quazzong.gwado.db.Db
 import io.github.quazzong.gwado.db.Gudang
 import io.github.quazzong.gwado.segar.jamSingkat
@@ -92,12 +104,14 @@ private fun Db.suksesTerakhir(): Instant? =
     (satu("SELECT max(selesai) AS s FROM source_runs WHERE status = 'success'")?.get("s") as String?)?.let(::dariDb)
 
 /** Nama layanan di filter; nama panjang disingkat jadi huruf depan tiap kata (Google Classroom → GC). */
-private fun singkat(nama: String): String =
+internal fun singkat(nama: String): String =
     if (nama.length > 10 && ' ' in nama) nama.split(' ').filter { it.isNotEmpty() }.joinToString("") { it.take(1) } else nama
 
 /**
  * Beranda: kepala (minggu, hari, progres), ubin ringkasan, filter layanan, lalu tugas
- * dalam bagian MENDESAK, NANTI (tanpa deadline di akhirnya), dan TERKUMPUL DI SITUS.
+ * dalam bagian MENDESAK, NANTI (tanpa deadline di akhirnya), dan SELESAI MINGGU INI
+ * (dicentang atau terkumpul di situs, deadline minggu ini). Yang beres di minggu lain ada
+ * di layar semua yang selesai.
  * [versi] naik setiap kali data di database berubah. Ketuk kartu = buka detail.
  */
 @OptIn(ExperimentalMaterial3Api::class)
@@ -113,6 +127,8 @@ fun Beranda(
     hasilAmbil: HasilAmbil? = null,
     onBukaLayanan: () -> Unit = {},
     onBerubah: () -> Unit = {},
+    onSemuaSelesai: () -> Unit = {},
+    ditahan: Map<String, Tahan> = emptyMap(),
     modifier: Modifier = Modifier,
 ) {
     val w = GwadoTema.warna
@@ -128,9 +144,11 @@ fun Beranda(
     val layanan = daftar.map { it.sumber ?: "Manual" }.distinct().sortedBy { it == "Manual" }
     val aktif = filter?.takeIf { it in layanan }
     val tampil = if (aktif == null) daftar else daftar.filter { (it.sumber ?: "Manual") == aktif }
-    val (sudah, belum) = tampil.partition(::terkumpul)
+    val belum = tampil.filterNot(::terkumpul)
     val (atas, bawah) = belum.partition { mendesak(it, sekarang) }
     val lewat = atas.filter { lewatDeadline(it, sekarang) }
+    val selesai = selesaiMinggu(data?.semua.orEmpty(), sekarang.atOffset(WIB).toLocalDate())
+        .filter { aktif == null || (it.sumber ?: "Manual") == aktif }
     val stSumber = data?.sumber?.filter { it.status != null }?.let { statusSumber(it, sekarang) }.orEmpty()
     val pitaSumber = banner(stSumber)
     var dilihat by rememberSaveable { mutableIntStateOf(0) }
@@ -163,21 +181,31 @@ fun Beranda(
             )
         }
         if (pitaSumber != null) {
-            item(key = "pita-sumber") {
-                val masalah = stSumber.filter { it.tingkat != Tingkat.NORMAL }
-                Pita(
-                    masalah.joinToString(", ", postfix = ". Ketuk untuk membuka Layanan.") { "${it.nama} ${chipStatus(it).first}" },
-                    merah = pitaSumber.tingkat == Tingkat.MERAH,
-                    onClick = onBukaLayanan,
-                )
+            val merah = stSumber.filter { it.tingkat == Tingkat.MERAH }
+            val kuning = stSumber.filter { it.tingkat == Tingkat.KUNING }
+            if (merah.isNotEmpty()) {
+                item(key = "gagal") {
+                    KotakGagal(merah, stSumber.filter { it.tingkat == Tingkat.NORMAL }, data?.sumber.orEmpty(), menyegarkan, onSegarkan, onBukaLayanan)
+                }
             }
+            if (kuning.isNotEmpty()) {
+                item(key = "pita-sumber") {
+                    Pita(
+                        kuning.joinToString(", ", postfix = ". Ketuk untuk membuka Layanan.") { "${it.nama} ${chipStatus(it).first}" },
+                        onClick = onBukaLayanan,
+                    )
+                }
+            }
+        }
+        if (ditahan.isNotEmpty()) {
+            item(key = "ditahan") { KotakDitahan(ditahan) }
         }
         if (hasilBaru != null) {
             item(key = "pita-ambil") { Pita(hasilBaru.pesan.joinToString("\n")) }
         }
         item(key = "ubin") {
             Row(Modifier.fillMaxWidth().padding(top = Jarak.s4), horizontalArrangement = Arrangement.spacedBy(6.dp)) {
-                Ubin("Aktif", "${daftar.size}", Modifier.weight(1f))
+                Ubin("Aktif", "${daftar.count { !terkumpul(it) }}", Modifier.weight(1f))
                 Ubin("Mendesak", "${daftar.count { mendesak(it, sekarang) }}", Modifier.weight(1f))
                 Ubin("Diambil", data?.diambil?.let { jamSingkat(it, sekarang) } ?: "—", Modifier.weight(1f))
             }
@@ -192,29 +220,39 @@ fun Beranda(
                 )
             }
         }
-        if (daftar.isEmpty()) {
-            item(key = "kosong") {
-                Column(
-                    Modifier.fillMaxWidth().padding(vertical = Jarak.s24),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                ) {
-                    Text("Belum ada tugas", style = Huruf.judulBagian, color = w.tinta)
-                    Text(
-                        "Tarik ke bawah, atau tekan Ambil sekarang, untuk mengambil tugas dari situs kuliah.",
-                        style = Huruf.isi,
-                        color = w.tintaRedup,
-                        textAlign = TextAlign.Center,
-                    )
+        val adaBeres = data?.semua.orEmpty().any(::beres)
+        val adaLayanan = data?.sumber?.any { it.status != null } ?: true      // true selama memuat: tidak berkedip
+        when {
+            daftar.isNotEmpty() && belum.isNotEmpty() -> Unit
+            !adaLayanan && daftar.isEmpty() && !adaBeres -> item(key = "kosong") {
+                Kosong("Belum ada layanan tersambung", "Sambungkan Brone, Eling, atau Classroom supaya tugasmu muncul di sini.") {
+                    TombolPermen("Tambah layanan", onBukaLayanan, Modifier.padding(top = Jarak.s12))
+                    TombolGaris("Tugas manual", onTambah, Modifier.padding(top = Jarak.s8))
+                }
+            }
+            daftar.isEmpty() && !adaBeres -> item(key = "kosong") {
+                Kosong("Belum ada tugas", "Tarik ke bawah untuk mengambil tugas dari situs kuliah, atau catat tugas dari grup kelas sendiri.") {
                     TombolPermen(if (menyegarkan) "Mengambil…" else "Ambil sekarang", onSegarkan, Modifier.padding(top = Jarak.s12))
                     TombolGaris("Tugas manual", onTambah, Modifier.padding(top = Jarak.s8))
                 }
+            }
+            else -> item(key = "kosong") {
+                Kosong(
+                    if (aktif == null) "Semua tugas beres" else "Semua tugas ${singkat(aktif)} beres",
+                    "Tidak ada tugas aktif. Yang sudah selesai tetap bisa dilihat di bawah.",
+                )
             }
         }
         bagian("Mendesak", atas, sekarang, onBuka) {
             if (lewat.size >= 2) TombolGaris("Centang ${lewat.size} yang lewat", { konfirmasiLewat = true })
         }
         bagian("Nanti", bawah, sekarang, onBuka)
-        bagian("Terkumpul di situs", sudah, sekarang, onBuka)
+        bagian("Selesai minggu ini", selesai, sekarang, onBuka)
+        if (data?.semua.orEmpty().any(::beres)) {
+            item(key = "semua-selesai") {
+                TombolGaris("Lihat semua yang selesai", onSemuaSelesai, Modifier.padding(top = Jarak.s4))
+            }
+        }
     }
     TombolPlumIkon(
         R.drawable.ikon_tambah,
@@ -274,4 +312,88 @@ private fun LazyListScope.bagian(
         }
     }
     items(isi, key = { it.id }) { t -> KartuTugas(t, sekarang, onClick = { onBuka(t.id) }) }
+}
+
+/** Keadaan kosong di beranda: judul, satu kalimat, dan tombol opsional. */
+@Composable
+private fun Kosong(judul: String, kalimat: String, tombol: @Composable ColumnScope.() -> Unit = {}) {
+    val w = GwadoTema.warna
+    Column(Modifier.fillMaxWidth().padding(vertical = Jarak.s24), horizontalAlignment = Alignment.CenterHorizontally) {
+        Text(judul, style = Huruf.judulBagian, color = w.tinta, textAlign = TextAlign.Center)
+        Text(kalimat, style = Huruf.isi, color = w.tintaRedup, textAlign = TextAlign.Center, modifier = Modifier.padding(top = 4.dp))
+        tombol()
+    }
+}
+
+/**
+ * Kotak merah untuk layanan yang gagal pada pengambilan terakhir: apa yang terjadi, bahwa data
+ * lama aman, layanan lain yang berhasil, lalu Coba lagi (gagal biasa) atau Buka Layanan (login/izin ditolak).
+ */
+@Composable
+private fun KotakGagal(
+    merah: List<StatusSumber>,
+    normal: List<StatusSumber>,
+    baris: List<SumberTerakhir>,
+    menyegarkan: Boolean,
+    onCoba: () -> Unit,
+    onLayanan: () -> Unit,
+) {
+    val w = GwadoTema.warna
+    val ditolak = merah.filter { it.label == "token ditolak" }
+    val gagal = merah - ditolak.toSet()
+    val kalimat = buildList {
+        for (st in ditolak) {
+            add(if (st.id == "classroom") "Google menolak izin. Beri izin lagi lewat tab Layanan." else "${st.nama} menolak login. Login ulang lewat tab Layanan.")
+        }
+        for (st in gagal) {
+            val jaringan = baris.firstOrNull { it.id == st.id }?.errorSingkat?.startsWith("jaringan") == true
+            add(if (jaringan) "${st.nama} tidak bisa dihubungi, sudah dicoba 3 kali." else "${st.nama} gagal diambil.")
+        }
+        add("Tugas lama tetap aman di HP.")
+        if (normal.isNotEmpty()) add("${normal.joinToString(" dan ") { it.nama }} berhasil diambil.")
+    }
+    Kotak(Modifier.fillMaxWidth(), latar = SolidColor(w.latarLewat), bayangan = Jarak.bayanganKecil) {
+        Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+            Text("Gagal mengambil dari ${merah.joinToString(" dan ") { it.nama }}", style = Huruf.judulKartu, color = w.tinta)
+            Text(kalimat.joinToString(" "), style = Huruf.isi.copy(fontSize = 13.sp), color = w.tinta)
+            Row(Modifier.padding(top = Jarak.s4), horizontalArrangement = Arrangement.spacedBy(Jarak.s8)) {
+                if (gagal.isNotEmpty()) TombolPlum(if (menyegarkan) "Mengambil…" else "Coba lagi", onCoba)
+                if (ditolak.isNotEmpty()) TombolGaris("Buka Layanan", onLayanan)
+            }
+        }
+    }
+}
+
+/** Kotak kuning untuk layanan yang sedang ditahan, dengan hitung mundur per detik. */
+@Composable
+private fun KotakDitahan(ditahan: Map<String, Tahan>) {
+    val w = GwadoTema.warna
+    val kini by produceState(Instant.now()) {
+        while (true) {
+            value = Instant.now()
+            delay(1000)
+        }
+    }
+    val masih = DAFTAR_LAYANAN.mapNotNull { l -> ditahan[l.id]?.takeIf { it.sampai.isAfter(kini) }?.let { l to it } }
+    if (masih.isEmpty()) return
+    Kotak(Modifier.fillMaxWidth(), latar = SolidColor(w.latarMepet), bayangan = Jarak.bayanganKecil) {
+        Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+            Text("Ditahan sementara", style = Huruf.judulKartu, color = w.tinta)
+            for ((l, t) in masih) {
+                val teks = when (t.sebab) {
+                    SebabTertahan.JENDELA_HINDARI -> {
+                        val j = t.sampai.atOffset(WIB)
+                        "${l.label} sedang backup, jadi tidak dihubungi sampai %02d.%02d WIB.".format(j.hour, j.minute)
+                    }
+                    SebabTertahan.COOLDOWN -> {
+                        val detik = Duration.between(kini, t.sampai).seconds.coerceAtLeast(1)
+                        val sisa = if (detik < 60) "$detik detik" else "%d.%02d menit".format(detik / 60, detik % 60)
+                        "${l.label} baru saja diambil. Bisa diambil lagi dalam $sisa."
+                    }
+                }
+                Text(teks, style = Huruf.isi.copy(fontSize = 13.sp), color = w.tinta)
+            }
+            Text("Tugas lama tetap aman di HP.", style = Huruf.meta, color = w.tintaRedup)
+        }
+    }
 }

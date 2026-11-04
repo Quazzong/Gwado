@@ -24,6 +24,7 @@ import io.github.quazzong.gwado.fetch.FetchError
 import io.github.quazzong.gwado.fetch.HasilJob
 import io.github.quazzong.gwado.fetch.JENDELA_HINDARI
 import io.github.quazzong.gwado.fetch.SebabTertahan
+import io.github.quazzong.gwado.fetch.akhirJendela
 import io.github.quazzong.gwado.fetch.ambilClassroom
 import io.github.quazzong.gwado.fetch.ambilMoodle
 import io.github.quazzong.gwado.fetch.job
@@ -86,6 +87,9 @@ private class GagalIzin(pesan: String) : Exception(pesan)
 /** Satu layanan tersambung: run terakhirnya dan apakah aksesnya tersimpan (token Moodle, atau izin Classroom). */
 data class InfoLayanan(val layanan: Layanan, val baris: SumberTerakhir, val adaToken: Boolean)
 
+/** Layanan yang tidak dihubungi karena penahan; [sampai] = kapan boleh dicoba lagi. */
+data class Tahan(val sebab: SebabTertahan, val sampai: Instant)
+
 /** Hasil satu Ambil semua: pesan yang tidak tercatat di database. nomor naik setiap selesai. */
 data class HasilAmbil(val nomor: Int, val pesan: List<String>)
 
@@ -107,6 +111,9 @@ class Pengambil(private val activity: ComponentActivity, private val onBerubah: 
 
     var hasilTerakhir by mutableStateOf<HasilAmbil?>(null)
         private set
+
+    /** Layanan yang terakhir kali ditahan (jendela hindari atau jeda), per id layanan. */
+    val ditahan = mutableStateMapOf<String, Tahan>()
 
     /** Login Moodle terakhir yang berhasil: (id layanan, nomor urut). Layar login menutup diri saat nilainya berganti. */
     var loginBerhasil by mutableStateOf<Pair<String, Int>?>(null)
@@ -179,7 +186,7 @@ class Pengambil(private val activity: ComponentActivity, private val onBerubah: 
             if (l.id !in siap) continue
             val t = aman { satu(l, bolehLogin = false) }
             status[l.id] = t
-            if (t.isNotBlank()) catatanAmbil += t
+            if (t.isNotBlank() && l.id !in ditahan) catatanAmbil += t      // yang ditahan tampil di kotaknya sendiri
         }
         hasilTerakhir = HasilAmbil(++nomorAmbil, catatanAmbil.distinct())
     }
@@ -277,6 +284,7 @@ class Pengambil(private val activity: ComponentActivity, private val onBerubah: 
      * mengambil butuh semester yang sudah dikonfirmasi.
      */
     private suspend fun satu(l: Layanan, bolehLogin: Boolean): String {
+        ditahan.remove(l.id)
         tertahan(l.id, catatan.baca(l.id), Instant.now(), manual = true)?.let { return pesanTertahan(l, it) }
         val adaSemester = Gudang.pakai(activity) { it.semesterTersimpan() } != null
         val situs = l.situs
@@ -368,7 +376,14 @@ class Pengambil(private val activity: ComponentActivity, private val onBerubah: 
         return ""   // hasil run tercatat di database dan tampil lewat status sumber
     }
 
-    private fun pesanTertahan(l: Layanan, t: HasilJob.Tertahan): String = when (t.sebab) {
+    private fun pesanTertahan(l: Layanan, t: HasilJob.Tertahan): String {
+        val sekarang = Instant.now()
+        val sampai = if (t.sebab == SebabTertahan.JENDELA_HINDARI) akhirJendela(l.id, sekarang) else t.bolehLagi
+        ditahan[l.id] = Tahan(t.sebab, sampai ?: sekarang)
+        return teksTertahan(l, t)
+    }
+
+    private fun teksTertahan(l: Layanan, t: HasilJob.Tertahan): String = when (t.sebab) {
         SebabTertahan.JENDELA_HINDARI -> {
             val (m, sl) = JENDELA_HINDARI.getValue(l.id)
             "${l.label} sedang backup (%02d.00–%02d.00 WIB), situs tidak dihubungi. Coba lagi setelah %02d.00 WIB."

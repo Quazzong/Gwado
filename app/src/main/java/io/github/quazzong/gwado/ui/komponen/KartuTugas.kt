@@ -26,8 +26,9 @@ import java.time.Instant
 
 /**
  * Kartu satu tugas: judul, layanan + mata kuliah, dan chip sisa waktu.
- * Latar dan chip mengikuti makna sisa waktu terhadap `sekarang`;
- * tugas yang sudah terkumpul di situs memakai chip netral TERKUMPUL.
+ * Latar dan chip mengikuti makna sisa waktu terhadap `sekarang`. Tugas yang beres (dicentang
+ * atau terkumpul di situs) datar dan bertanda kue bercentang. Yang terkumpul di situs paling
+ * redup (judul redup + chip TERKUMPUL redup); yang hanya dicentang judulnya tetap jelas.
  */
 @Composable
 fun KartuTugas(
@@ -39,11 +40,12 @@ fun KartuTugas(
     val w = GwadoTema.warna
     val selesai = baris.status == "done"
     val deadline = baris.deadline?.let(::dariDb)
-    val terkumpul = !selesai && baris.statusKumpulSitus == "terkumpul"
-    val chip = if (terkumpul) null else deadline?.let { sisaChip(it, sekarang) }
-    val tanpaDeadline = !selesai && !terkumpul && deadline == null
+    val terkumpul = baris.statusKumpulSitus == "terkumpul"
+    val beres = selesai || terkumpul
+    val chip = if (beres) null else deadline?.let { sisaChip(it, sekarang) }
+    val tanpaDeadline = !beres && deadline == null
     val latar = when {
-        selesai || chip == null -> w.kartu
+        beres || chip == null -> w.kartu
         chip.makna == Makna.LEWAT -> w.latarLewat
         chip.makna == Makna.MEPET -> w.latarMepet
         else -> w.kartu
@@ -55,19 +57,19 @@ fun KartuTugas(
         latar = SolidColor(latar),
         putus = tanpaDeadline,
         kilau = if (tanpaDeadline) null else Kilau.Cincin(w.kilau),
-        bayangan = if (selesai || tanpaDeadline) 0.dp else Jarak.bayangan,
+        bayangan = if (beres || tanpaDeadline) 0.dp else Jarak.bayangan,
         onClick = onClick,
     ) {
         Row(
             Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(Jarak.s8),
         ) {
-            if (selesai) IkonSelesai(Modifier.align(Alignment.CenterVertically))
+            if (beres) IkonSelesai(Modifier.align(Alignment.CenterVertically))
             Column(Modifier.weight(1f)) {
                 Text(
                     baris.judul,
                     style = Huruf.judulKartu,
-                    color = if (selesai) w.tintaRedup else w.tinta,
+                    color = if (terkumpul) w.tintaRedup else w.tinta,
                     maxLines = 2,
                     overflow = TextOverflow.Ellipsis,
                 )
@@ -87,8 +89,8 @@ fun KartuTugas(
                 }
             }
             when {
+                terkumpul -> Chip("terkumpul", jenis = JenisChip.REDUP)
                 selesai -> Unit
-                terkumpul -> Chip("terkumpul")
                 chip == null -> Chip("tanpa deadline", jenis = JenisChip.PUTUS)
                 else -> Chip(
                     chip.label,

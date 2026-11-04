@@ -32,6 +32,15 @@ fun diJendelaHindari(sumber: String, sekarang: Instant): Boolean {
     return if (mulai > selesai) jam >= mulai || jam < selesai else jam in mulai until selesai
 }
 
+/** Akhir jendela hindari yang sedang berjalan, atau null kalau [sekarang] di luar jendela. */
+fun akhirJendela(sumber: String, sekarang: Instant): Instant? {
+    if (!diJendelaHindari(sumber, sekarang)) return null
+    val (_, selesai) = JENDELA_HINDARI.getValue(sumber)
+    val wib = sekarang.atOffset(WIB)
+    val hari = if (wib.hour < selesai) wib.toLocalDate() else wib.toLocalDate().plusDays(1)
+    return hari.atTime(selesai, 0).atOffset(WIB).toInstant()
+}
+
 /** Waktu sukses terakhir dari teks yang tersimpan, atau null kalau tidak ada/rusak. */
 fun suksesTerakhir(teks: String?): Instant? {
     if (teks == null) return null
