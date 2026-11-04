@@ -1,0 +1,21 @@
+{
+  "keterangan": "Lajur per klaster: kuliah batal ikut memakai lajur; rapat 08.40 menempel ujung kuliah 08.40 jadi memakai ulang lajur 0; acara siang terpisah tetap selebar kolom",
+  "dari": "2026-11-02",
+  "sampai": "2026-11-02",
+  "kejadian": [
+    {"sumber": "kuliah", "ref": "1", "judul": "Kalkulus", "status": "batal", "seharian": false, "mulai": "2026-11-02T00:00:00Z", "selesai": "2026-11-02T01:40:00Z"},
+    {"sumber": "acara", "ref": "4", "judul": "Konsultasi dosen PA", "status": "normal", "seharian": false, "mulai": "2026-11-02T00:30:00Z", "selesai": "2026-11-02T02:00:00Z"},
+    {"sumber": "acara", "ref": "5", "judul": "Rapat kelompok RPL", "status": "normal", "seharian": false, "mulai": "2026-11-02T01:40:00Z", "selesai": "2026-11-02T03:00:00Z"},
+    {"sumber": "acara", "ref": "6", "judul": "Les bahasa Inggris", "status": "normal", "seharian": false, "mulai": "2026-11-02T02:30:00Z", "selesai": "2026-11-02T03:30:00Z"},
+    {"sumber": "acara", "ref": "7", "judul": "Makan siang bareng", "status": "normal", "seharian": false, "mulai": "2026-11-02T06:00:00Z", "selesai": "2026-11-02T07:00:00Z"}
+  ],
+  "hasil": [
+    {"tanggal": "2026-11-02", "seharian": [], "deadline": [], "berjam": [
+      {"sumber": "kuliah", "ref": "1", "judul": "Kalkulus", "status": "batal", "seharian": false, "mulai": "2026-11-02T00:00:00Z", "selesai": "2026-11-02T01:40:00Z", "menit_mulai": 420, "menit_selesai": 520, "dari_kemarin": false, "ke_besok": false, "lajur": 0, "jumlah_lajur": 2},
+      {"sumber": "acara", "ref": "4", "judul": "Konsultasi dosen PA", "status": "normal", "seharian": false, "mulai": "2026-11-02T00:30:00Z", "selesai": "2026-11-02T02:00:00Z", "menit_mulai": 450, "menit_selesai": 540, "dari_kemarin": false, "ke_besok": false, "lajur": 1, "jumlah_lajur": 2},
+      {"sumber": "acara", "ref": "5", "judul": "Rapat kelompok RPL", "status": "normal", "seharian": false, "mulai": "2026-11-02T01:40:00Z", "selesai": "2026-11-02T03:00:00Z", "menit_mulai": 520, "menit_selesai": 600, "dari_kemarin": false, "ke_besok": false, "lajur": 0, "jumlah_lajur": 2},
+      {"sumber": "acara", "ref": "6", "judul": "Les bahasa Inggris", "status": "normal", "seharian": false, "mulai": "2026-11-02T02:30:00Z", "selesai": "2026-11-02T03:30:00Z", "menit_mulai": 570, "menit_selesai": 630, "dari_kemarin": false, "ke_besok": false, "lajur": 1, "jumlah_lajur": 2},
+      {"sumber": "acara", "ref": "7", "judul": "Makan siang bareng", "status": "normal", "seharian": false, "mulai": "2026-11-02T06:00:00Z", "selesai": "2026-11-02T07:00:00Z", "menit_mulai": 780, "menit_selesai": 840, "dari_kemarin": false, "ke_besok": false, "lajur": 0, "jumlah_lajur": 1}
+    ]}
+  ]
+}

@@ -24,6 +24,7 @@ import io.github.quazzong.gwado.ui.komponen.ItemTab
 import io.github.quazzong.gwado.ui.komponen.TabBar
 import io.github.quazzong.gwado.ui.komponen.rememberSekarang
 import io.github.quazzong.gwado.ui.layar.Beranda
+import io.github.quazzong.gwado.ui.layar.LayarKalender
 import io.github.quazzong.gwado.ui.layar.LayarFormulir
 import io.github.quazzong.gwado.ui.layar.LayarDetail
 import io.github.quazzong.gwado.ui.layar.mendesak
@@ -43,7 +44,7 @@ data class Detail(val id: String) : NavKey
 @Serializable
 data class Formulir(val id: String? = null) : NavKey
 
-private enum class Tab { TUGAS, LAYANAN }
+private enum class Tab { TUGAS, KALENDER, LAYANAN }
 
 /** Akar tampilan: back stack layar, dimulai dari layar utama. */
 @Composable
@@ -94,6 +95,7 @@ private fun LayarUtama(
     val jumlahMendesak = daftar.count { mendesak(it, sekarang) }
     val item = listOf(
         ItemTab(Tab.TUGAS, "Tugas", R.drawable.ikon_tugas, jumlahMendesak.takeIf { it > 0 }?.toString()),
+        ItemTab(Tab.KALENDER, "Kalender", R.drawable.ikon_kalender),
         ItemTab(Tab.LAYANAN, "Layanan", R.drawable.ikon_layanan),
     )
     Column(Modifier.fillMaxSize().background(w.latar).safeDrawingPadding()) {
@@ -101,6 +103,7 @@ private fun LayarUtama(
             penyimpan.SaveableStateProvider(tab) {
                 when (tab) {
                     Tab.TUGAS -> Beranda(daftar, versi, sekarang, bukaDetail, tambah)
+                    Tab.KALENDER -> LayarKalender(daftar, versi, sekarang, bukaDetail)
                     Tab.LAYANAN -> layanan()
                 }
             }

@@ -1,0 +1,35 @@
+{
+  "keterangan": "Kemah 2 malam (potongan tengah 0-1440, berbagi lajur dengan rapat), rapat berakhir tepat 00.00 (tidak muncul besoknya), nobar 21.00-01.00, UTS seharian 2 hari, deadline 23.59 dan tepat 00.00",
+  "dari": "2026-10-29",
+  "sampai": "2026-11-01",
+  "kejadian": [
+    {"sumber": "acara", "ref": "1", "judul": "Minggu UTS", "seharian": true, "mulai": "2026-10-28T17:00:00Z", "selesai": "2026-10-30T17:00:00Z"},
+    {"sumber": "acara", "ref": "8", "judul": "Kemah", "seharian": false, "mulai": "2026-10-29T12:00:00Z", "selesai": "2026-10-31T00:00:00Z"},
+    {"sumber": "deadline", "ref": "t-a", "judul": "Laporan ASD", "seharian": false, "mulai": "2026-10-29T16:59:00Z", "selesai": "2026-10-29T16:59:00Z"},
+    {"sumber": "deadline", "ref": "t-b", "judul": "Kuis Basis Data", "seharian": false, "mulai": "2026-10-29T17:00:00Z", "selesai": "2026-10-29T17:00:00Z"},
+    {"sumber": "acara", "ref": "2", "judul": "Rapat himpunan", "seharian": false, "mulai": "2026-10-30T15:00:00Z", "selesai": "2026-10-30T17:00:00Z"},
+    {"sumber": "acara", "ref": "3", "judul": "Nobar", "seharian": false, "mulai": "2026-10-31T14:00:00Z", "selesai": "2026-10-31T18:00:00Z"}
+  ],
+  "hasil": [
+    {"tanggal": "2026-10-29",
+     "seharian": [{"sumber": "acara", "ref": "1", "judul": "Minggu UTS", "seharian": true, "mulai": "2026-10-28T17:00:00Z", "selesai": "2026-10-30T17:00:00Z"}],
+     "deadline": [{"sumber": "deadline", "ref": "t-a", "judul": "Laporan ASD", "seharian": false, "mulai": "2026-10-29T16:59:00Z", "selesai": "2026-10-29T16:59:00Z", "menit": 1439}],
+     "berjam": [{"sumber": "acara", "ref": "8", "judul": "Kemah", "seharian": false, "mulai": "2026-10-29T12:00:00Z", "selesai": "2026-10-31T00:00:00Z", "menit_mulai": 1140, "menit_selesai": 1440, "dari_kemarin": false, "ke_besok": true, "lajur": 0, "jumlah_lajur": 1}]},
+    {"tanggal": "2026-10-30",
+     "seharian": [{"sumber": "acara", "ref": "1", "judul": "Minggu UTS", "seharian": true, "mulai": "2026-10-28T17:00:00Z", "selesai": "2026-10-30T17:00:00Z"}],
+     "deadline": [{"sumber": "deadline", "ref": "t-b", "judul": "Kuis Basis Data", "seharian": false, "mulai": "2026-10-29T17:00:00Z", "selesai": "2026-10-29T17:00:00Z", "menit": 0}],
+     "berjam": [
+       {"sumber": "acara", "ref": "8", "judul": "Kemah", "seharian": false, "mulai": "2026-10-29T12:00:00Z", "selesai": "2026-10-31T00:00:00Z", "menit_mulai": 0, "menit_selesai": 1440, "dari_kemarin": true, "ke_besok": true, "lajur": 0, "jumlah_lajur": 2},
+       {"sumber": "acara", "ref": "2", "judul": "Rapat himpunan", "seharian": false, "mulai": "2026-10-30T15:00:00Z", "selesai": "2026-10-30T17:00:00Z", "menit_mulai": 1320, "menit_selesai": 1440, "dari_kemarin": false, "ke_besok": false, "lajur": 1, "jumlah_lajur": 2}]},
+    {"tanggal": "2026-10-31",
+     "seharian": [],
+     "deadline": [],
+     "berjam": [
+       {"sumber": "acara", "ref": "8", "judul": "Kemah", "seharian": false, "mulai": "2026-10-29T12:00:00Z", "selesai": "2026-10-31T00:00:00Z", "menit_mulai": 0, "menit_selesai": 420, "dari_kemarin": true, "ke_besok": false, "lajur": 0, "jumlah_lajur": 1},
+       {"sumber": "acara", "ref": "3", "judul": "Nobar", "seharian": false, "mulai": "2026-10-31T14:00:00Z", "selesai": "2026-10-31T18:00:00Z", "menit_mulai": 1260, "menit_selesai": 1440, "dari_kemarin": false, "ke_besok": true, "lajur": 0, "jumlah_lajur": 1}]},
+    {"tanggal": "2026-11-01",
+     "seharian": [],
+     "deadline": [],
+     "berjam": [{"sumber": "acara", "ref": "3", "judul": "Nobar", "seharian": false, "mulai": "2026-10-31T14:00:00Z", "selesai": "2026-10-31T18:00:00Z", "menit_mulai": 0, "menit_selesai": 60, "dari_kemarin": true, "ke_besok": false, "lajur": 0, "jumlah_lajur": 1}]}
+  ]
+}

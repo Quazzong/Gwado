@@ -1,7 +1,7 @@
 package io.github.quazzong.gwado.db
 
 /** File migrasi di src/main/resources/migrasi, nomor 1, 2, 3, … tanpa lompat. */
-val MIGRASI = listOf("0001_awal.sql", "0002_pengecualian_matkul.sql", "0003_jadwal_kuliah.sql")
+val MIGRASI = listOf("0001_awal.sql", "0002_pengecualian_matkul.sql", "0003_jadwal_kuliah.sql", "0004_kalender.sql")
 
 private val NAMA_MIGRASI = Regex("""^(\d{4})_[a-z0-9_]+\.sql$""")
 

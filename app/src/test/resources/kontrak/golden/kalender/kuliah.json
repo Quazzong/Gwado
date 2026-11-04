@@ -1,0 +1,23 @@
+{
+  "keterangan": "Kuliah: batal tetap ada (samar), slot asli pindah jadi bekas_pindah + kejadian dipindah di tempat baru, berlaku_dari menyaring, berlaku_sampai '' = tanpa batas, warna sama per matkul",
+  "dari": "2026-10-26",
+  "sampai": "2026-11-01",
+  "isi": [
+    {"tabel": "class_schedule", "baris": [
+      {"id": 1, "hari": 1, "mulai": "07:00", "selesai": "08:40", "kode_mk": "CIF61001", "matkul": "Kalkulus", "kelas": "A", "ruang": "Gedung F - F2.5"},
+      {"id": 2, "hari": 3, "mulai": "09:30", "selesai": "12:00", "kode_mk": "CIF61002", "matkul": "Basis Data", "kelas": "B", "ruang": "Gedung G - G1.1", "berlaku_sampai": ""},
+      {"id": 3, "hari": 5, "mulai": "13:00", "selesai": "14:40", "matkul": "Agama", "berlaku_dari": "2026-10-31"},
+      {"id": 4, "hari": 4, "mulai": "07:00", "selesai": "09:30", "kode_mk": "CIF61001", "matkul": "Kalkulus", "kelas": "A", "ruang": "Gedung F - F3.1"}
+    ]},
+    {"tabel": "acara_pengecualian", "baris": [
+      {"class_id": 1, "tanggal_asli": "2026-10-26", "jenis": "batal"},
+      {"class_id": 2, "tanggal_asli": "2026-10-28", "jenis": "pindah", "mulai": "2026-10-30T03:00:00Z", "selesai": "2026-10-30T05:30:00Z", "lokasi": "Gedung G - G1.2"}
+    ]}
+  ],
+  "hasil": [
+    {"sumber": "kuliah", "ref": "1", "tanggal_asli": "2026-10-26", "status": "batal", "seharian": false, "mulai": "2026-10-26T00:00:00Z", "selesai": "2026-10-26T01:40:00Z", "judul": "Kalkulus", "lokasi": "Gedung F - F2.5", "kalender": "kuliah", "warna": 2, "peran": "sibuk", "kode_mk": "CIF61001", "pindah_ke": null},
+    {"sumber": "kuliah", "ref": "2", "tanggal_asli": "2026-10-28", "status": "bekas_pindah", "seharian": false, "mulai": "2026-10-28T02:30:00Z", "selesai": "2026-10-28T05:00:00Z", "judul": "Basis Data", "lokasi": "Gedung G - G1.1", "kalender": "kuliah", "warna": 3, "peran": "sibuk", "kode_mk": "CIF61002", "pindah_ke": "2026-10-30T03:00:00Z"},
+    {"sumber": "kuliah", "ref": "4", "tanggal_asli": "2026-10-29", "status": "normal", "seharian": false, "mulai": "2026-10-29T00:00:00Z", "selesai": "2026-10-29T02:30:00Z", "judul": "Kalkulus", "lokasi": "Gedung F - F3.1", "kalender": "kuliah", "warna": 2, "peran": "sibuk", "kode_mk": "CIF61001", "pindah_ke": null},
+    {"sumber": "kuliah", "ref": "2", "tanggal_asli": "2026-10-28", "status": "dipindah", "seharian": false, "mulai": "2026-10-30T03:00:00Z", "selesai": "2026-10-30T05:30:00Z", "judul": "Basis Data", "lokasi": "Gedung G - G1.2", "kalender": "kuliah", "warna": 3, "peran": "sibuk", "kode_mk": "CIF61002", "pindah_ke": null}
+  ]
+}

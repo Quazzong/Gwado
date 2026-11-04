@@ -1,0 +1,25 @@
+{
+  "keterangan": "Seri mingguan acara: batal hilang, pindah tampil di tempat baru (termasuk pindah dari luar rentang), pengecualian di tanggal yang bukan kejadian diabaikan, seri yang sudah berakhir tidak muncul",
+  "dari": "2026-10-26",
+  "sampai": "2026-11-08",
+  "isi": [
+    {"tabel": "acara", "baris": [
+      {"id": 1, "kalender_id": 2, "judul": "Les gitar", "jenis": "mingguan", "hari": 2, "jam_mulai": "19:00", "jam_selesai": "20:00", "tgl_mulai": "2026-10-20"},
+      {"id": 2, "kalender_id": 1, "judul": "Rapat HIMA", "lokasi": "Gedung G", "jenis": "mingguan", "hari": 4, "jam_mulai": "15:30", "jam_selesai": "17:00", "tgl_mulai": "2026-10-29", "tgl_selesai": "2026-11-05"},
+      {"id": 3, "kalender_id": 2, "judul": "Nonton", "jenis": "mingguan", "hari": 1, "jam_mulai": "20:00", "jam_selesai": "22:00", "tgl_mulai": "2026-11-09", "tgl_selesai": "2026-11-09"},
+      {"id": 4, "kalender_id": 2, "judul": "Kursus lama", "jenis": "mingguan", "hari": 3, "jam_mulai": "10:00", "jam_selesai": "11:00", "tgl_mulai": "2026-09-02", "tgl_selesai": "2026-10-27"}
+    ]},
+    {"tabel": "acara_pengecualian", "baris": [
+      {"acara_id": 1, "tanggal_asli": "2026-10-27", "jenis": "batal"},
+      {"acara_id": 1, "tanggal_asli": "2026-11-04", "jenis": "batal"},
+      {"acara_id": 2, "tanggal_asli": "2026-11-05", "jenis": "pindah", "mulai": "2026-11-06T08:00:00Z", "selesai": "2026-11-06T09:30:00Z", "lokasi": "Sekre"},
+      {"acara_id": 3, "tanggal_asli": "2026-11-09", "jenis": "pindah", "mulai": "2026-11-07T13:00:00Z", "selesai": "2026-11-07T15:00:00Z", "judul": "Nonton bareng"}
+    ]}
+  ],
+  "hasil": [
+    {"sumber": "acara", "ref": "2", "tanggal_asli": "2026-10-29", "status": "normal", "seharian": false, "mulai": "2026-10-29T08:30:00Z", "selesai": "2026-10-29T10:00:00Z", "judul": "Rapat HIMA", "lokasi": "Gedung G", "kalender": "sibuk", "warna": null, "peran": "sibuk", "kode_mk": null, "pindah_ke": null},
+    {"sumber": "acara", "ref": "1", "tanggal_asli": "2026-11-03", "status": "normal", "seharian": false, "mulai": "2026-11-03T12:00:00Z", "selesai": "2026-11-03T13:00:00Z", "judul": "Les gitar", "lokasi": null, "kalender": "pribadi", "warna": null, "peran": "info", "kode_mk": null, "pindah_ke": null},
+    {"sumber": "acara", "ref": "2", "tanggal_asli": "2026-11-05", "status": "dipindah", "seharian": false, "mulai": "2026-11-06T08:00:00Z", "selesai": "2026-11-06T09:30:00Z", "judul": "Rapat HIMA", "lokasi": "Sekre", "kalender": "sibuk", "warna": null, "peran": "sibuk", "kode_mk": null, "pindah_ke": null},
+    {"sumber": "acara", "ref": "3", "tanggal_asli": "2026-11-09", "status": "dipindah", "seharian": false, "mulai": "2026-11-07T13:00:00Z", "selesai": "2026-11-07T15:00:00Z", "judul": "Nonton bareng", "lokasi": null, "kalender": "pribadi", "warna": null, "peran": "info", "kode_mk": null, "pindah_ke": null}
+  ]
+}

@@ -1,0 +1,31 @@
+{
+  "keterangan": "Acara sekali (termasuk melewati tengah malam, utuh), seharian melewati batas rentang, batas rentang eksklusif untuk acara dan inklusif untuk deadline tepat 00.00 WIB, tugas selesai dan tanpa deadline tidak tampil, seharian lebih dulu dari acara di jam yang sama",
+  "dari": "2026-10-26",
+  "sampai": "2026-11-01",
+  "isi": [
+    {"tabel": "acara", "baris": [
+      {"id": 1, "kalender_id": 2, "judul": "Nobar", "lokasi": "Kos", "jenis": "sekali", "mulai": "2026-10-31T14:00:00Z", "selesai": "2026-10-31T18:00:00Z"},
+      {"id": 2, "kalender_id": 1, "judul": "Minggu UTS", "jenis": "seharian", "tgl_mulai": "2026-10-30", "tgl_selesai": "2026-11-03"},
+      {"id": 3, "kalender_id": 2, "judul": "Libur", "jenis": "seharian", "tgl_mulai": "2026-10-25", "tgl_selesai": "2026-10-25"},
+      {"id": 4, "kalender_id": 2, "judul": "Sebelum", "jenis": "sekali", "mulai": "2026-10-25T15:00:00Z", "selesai": "2026-10-25T17:00:00Z"},
+      {"id": 5, "kalender_id": 2, "judul": "Sesudah", "jenis": "sekali", "mulai": "2026-11-01T17:00:00Z", "selesai": "2026-11-01T18:00:00Z"},
+      {"id": 6, "kalender_id": 2, "judul": "Begadang", "jenis": "sekali", "mulai": "2026-10-29T17:00:00Z", "selesai": "2026-10-29T19:00:00Z"}
+    ]},
+    {"tabel": "tasks", "baris": [
+      {"id": "m-00000001", "jenis": "manual", "asal": "manual", "judul": "Laporan Basis Data", "deadline": "2026-10-28T16:59:00Z"},
+      {"id": "m-00000002", "jenis": "manual", "asal": "manual", "judul": "Tugas selesai", "deadline": "2026-10-29T16:59:00Z"},
+      {"id": "m-00000003", "jenis": "manual", "asal": "manual", "judul": "Tanpa deadline"},
+      {"id": "m-00000004", "jenis": "manual", "asal": "manual", "judul": "Deadline tengah malam", "deadline": "2026-10-25T17:00:00Z"}
+    ]},
+    {"tabel": "task_user_state", "baris": [
+      {"task_id": "m-00000002", "status": "done"}
+    ]}
+  ],
+  "hasil": [
+    {"sumber": "deadline", "ref": "m-00000004", "tanggal_asli": "2026-10-26", "status": "normal", "seharian": false, "mulai": "2026-10-25T17:00:00Z", "selesai": "2026-10-25T17:00:00Z", "judul": "Deadline tengah malam", "lokasi": null, "kalender": "deadline", "warna": null, "peran": "info", "kode_mk": null, "pindah_ke": null},
+    {"sumber": "deadline", "ref": "m-00000001", "tanggal_asli": "2026-10-28", "status": "normal", "seharian": false, "mulai": "2026-10-28T16:59:00Z", "selesai": "2026-10-28T16:59:00Z", "judul": "Laporan Basis Data", "lokasi": null, "kalender": "deadline", "warna": null, "peran": "info", "kode_mk": null, "pindah_ke": null},
+    {"sumber": "acara", "ref": "2", "tanggal_asli": "2026-10-30", "status": "normal", "seharian": true, "mulai": "2026-10-29T17:00:00Z", "selesai": "2026-11-03T17:00:00Z", "judul": "Minggu UTS", "lokasi": null, "kalender": "sibuk", "warna": null, "peran": "sibuk", "kode_mk": null, "pindah_ke": null},
+    {"sumber": "acara", "ref": "6", "tanggal_asli": "2026-10-30", "status": "normal", "seharian": false, "mulai": "2026-10-29T17:00:00Z", "selesai": "2026-10-29T19:00:00Z", "judul": "Begadang", "lokasi": null, "kalender": "pribadi", "warna": null, "peran": "info", "kode_mk": null, "pindah_ke": null},
+    {"sumber": "acara", "ref": "1", "tanggal_asli": "2026-10-31", "status": "normal", "seharian": false, "mulai": "2026-10-31T14:00:00Z", "selesai": "2026-10-31T18:00:00Z", "judul": "Nobar", "lokasi": "Kos", "kalender": "pribadi", "warna": null, "peran": "info", "kode_mk": null, "pindah_ke": null}
+  ]
+}

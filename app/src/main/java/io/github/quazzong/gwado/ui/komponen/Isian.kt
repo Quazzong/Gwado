@@ -51,6 +51,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import io.github.quazzong.gwado.R
@@ -217,6 +218,7 @@ fun StripSub(
     judul: String,
     modifier: Modifier = Modifier,
     benih: Int = 21,
+    ukuran: TextUnit = 24.sp,
     kiri: @Composable () -> Unit = {},
     kanan: @Composable () -> Unit = {},
 ) {
@@ -236,7 +238,7 @@ fun StripSub(
         ) {
             Row(horizontalArrangement = Arrangement.spacedBy(10.dp), verticalAlignment = Alignment.CenterVertically) {
                 kiri()
-                TeksStiker(judul, ukuran = 24.sp, garis = 2.dp)
+                TeksStiker(judul, ukuran = ukuran, garis = 2.dp)
             }
             kanan()
         }
