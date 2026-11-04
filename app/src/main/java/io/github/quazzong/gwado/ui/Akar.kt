@@ -84,7 +84,7 @@ fun Akar(
                 if (siapkan != null) {
                     siapkan(buka)
                 } else {
-                    LayarUtama(daftar, versi, { id -> buka(Detail(id)) }, { buka(Formulir()) }, menyegarkan, onSegarkan, hasilAmbil) {
+                    LayarUtama(daftar, versi, { id -> buka(Detail(id)) }, { buka(Formulir()) }, menyegarkan, onSegarkan, hasilAmbil, muatUlang) {
                         layanan(buka)
                     }
                 }
@@ -131,6 +131,7 @@ private fun LayarUtama(
     menyegarkan: Boolean,
     onSegarkan: () -> Unit,
     hasilAmbil: HasilAmbil?,
+    muatUlang: () -> Unit,
     layanan: @Composable () -> Unit,
 ) {
     val w = GwadoTema.warna
@@ -150,6 +151,7 @@ private fun LayarUtama(
                     Tab.TUGAS -> Beranda(
                         daftar, versi, sekarang, bukaDetail, tambah, menyegarkan, onSegarkan, hasilAmbil,
                         onBukaLayanan = { tab = Tab.LAYANAN },
+                        onBerubah = muatUlang,
                     )
                     Tab.KALENDER -> LayarKalender(daftar, versi, sekarang, bukaDetail)
                     Tab.LAYANAN -> layanan()

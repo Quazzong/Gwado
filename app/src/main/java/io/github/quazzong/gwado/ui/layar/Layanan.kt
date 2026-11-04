@@ -264,7 +264,10 @@ private fun PanelSemester(
                         color = w.tintaRedup,
                     )
                     Text(
-                        kuliahMulai?.let { "Kuliah pertama ${tanggalPanjang(it.toString())}" } ?: "Kuliah pertama belum diisi",
+                        kuliahMulai?.let {
+                            "Kuliah pertama ${tanggalPanjang(it.toString())}" +
+                                if (it > tanggalWib(Instant.now())) " (belum mulai)" else ""
+                        } ?: "Kuliah pertama belum diisi",
                         style = Huruf.meta,
                         color = w.tintaRedup,
                     )

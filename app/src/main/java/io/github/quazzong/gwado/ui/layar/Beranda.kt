@@ -11,7 +11,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
@@ -27,10 +30,13 @@ import io.github.quazzong.gwado.ui.komponen.KueTarik
 import io.github.quazzong.gwado.ui.komponen.Pita
 import io.github.quazzong.gwado.ui.komponen.TombolPermen
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.produceState
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -46,6 +52,7 @@ import io.github.quazzong.gwado.db.Gudang
 import io.github.quazzong.gwado.segar.jamSingkat
 import io.github.quazzong.gwado.tugas.BarisTugas
 import io.github.quazzong.gwado.tugas.daftarTugas
+import io.github.quazzong.gwado.tugas.tandaiSemua
 import io.github.quazzong.gwado.ui.komponen.KartuTugas
 import io.github.quazzong.gwado.ui.komponen.Segmen
 import io.github.quazzong.gwado.ui.komponen.TombolGaris
@@ -105,10 +112,13 @@ fun Beranda(
     onSegarkan: () -> Unit = {},
     hasilAmbil: HasilAmbil? = null,
     onBukaLayanan: () -> Unit = {},
+    onBerubah: () -> Unit = {},
     modifier: Modifier = Modifier,
 ) {
     val w = GwadoTema.warna
     val konteks = LocalContext.current
+    val cakupan = rememberCoroutineScope()
+    var konfirmasiLewat by remember { mutableStateOf(false) }
     val data by produceState<DataKepala?>(null, versi) {
         value = runCatching {
             Gudang.pakai(konteks) { db -> DataKepala(db.kuliahMulai(), db.daftarTugas(semua = true), db.suksesTerakhir(), db.sumberTerakhir()) }
@@ -120,6 +130,7 @@ fun Beranda(
     val tampil = if (aktif == null) daftar else daftar.filter { (it.sumber ?: "Manual") == aktif }
     val (sudah, belum) = tampil.partition(::terkumpul)
     val (atas, bawah) = belum.partition { mendesak(it, sekarang) }
+    val lewat = atas.filter { lewatDeadline(it, sekarang) }
     val stSumber = data?.sumber?.filter { it.status != null }?.let { statusSumber(it, sekarang) }.orEmpty()
     val pitaSumber = banner(stSumber)
     var dilihat by rememberSaveable { mutableIntStateOf(0) }
@@ -199,7 +210,9 @@ fun Beranda(
                 }
             }
         }
-        bagian("Mendesak", atas, sekarang, onBuka)
+        bagian("Mendesak", atas, sekarang, onBuka) {
+            if (lewat.size >= 2) TombolGaris("Centang ${lewat.size} yang lewat", { konfirmasiLewat = true })
+        }
         bagian("Nanti", bawah, sekarang, onBuka)
         bagian("Terkumpul di situs", sudah, sekarang, onBuka)
     }
@@ -210,17 +223,55 @@ fun Beranda(
         Modifier.align(Alignment.BottomEnd).padding(Jarak.tepiLayar),
     )
     }
+
+    if (konfirmasiLewat) {
+        val warna = ButtonDefaults.textButtonColors(contentColor = w.tinta)
+        AlertDialog(
+            onDismissRequest = { konfirmasiLewat = false },
+            title = { Text("Centang ${lewat.size} tugas yang lewat?", style = Huruf.judulBagian) },
+            text = {
+                Text(
+                    (if (aktif != null) "Semua tugas $aktif " else "Semua tugas ") +
+                        "berchip LEWAT ditandai selesai. Bisa dibatalkan satu per satu dari detail tugas.",
+                    style = Huruf.isi,
+                )
+            },
+            confirmButton = {
+                TextButton({
+                    konfirmasiLewat = false
+                    val id = lewat.map { it.id }
+                    cakupan.launch {
+                        runCatching { Gudang.pakai(konteks) { it.tandaiSemua(id, Instant.now()) } }
+                        onBerubah()
+                    }
+                }, colors = warna) { Text("Centang semua") }
+            },
+            dismissButton = { TextButton({ konfirmasiLewat = false }, colors = warna) { Text("Batal") } },
+        )
+    }
 }
 
-private fun LazyListScope.bagian(judul: String, isi: List<BarisTugas>, sekarang: Instant, onBuka: (String) -> Unit) {
+/** Tugas belum selesai yang deadline-nya sudah lewat (chip LEWAT). */
+private fun lewatDeadline(t: BarisTugas, sekarang: Instant): Boolean =
+    t.deadline?.let { sisaChip(dariDb(it), sekarang).makna == Makna.LEWAT } ?: false
+
+private fun LazyListScope.bagian(
+    judul: String,
+    isi: List<BarisTugas>,
+    sekarang: Instant,
+    onBuka: (String) -> Unit,
+    aksi: @Composable () -> Unit = {},
+) {
     if (isi.isEmpty()) return
     item(key = "bagian-$judul") {
-        Text(
-            judul.uppercase(),
-            style = Huruf.label,
-            color = GwadoTema.warna.tintaRedup,
-            modifier = Modifier.padding(top = Jarak.s8),
-        )
+        Row(
+            Modifier.fillMaxWidth().padding(top = Jarak.s8),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Text(judul.uppercase(), style = Huruf.label, color = GwadoTema.warna.tintaRedup)
+            aksi()
+        }
     }
     items(isi, key = { it.id }) { t -> KartuTugas(t, sekarang, onClick = { onBuka(t.id) }) }
 }

@@ -178,7 +178,11 @@ fun LayarSemester(onKembali: () -> Unit, onTersimpan: () -> Unit) {
                     )
                     if (kuliah != null) TombolGaris("Kosongkan", { kuliah = null })
                 }
-                Keterangan("Untuk menghitung MINGGU KE-n di beranda.")
+                val belumMulai = kuliah?.let { LocalDate.parse(it) > tanggalWib(Instant.now()) } == true
+                Keterangan(
+                    if (belumMulai) "Tanggal ini belum lewat, jadi MINGGU KE-n baru tampil di beranda mulai tanggal ini."
+                    else "Minggu (Senin–Minggu) yang memuat tanggal ini dihitung MINGGU KE-1 di beranda.",
+                )
             }
             KotakInfo(
                 "Semester baru berlaku mulai Ambil berikutnya. Tugas dari mata kuliah semester lain " +
