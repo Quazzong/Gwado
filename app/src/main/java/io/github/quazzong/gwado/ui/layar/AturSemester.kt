@@ -1,6 +1,6 @@
 package io.github.quazzong.gwado.ui.layar
 
-import androidx.compose.foundation.background
+import io.github.quazzong.gwado.ui.komponen.latarLayar
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -134,7 +134,7 @@ fun LayarSemester(onKembali: () -> Unit, onTersimpan: () -> Unit) {
         }
     }
 
-    Column(Modifier.fillMaxSize().background(w.latar).safeDrawingPadding()) {
+    Column(Modifier.fillMaxSize().latarLayar().safeDrawingPadding()) {
         Column(
             Modifier.weight(1f).verticalScroll(rememberScrollState()).padding(Jarak.tepiLayar),
             verticalArrangement = Arrangement.spacedBy(Jarak.s16),

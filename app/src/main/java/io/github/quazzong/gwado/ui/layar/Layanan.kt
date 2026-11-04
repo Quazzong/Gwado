@@ -110,6 +110,7 @@ fun LayarLayanan(
     onMasuk: (Layanan) -> Unit,
     modifier: Modifier = Modifier,
     pesanUmum: String = "",
+    onPengaturan: () -> Unit = {},
 ) {
     val w = GwadoTema.warna
     val sekarang = rememberSekarang()
@@ -146,7 +147,15 @@ fun LayarLayanan(
         contentPadding = PaddingValues(Jarak.tepiLayar),
         verticalArrangement = Arrangement.spacedBy(Jarak.s8),
     ) {
-        item(key = "strip") { StripSub("Layanan", Modifier.padding(bottom = Jarak.s8), benih = 13, ukuran = 26.sp) }
+        item(key = "strip") {
+            StripSub(
+                "Layanan",
+                Modifier.padding(bottom = Jarak.s8),
+                benih = 13,
+                ukuran = 26.sp,
+                kanan = { TombolGarisIkon(R.drawable.ikon_gerigi, "Pengaturan tampilan", onPengaturan) },
+            )
+        }
         if (pesanUmum.isNotEmpty()) item(key = "umum") { Pita(pesanUmum, merah = true) }
         item(key = "semester") { PanelSemester(semester, kuliahMulai, onUbahSemester, onKonfirmasi) }
         val d = daftar

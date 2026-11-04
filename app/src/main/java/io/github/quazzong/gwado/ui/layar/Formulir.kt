@@ -1,5 +1,6 @@
 package io.github.quazzong.gwado.ui.layar
 
+import io.github.quazzong.gwado.ui.komponen.latarLayar
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -174,7 +175,7 @@ fun LayarFormulir(id: String?, onKembali: () -> Unit, onTersimpan: () -> Unit) {
 
     val namaMk = kode?.let { k -> matkul.firstOrNull { it.first == k }?.second ?: k } ?: "Tanpa mata kuliah"
 
-    Column(Modifier.fillMaxSize().background(w.latar).safeDrawingPadding()) {
+    Column(Modifier.fillMaxSize().latarLayar().safeDrawingPadding()) {
         Column(
             Modifier.weight(1f).verticalScroll(rememberScrollState()).padding(Jarak.tepiLayar),
             verticalArrangement = Arrangement.spacedBy(Jarak.s16),

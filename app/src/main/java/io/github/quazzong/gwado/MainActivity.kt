@@ -5,6 +5,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateMapOf
@@ -28,6 +29,10 @@ import io.github.quazzong.gwado.ui.Akar
 import io.github.quazzong.gwado.ui.AturSemester
 import io.github.quazzong.gwado.ui.DaftarMatkul
 import io.github.quazzong.gwado.ui.Masuk
+import io.github.quazzong.gwado.ui.Pengaturan
+import io.github.quazzong.gwado.ui.komponen.LocalTekstur
+import io.github.quazzong.gwado.tampilan.Tekstur
+import io.github.quazzong.gwado.tampilan.tekstur
 import io.github.quazzong.gwado.ui.layar.LayarLayanan
 import io.github.quazzong.gwado.ui.layar.LayarMasuk
 import io.github.quazzong.gwado.ui.layar.LayarSiapkan
@@ -44,6 +49,7 @@ private class DataLayar(
     val daftar: List<BarisTugas>,
     val matkul: Map<String, String>,
     val ditolak: Boolean,
+    val tekstur: Tekstur,
 )
 
 class MainActivity : ComponentActivity() {
@@ -53,6 +59,7 @@ class MainActivity : ComponentActivity() {
     private var semester by mutableStateOf<Map<String, String>?>(null)   // null = belum dikonfirmasi
     private var kuliah by mutableStateOf<LocalDate?>(null)
     private val matkul = mutableStateMapOf<String, String>()               // sumber → "N diikuti · M dilewati"
+    private var tekstur by mutableStateOf(Tekstur.BAWAAN)
     private var lencanaLayanan by mutableStateOf(false)                    // ada layanan yang menolak login/izin
     private var tampilSiapkan by mutableStateOf(false)                     // layar Siapkan Gwado menggantikan tab
     private val pengambil = Pengambil(this, onBerubah = { muatUlangDaftar() })
@@ -62,6 +69,7 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             GwadoTema {
+                CompositionLocalProvider(LocalTekstur provides tekstur) {
                 Akar(
                     daftar = daftar,
                     versi = versiData,
@@ -79,6 +87,7 @@ class MainActivity : ComponentActivity() {
                             onMatkul = { buka(DaftarMatkul(it)) },
                             onMasuk = { buka(Masuk(it.id)) },
                             pesanUmum = umum,
+                            onPengaturan = { buka(Pengaturan) },
                         )
                     },
                     masuk = { id, kembali -> LayarMasuk(pengambil, id, kembali) },
@@ -91,6 +100,7 @@ class MainActivity : ComponentActivity() {
                         )
                     },
                 )
+                }
             }
         }
         muatUlangDaftar()
@@ -108,6 +118,7 @@ class MainActivity : ComponentActivity() {
                         db.semesterTersimpan(), db.kuliahMulai(), db.daftarTugas(), db.ringkasanMatkul(),
                         statusSumber(db.sumberTerakhir().filter { it.status != null }, Instant.now())
                             .any { it.label == "token ditolak" },
+                        db.tekstur(),
                     )
                 }
                 semester = d.semester
@@ -115,6 +126,7 @@ class MainActivity : ComponentActivity() {
                 daftar = d.daftar
                 matkul.putAll(d.matkul)
                 lencanaLayanan = d.ditolak
+                tekstur = d.tekstur
                 versiData++
                 ""
             } catch (e: CancellationException) {

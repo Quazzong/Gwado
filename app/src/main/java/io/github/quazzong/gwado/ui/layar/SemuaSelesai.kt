@@ -1,6 +1,6 @@
 package io.github.quazzong.gwado.ui.layar
 
-import androidx.compose.foundation.background
+import io.github.quazzong.gwado.ui.komponen.latarLayar
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
@@ -60,7 +60,7 @@ fun LayarSemuaSelesai(versi: Int, onBuka: (String) -> Unit, onKembali: () -> Uni
     val (terkumpul, dicentang) = tampil.partition { it.statusKumpulSitus == "terkumpul" }
 
     LazyColumn(
-        Modifier.fillMaxSize().background(w.latar).safeDrawingPadding(),
+        Modifier.fillMaxSize().latarLayar().safeDrawingPadding(),
         contentPadding = PaddingValues(Jarak.tepiLayar),
         verticalArrangement = Arrangement.spacedBy(Jarak.s8),
     ) {

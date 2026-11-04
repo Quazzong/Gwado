@@ -1,5 +1,6 @@
 package io.github.quazzong.gwado.ui.layar
 
+import io.github.quazzong.gwado.ui.komponen.latarLayar
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -123,7 +124,7 @@ fun LayarMatkul(sumber: String, onKembali: () -> Unit) {
     Column(
         Modifier
             .fillMaxSize()
-            .background(w.latar)
+            .latarLayar()
             .safeDrawingPadding()
             .verticalScroll(rememberScrollState())
             .padding(Jarak.tepiLayar),

@@ -1,5 +1,6 @@
 package io.github.quazzong.gwado.ui.layar
 
+import io.github.quazzong.gwado.ui.komponen.latarLayar
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -114,7 +115,7 @@ fun LayarSiapkan(
     Column(
         Modifier
             .fillMaxSize()
-            .background(w.latar)
+            .latarLayar()
             .safeDrawingPadding()
             .verticalScroll(rememberScrollState())
             .padding(Jarak.tepiLayar),
@@ -277,7 +278,7 @@ private fun NomorKue(nomor: Int, selesai: Boolean) {
 private fun LayarTunggu() {
     val w = GwadoTema.warna
     Column(
-        Modifier.fillMaxSize().background(w.latar).safeDrawingPadding().padding(Jarak.tepiLayar),
+        Modifier.fillMaxSize().latarLayar().safeDrawingPadding().padding(Jarak.tepiLayar),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {

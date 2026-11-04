@@ -1,6 +1,6 @@
 package io.github.quazzong.gwado.ui
 
-import androidx.compose.foundation.background
+import io.github.quazzong.gwado.ui.komponen.latarLayar
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -28,6 +28,7 @@ import io.github.quazzong.gwado.ui.komponen.rememberSekarang
 import io.github.quazzong.gwado.ui.layar.Beranda
 import io.github.quazzong.gwado.ui.layar.LayarKalender
 import io.github.quazzong.gwado.ui.layar.LayarMatkul
+import io.github.quazzong.gwado.ui.layar.LayarPengaturan
 import io.github.quazzong.gwado.ui.layar.LayarSemester
 import io.github.quazzong.gwado.ui.layar.LayarSemuaSelesai
 import io.github.quazzong.gwado.ui.layar.LayarFormulir
@@ -60,6 +61,10 @@ data class DaftarMatkul(val sumber: String) : NavKey
 /** Semua tugas yang dicentang atau terkumpul di situs. */
 @Serializable
 data object SemuaSelesai : NavKey
+
+/** Pengaturan tampilan: tekstur latar dan tema. */
+@Serializable
+data object Pengaturan : NavKey
 
 /** Ubah semester aktif dan tanggal kuliah pertama. */
 @Serializable
@@ -117,6 +122,9 @@ fun Akar(
             }
             entry<Masuk> { k -> masuk(k.id) { tumpukan.removeLastOrNull() } }
             entry<DaftarMatkul> { k -> LayarMatkul(k.sumber, onKembali = { tumpukan.removeLastOrNull() }) }
+            entry<Pengaturan> {
+                LayarPengaturan(onKembali = { tumpukan.removeLastOrNull() }, onBerubah = muatUlang)
+            }
             entry<SemuaSelesai> {
                 LayarSemuaSelesai(versi, onBuka = { id -> buka(Detail(id)) }, onKembali = { tumpukan.removeLastOrNull() })
             }
@@ -158,7 +166,7 @@ private fun LayarUtama(
         ItemTab(Tab.KALENDER, "Kalender", R.drawable.ikon_kalender),
         ItemTab(Tab.LAYANAN, "Layanan", R.drawable.ikon_layanan, if (lencanaLayanan) "!" else null),
     )
-    Column(Modifier.fillMaxSize().background(w.latar).safeDrawingPadding()) {
+    Column(Modifier.fillMaxSize().latarLayar().safeDrawingPadding()) {
         Box(Modifier.weight(1f).fillMaxWidth()) {
             penyimpan.SaveableStateProvider(tab) {
                 when (tab) {
