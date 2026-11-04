@@ -17,6 +17,9 @@ import io.github.quazzong.gwado.layanan.Pengambil
 import io.github.quazzong.gwado.semester.ringkasanMatkul
 import io.github.quazzong.gwado.semester.semesterTersimpan
 import io.github.quazzong.gwado.semester.simpanSemester
+import io.github.quazzong.gwado.siapkan.perluSiapkan
+import io.github.quazzong.gwado.siapkan.siapSelesai
+import io.github.quazzong.gwado.siapkan.tandaiSiap
 import io.github.quazzong.gwado.tugas.BarisTugas
 import io.github.quazzong.gwado.tugas.daftarTugas
 import io.github.quazzong.gwado.ui.Akar
@@ -25,6 +28,7 @@ import io.github.quazzong.gwado.ui.DaftarMatkul
 import io.github.quazzong.gwado.ui.Masuk
 import io.github.quazzong.gwado.ui.layar.LayarLayanan
 import io.github.quazzong.gwado.ui.layar.LayarMasuk
+import io.github.quazzong.gwado.ui.layar.LayarSiapkan
 import io.github.quazzong.gwado.ui.tema.GwadoTema
 import java.time.LocalDate
 import kotlinx.coroutines.CancellationException
@@ -45,6 +49,7 @@ class MainActivity : ComponentActivity() {
     private var semester by mutableStateOf<Map<String, String>?>(null)   // null = belum dikonfirmasi
     private var kuliah by mutableStateOf<LocalDate?>(null)
     private val matkul = mutableStateMapOf<String, String>()               // sumber → "N diikuti · M dilewati"
+    private var tampilSiapkan by mutableStateOf(false)                     // layar Siapkan Gwado menggantikan tab
     private val pengambil = Pengambil(this, onBerubah = { muatUlangDaftar() })
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -70,10 +75,19 @@ class MainActivity : ComponentActivity() {
                         )
                     },
                     masuk = { id, kembali -> LayarMasuk(pengambil, id, kembali) },
+                    siapkan = if (!tampilSiapkan) null else { buka ->
+                        LayarSiapkan(
+                            pengambil, versiData, semester,
+                            onKonfirmasi = ::konfirmasiSemester,
+                            onBuka = buka,
+                            onSelesai = ::selesaiSiapkan,
+                        )
+                    },
                 )
             }
         }
         muatUlangDaftar()
+        lifecycleScope.launch { tampilSiapkan = cekSiapkan() }
         // Hanya saat pertama dibuat: rotasi layar mengirim intent yang sama lagi (passport sudah terpakai).
         if (savedInstanceState == null) intentMasuk(intent)
     }
@@ -96,6 +110,33 @@ class MainActivity : ComponentActivity() {
             } catch (e: Exception) {
                 "Database tidak bisa dibuka: ${e.javaClass.simpleName}"
             }
+        }
+    }
+
+    /** Apakah Siapkan Gwado perlu tampil. Instalasi lama yang sudah lengkap langsung ditandai siap. */
+    private suspend fun cekSiapkan(): Boolean = try {
+        val (selesai, adaSemester) = Gudang.pakai(this) { it.siapSelesai() to (it.semesterTersimpan() != null) }
+        val perlu = perluSiapkan(selesai, adaSemester, pengambil.tersambung().isNotEmpty())
+        if (!selesai && !perlu) Gudang.pakai(this) { it.tandaiSiap() }
+        perlu
+    } catch (e: CancellationException) {
+        throw e
+    } catch (e: Exception) {
+        false
+    }
+
+    /** Pengambilan pertama selesai: tandai siap, tampilkan tab. */
+    private fun selesaiSiapkan() {
+        lifecycleScope.launch {
+            try {
+                Gudang.pakai(this@MainActivity) { it.tandaiSiap() }
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                // tanda tidak tersimpan: Siapkan muncul lagi di pembukaan berikutnya
+            }
+            tampilSiapkan = false
+            muatUlangDaftar()
         }
     }
 

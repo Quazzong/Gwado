@@ -74,10 +74,16 @@ private val SCOPES = listOf(
     Scope("https://www.googleapis.com/auth/classroom.coursework.me.readonly"),
 )
 
+/** Kunci SharedPreferences: izin Classroom pernah diberikan di HP ini. */
+private const val KUNCI_IZIN_GOOGLE = "izin_classroom"
+
+/** Status layanan yang sudah tersambung tapi belum boleh diambil. */
+private const val TUNGGU_SEMESTER = "Tersambung. Tugas diambil setelah semester dikonfirmasi."
+
 /** Gagal mendapat access token Google; pesannya aman ditampilkan. */
 private class GagalIzin(pesan: String) : Exception(pesan)
 
-/** Satu layanan tersambung: run terakhirnya dan apakah token Moodle-nya ada di HP. */
+/** Satu layanan tersambung: run terakhirnya dan apakah aksesnya tersimpan (token Moodle, atau izin Classroom). */
 data class InfoLayanan(val layanan: Layanan, val baris: SumberTerakhir, val adaToken: Boolean)
 
 /** Hasil satu Ambil semua: pesan yang tidak tercatat di database. nomor naik setiap selesai. */
@@ -128,11 +134,14 @@ class Pengambil(private val activity: ComponentActivity, private val onBerubah: 
     suspend fun daftarTersambung(): List<InfoLayanan> {
         val baris = Gudang.pakai(activity) { it.sumberTerakhir() }.associateBy { it.id }
         return DAFTAR_LAYANAN.mapNotNull { l ->
-            baris[l.id]?.let { b -> InfoLayanan(l, b, l.situs != null && brankas.baca(l.id) != null) }
+            baris[l.id]?.let { b -> InfoLayanan(l, b, adaAkses(l)) }
         }.filter { it.baris.status != null || it.adaToken }
     }
 
     suspend fun tersambung(): Set<String> = daftarTersambung().map { it.layanan.id }.toSet()
+
+    private fun adaAkses(l: Layanan): Boolean =
+        if (l.situs != null) brankas.baca(l.id) != null else prefs.getBoolean(KUNCI_IZIN_GOOGLE, false)
 
     /** Layanan yang didukung tapi belum tersambung (termasuk yang pernah dimatikan), urut daftar layanan. */
     suspend fun belumTersambung(): List<Layanan> {
@@ -188,6 +197,7 @@ class Pengambil(private val activity: ComponentActivity, private val onBerubah: 
      */
     fun matikan(l: Layanan) = luncurkan {
         val catatanCabut = if (l.situs == null) {
+            prefs.edit().remove(KUNCI_IZIN_GOOGLE).apply()
             cabutGoogle()
         } else {
             brankas.hapus(l.id)
@@ -224,7 +234,16 @@ class Pengambil(private val activity: ComponentActivity, private val onBerubah: 
                     "Token ${l.label} tidak bisa disimpan (${e.javaClass.simpleName}); dipakai sekali saja."
                 }
                 loginBerhasil = l.id to ++nomorLogin
-                luncurkan { status[l.id] = aman { ambilDanSimpan(l) { ambilMoodle(situs, h.token, Instant.now()) } } }
+                luncurkan {
+                    status[l.id] = aman {
+                        if (Gudang.pakai(activity) { it.semesterTersimpan() } == null) {
+                            TUNGGU_SEMESTER
+                        } else {
+                            ambilDanSimpan(l) { ambilMoodle(situs, h.token, Instant.now()) }
+                        }
+                    }
+                    onBerubah()
+                }
             }
         }
     }
@@ -253,18 +272,25 @@ class Pengambil(private val activity: ComponentActivity, private val onBerubah: 
         "Gagal tak terduga: ${e.javaClass.simpleName}"
     }
 
+    /**
+     * Login atau izin dulu kalau belum ada, lalu ambil. Menyambungkan tidak butuh semester;
+     * mengambil butuh semester yang sudah dikonfirmasi.
+     */
     private suspend fun satu(l: Layanan, bolehLogin: Boolean): String {
-        if (Gudang.pakai(activity) { it.semesterTersimpan() } == null) return "Konfirmasi semester dulu"
         tertahan(l.id, catatan.baca(l.id), Instant.now(), manual = true)?.let { return pesanTertahan(l, it) }
+        val adaSemester = Gudang.pakai(activity) { it.semesterTersimpan() } != null
         val situs = l.situs
         if (situs == null) {
             status[l.id] = "Meminta izin Google…"
             val akses = tokenGoogle()
+            prefs.edit().putBoolean(KUNCI_IZIN_GOOGLE, true).apply()
+            if (!adaSemester) return TUNGGU_SEMESTER
             return ambilDanSimpan(l) { ambilClassroom(akses, Instant.now()) }
         }
         val token = brankas.baca(l.id)
         return when {
-            token != null -> ambilDanSimpan(l) { ambilMoodle(situs, token, Instant.now()) }
+            token != null && adaSemester -> ambilDanSimpan(l) { ambilMoodle(situs, token, Instant.now()) }
+            token != null -> TUNGGU_SEMESTER
             bolehLogin -> mulaiLogin(l, situs)
             else -> "Perlu login: tekan Login di kartu ${l.label}"
         }

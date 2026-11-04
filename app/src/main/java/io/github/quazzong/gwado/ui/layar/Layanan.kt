@@ -372,7 +372,7 @@ private fun KartuLayanan(
 
 /** Lembar bawah berisi layanan yang belum tersambung: ikon bentuk, nama, satu baris penjelasan. */
 @Composable
-private fun LembarTambah(belum: List<Layanan>, onTutup: () -> Unit, onPilih: (Layanan) -> Unit) {
+internal fun LembarTambah(belum: List<Layanan>, onTutup: () -> Unit, onPilih: (Layanan) -> Unit) {
     val w = GwadoTema.warna
     LembarBawah(onTutup) {
         Text("Tambah layanan", style = Huruf.judulBagian, color = w.tinta, modifier = Modifier.padding(horizontal = 16.dp))
@@ -414,7 +414,7 @@ private fun LembarTambah(belum: List<Layanan>, onTutup: () -> Unit, onPilih: (La
 
 /** Peringatan sebelum layar izin Google: aplikasi belum diverifikasi Google. */
 @Composable
-private fun DialogIzinGoogle(onLanjut: () -> Unit, onTutup: () -> Unit) {
+internal fun DialogIzinGoogle(onLanjut: () -> Unit, onTutup: () -> Unit) {
     val warna = ButtonDefaults.textButtonColors(contentColor = GwadoTema.warna.tinta)
     AlertDialog(
         onDismissRequest = onTutup,

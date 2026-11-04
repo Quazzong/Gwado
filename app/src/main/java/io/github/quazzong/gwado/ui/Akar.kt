@@ -61,7 +61,7 @@ data object AturSemester : NavKey
 
 private enum class Tab { TUGAS, KALENDER, LAYANAN }
 
-/** Akar tampilan: back stack layar, dimulai dari layar utama. */
+/** Akar tampilan: back stack layar, dimulai dari layar utama (atau Siapkan Gwado kalau [siapkan] diisi). */
 @Composable
 fun Akar(
     daftar: List<BarisTugas>,
@@ -72,6 +72,7 @@ fun Akar(
     hasilAmbil: HasilAmbil?,
     layanan: @Composable (buka: (NavKey) -> Unit) -> Unit,
     masuk: @Composable (id: String, onKembali: () -> Unit) -> Unit,
+    siapkan: (@Composable (buka: (NavKey) -> Unit) -> Unit)? = null,
 ) {
     val tumpukan = rememberNavBackStack(Utama)
     val buka = { k: NavKey -> if (tumpukan.lastOrNull() != k) tumpukan.add(k) }
@@ -80,8 +81,12 @@ fun Akar(
         onBack = { tumpukan.removeLastOrNull() },
         entryProvider = entryProvider {
             entry<Utama> {
-                LayarUtama(daftar, versi, { id -> buka(Detail(id)) }, { buka(Formulir()) }, menyegarkan, onSegarkan, hasilAmbil) {
-                    layanan(buka)
+                if (siapkan != null) {
+                    siapkan(buka)
+                } else {
+                    LayarUtama(daftar, versi, { id -> buka(Detail(id)) }, { buka(Formulir()) }, menyegarkan, onSegarkan, hasilAmbil) {
+                        layanan(buka)
+                    }
                 }
             }
             entry<Detail> { k ->
