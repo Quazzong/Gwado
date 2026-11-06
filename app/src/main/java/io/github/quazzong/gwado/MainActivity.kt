@@ -1,10 +1,14 @@
 package io.github.quazzong.gwado
 
+import android.Manifest
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -15,6 +19,8 @@ import androidx.lifecycle.lifecycleScope
 import io.github.quazzong.gwado.beranda.kuliahMulai
 import io.github.quazzong.gwado.db.Gudang
 import io.github.quazzong.gwado.layanan.Pengambil
+import io.github.quazzong.gwado.pengingat.hentikanAlarm
+import io.github.quazzong.gwado.pengingat.perbaruiPengingat
 import io.github.quazzong.gwado.penjadwal.pasangPenjadwal
 import io.github.quazzong.gwado.segar.statusSumber
 import io.github.quazzong.gwado.segar.sumberTerakhir
@@ -67,6 +73,9 @@ class MainActivity : ComponentActivity() {
     private var tampilSiapkan by mutableStateOf(false)                     // layar Siapkan Gwado menggantikan tab
     private var bukaTugas by mutableStateOf<String?>(null)                 // detail yang diminta dari widget
     private val pengambil = Pengambil(this, onBerubah = { muatUlangDaftar() })
+    private val izinNotifikasi = registerForActivityResult(ActivityResultContracts.RequestPermission()) {
+        lifecycleScope.launch { perbaruiPengingat(this@MainActivity) }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -110,14 +119,21 @@ class MainActivity : ComponentActivity() {
             }
         }
         pasangPenjadwal(this)
-        lifecycleScope.launch { tampilSiapkan = cekSiapkan() }
+        lifecycleScope.launch {
+            tampilSiapkan = cekSiapkan()
+            if (!tampilSiapkan) mintaIzinNotifikasi()
+        }
         // Hanya saat pertama dibuat: rotasi layar mengirim intent yang sama lagi (passport sudah terpakai).
         if (savedInstanceState == null) intentMasuk(intent)
     }
 
-    /** Setiap kali layar tampil lagi: Ambil otomatis di latar mungkin sudah mengubah database. */
+    /**
+     * Setiap kali layar tampil lagi: Ambil otomatis di latar mungkin sudah mengubah database.
+     * Membuka Gwado juga menghentikan dering alarm deadline.
+     */
     override fun onStart() {
         super.onStart()
+        hentikanAlarm(this)
         muatUlangDaftar()
     }
 
@@ -141,6 +157,7 @@ class MainActivity : ComponentActivity() {
                 tekstur = d.tekstur
                 versiData++
                 perbaruiWidget(this@MainActivity)
+                perbaruiPengingat(this@MainActivity)
                 ""
             } catch (e: CancellationException) {
                 throw e
@@ -174,7 +191,15 @@ class MainActivity : ComponentActivity() {
             }
             tampilSiapkan = false
             muatUlangDaftar()
+            mintaIzinNotifikasi()
         }
+    }
+
+    /** Android 13+: minta izin notifikasi untuk pengingat deadline (sistem berhenti bertanya setelah ditolak dua kali). */
+    private fun mintaIzinNotifikasi() {
+        if (Build.VERSION.SDK_INT < 33) return
+        if (checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED) return
+        izinNotifikasi.launch(Manifest.permission.POST_NOTIFICATIONS)
     }
 
     /** Simpan tebakan semester apa adanya (tombol Sudah benar). */

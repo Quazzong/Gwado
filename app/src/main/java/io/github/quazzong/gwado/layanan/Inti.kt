@@ -15,6 +15,7 @@ import io.github.quazzong.gwado.ingest.isiGagal
 import io.github.quazzong.gwado.ingest.isiSukses
 import io.github.quazzong.gwado.ingest.proses
 import io.github.quazzong.gwado.masuk.BrankasToken
+import io.github.quazzong.gwado.pengingat.perbaruiPengingat
 import io.github.quazzong.gwado.segar.sumberTerakhir
 import io.github.quazzong.gwado.sumber.HasilSumber
 import io.github.quazzong.gwado.widget.perbaruiWidget
@@ -100,6 +101,7 @@ internal suspend fun ambilDanCatat(
     }
     Gudang.pakai(context) { it.proses(isi) }
     perbaruiWidget(context)
+    perbaruiPengingat(context)
     return null
 }
 

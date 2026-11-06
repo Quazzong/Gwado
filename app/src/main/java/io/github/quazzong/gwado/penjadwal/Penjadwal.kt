@@ -20,6 +20,7 @@ import io.github.quazzong.gwado.layanan.daftarTersambung
 import io.github.quazzong.gwado.layanan.prefsGwado
 import io.github.quazzong.gwado.layanan.tokenGoogleDiam
 import io.github.quazzong.gwado.masuk.BrankasKeystore
+import io.github.quazzong.gwado.pengingat.perbaruiPengingat
 import io.github.quazzong.gwado.semester.semesterTersimpan
 import io.github.quazzong.gwado.waktu.dariDb
 import io.github.quazzong.gwado.widget.perbaruiWidget
@@ -60,6 +61,7 @@ class PekerjaAmbil(context: Context, params: WorkerParameters) : CoroutineWorker
         prefsGwado(applicationContext).edit()
             .putString(KUNCI_OTOMATIS, "${iso(Instant.now())} $ringkas").apply()
         perbaruiWidget(applicationContext)                                   // label sisa waktu ikut maju tiap jam
+        perbaruiPengingat(applicationContext)                                // pasang lagi alarm yang hilang (aplikasi dihentikan paksa)
         return Result.success()
     }
 }
