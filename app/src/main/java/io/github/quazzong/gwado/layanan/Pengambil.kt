@@ -1,6 +1,5 @@
 package io.github.quazzong.gwado.layanan
 
-import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import androidx.activity.ComponentActivity
@@ -12,45 +11,30 @@ import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.lifecycleScope
-import com.google.android.gms.auth.api.identity.AuthorizationRequest
 import com.google.android.gms.auth.api.identity.Identity
 import com.google.android.gms.auth.api.identity.RevokeAccessRequest
-import com.google.android.gms.tasks.Task
 import com.google.android.gms.common.api.ApiException
-import com.google.android.gms.common.api.Scope
 import io.github.quazzong.gwado.db.Gudang
-import io.github.quazzong.gwado.fetch.CatatanSukses
-import io.github.quazzong.gwado.fetch.FetchError
 import io.github.quazzong.gwado.fetch.HasilJob
 import io.github.quazzong.gwado.fetch.JENDELA_HINDARI
 import io.github.quazzong.gwado.fetch.SebabTertahan
 import io.github.quazzong.gwado.fetch.akhirJendela
 import io.github.quazzong.gwado.fetch.ambilClassroom
 import io.github.quazzong.gwado.fetch.ambilMoodle
-import io.github.quazzong.gwado.fetch.job
 import io.github.quazzong.gwado.fetch.tertahan
-import io.github.quazzong.gwado.ingest.isiGagal
-import io.github.quazzong.gwado.ingest.isiSukses
-import io.github.quazzong.gwado.ingest.proses
 import io.github.quazzong.gwado.masuk.BrankasKeystore
 import io.github.quazzong.gwado.masuk.HasilLogin
 import io.github.quazzong.gwado.masuk.alamatLogin
 import io.github.quazzong.gwado.masuk.bacaRedirect
 import io.github.quazzong.gwado.segar.SumberTerakhir
-import io.github.quazzong.gwado.segar.sumberTerakhir
 import io.github.quazzong.gwado.semester.semesterTersimpan
 import io.github.quazzong.gwado.sumber.HasilSumber
 import java.time.Duration
 import java.time.Instant
 import java.util.UUID
-import kotlin.coroutines.resume
-import kotlin.coroutines.resumeWithException
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CompletableDeferred
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.suspendCancellableCoroutine
-import kotlinx.coroutines.withContext
 
 /**
  * Layanan yang didukung. situs null = Classroom (token dari layar izin Google, bukan login SSO).
@@ -69,14 +53,6 @@ val DAFTAR_LAYANAN = listOf(
     Layanan("eling", "Eling", "Tugas praktikum dari Moodle UB", "https://eling.ub.ac.id"),
     Layanan("classroom", "Classroom", "Kelas yang dibuat dosen di Classroom", nama = "Google Classroom"),
 )
-
-private val SCOPES = listOf(
-    Scope("https://www.googleapis.com/auth/classroom.courses.readonly"),
-    Scope("https://www.googleapis.com/auth/classroom.coursework.me.readonly"),
-)
-
-/** Kunci SharedPreferences: izin Classroom pernah diberikan di HP ini. */
-private const val KUNCI_IZIN_GOOGLE = "izin_classroom"
 
 /** Status layanan yang sudah tersambung tapi belum boleh diambil. */
 private const val TUNGGU_SEMESTER = "Tersambung. Tugas diambil setelah semester dikonfirmasi."
@@ -123,14 +99,9 @@ class Pengambil(private val activity: ComponentActivity, private val onBerubah: 
 
     private var nomorAmbil = 0
 
-    private val prefs by lazy { activity.getPreferences(Context.MODE_PRIVATE) }
+    private val prefs by lazy { prefsGwado(activity) }
     private val brankas by lazy { BrankasKeystore(activity) }
-    private val catatan = object : CatatanSukses {
-        override fun baca(sumber: String) = prefs.getString("sukses_$sumber", null)
-        override fun tulis(sumber: String, waktuTeks: String) {
-            prefs.edit().putString("sukses_$sumber", waktuTeks).apply()
-        }
-    }
+    private val catatan by lazy { CatatanPrefs(prefs) }
 
     private var tungguIzin: CompletableDeferred<ActivityResult>? = null
     private val izinGoogle = activity.registerForActivityResult(ActivityResultContracts.StartIntentSenderForResult()) {
@@ -138,17 +109,9 @@ class Pengambil(private val activity: ComponentActivity, private val onBerubah: 
     }
 
     /** Layanan tersambung (sumber aktif yang punya token tersimpan atau sudah pernah diambil), urut daftar layanan. */
-    suspend fun daftarTersambung(): List<InfoLayanan> {
-        val baris = Gudang.pakai(activity) { it.sumberTerakhir() }.associateBy { it.id }
-        return DAFTAR_LAYANAN.mapNotNull { l ->
-            baris[l.id]?.let { b -> InfoLayanan(l, b, adaAkses(l)) }
-        }.filter { it.baris.status != null || it.adaToken }
-    }
+    suspend fun daftarTersambung(): List<InfoLayanan> = daftarTersambung(activity, brankas, prefs)
 
     suspend fun tersambung(): Set<String> = daftarTersambung().map { it.layanan.id }.toSet()
-
-    private fun adaAkses(l: Layanan): Boolean =
-        if (l.situs != null) brankas.baca(l.id) != null else prefs.getBoolean(KUNCI_IZIN_GOOGLE, false)
 
     /** Layanan yang didukung tapi belum tersambung (termasuk yang pernah dimatikan), urut daftar layanan. */
     suspend fun belumTersambung(): List<Layanan> {
@@ -314,9 +277,8 @@ class Pengambil(private val activity: ComponentActivity, private val onBerubah: 
     /** Access token Google; layar izin hanya muncul kalau Google memintanya. */
     private suspend fun tokenGoogle(): String {
         val klien = Identity.getAuthorizationClient(activity)
-        val permintaan = AuthorizationRequest.builder().setRequestedScopes(SCOPES).build()
         val r = try {
-            tunggu(klien.authorize(permintaan))
+            tunggu(klien.authorize(permintaanIzin()))
         } catch (e: ApiException) {
             throw GagalIzin("Gagal meminta izin Google (kode ${e.statusCode})")
         }
@@ -346,7 +308,7 @@ class Pengambil(private val activity: ComponentActivity, private val onBerubah: 
             "Cabut lewat myaccount.google.com/permissions kalau perlu."
         val klien = Identity.getAuthorizationClient(activity)
         return try {
-            val r = tunggu(klien.authorize(AuthorizationRequest.builder().setRequestedScopes(SCOPES).build()))
+            val r = tunggu(klien.authorize(permintaanIzin()))
             if (r.hasResolution()) return null                 // belum ada izin: tidak ada yang dicabut
             val akun = r.toGoogleSignInAccount()?.account ?: return manual
             tunggu(klien.revokeAccess(RevokeAccessRequest.builder().setAccount(akun).setScopes(SCOPES).build()))
@@ -361,17 +323,8 @@ class Pengambil(private val activity: ComponentActivity, private val onBerubah: 
     /** Fetch, Isi, ingest. Teks kosong kalau run tercatat; selain itu alasan situs tidak dihubungi. */
     private suspend fun ambilDanSimpan(l: Layanan, jalankan: () -> HasilSumber): String {
         status[l.id] = "Mengambil dari ${l.label}…"
-        val mulai = Instant.now()
-        val isi = try {
-            when (val j = withContext(Dispatchers.IO) { job(l.id, catatan, manual = true, jalankan = jalankan) }) {
-                is HasilJob.Tertahan -> return pesanTertahan(l, j)      // situs tidak dihubungi: tidak ada run
-                is HasilJob.Selesai -> isiSukses(l.id, mulai, Instant.now(), j.hasil)
-            }
-        } catch (e: FetchError) {
-            if (e.jenis == "token_ditolak" && l.situs != null) brankas.hapus(l.id)
-            isiGagal(l.id, mulai, Instant.now(), e)                    // run gagal tetap dicatat
-        }
-        Gudang.pakai(activity) { it.proses(isi) }
+        ambilDanCatat(activity, l, catatan, brankas, manual = true, jalankan = jalankan)
+            ?.let { return pesanTertahan(l, it) }                       // situs tidak dihubungi: tidak ada run
         onBerubah()
         return ""   // hasil run tercatat di database dan tampil lewat status sumber
     }
@@ -395,10 +348,4 @@ class Pengambil(private val activity: ComponentActivity, private val onBerubah: 
             "${l.label} baru saja diambil, situs tidak dihubungi. Coba lagi dalam $sisa."
         }
     }
-}
-
-/** Tunggu hasil Task Play services di dalam coroutine. */
-private suspend fun <T> tunggu(t: Task<T>): T = suspendCancellableCoroutine { k ->
-    t.addOnSuccessListener { k.resume(it) }
-        .addOnFailureListener { k.resumeWithException(it) }
 }

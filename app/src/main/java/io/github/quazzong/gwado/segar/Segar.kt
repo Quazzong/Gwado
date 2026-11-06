@@ -65,8 +65,8 @@ data class StatusSumber(val id: String, val nama: String, val tingkat: Tingkat, 
 /** Pesan semua sumber yang tidak normal; merah kalau ada yang merah, selain itu kuning. */
 data class Banner(val tingkat: Tingkat, val pesan: List<String>)
 
-/** Jam ambil terjadwal (WIB). */
-private val JADWAL_AMBIL = listOf(5, 10, 15, 20)
+/** Jam ambil terjadwal (WIB); dipakai juga penjadwal pengambilan otomatis. */
+internal val JADWAL_AMBIL = listOf(5, 10, 15, 20)
 
 /** Jadwal dianggap sudah lewat setelah jamnya ditambah tenggang ini. */
 private val TENGGANG = Duration.ofMinutes(15)

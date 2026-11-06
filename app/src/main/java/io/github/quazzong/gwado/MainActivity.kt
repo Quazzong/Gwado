@@ -15,6 +15,7 @@ import androidx.lifecycle.lifecycleScope
 import io.github.quazzong.gwado.beranda.kuliahMulai
 import io.github.quazzong.gwado.db.Gudang
 import io.github.quazzong.gwado.layanan.Pengambil
+import io.github.quazzong.gwado.penjadwal.pasangPenjadwal
 import io.github.quazzong.gwado.segar.statusSumber
 import io.github.quazzong.gwado.segar.sumberTerakhir
 import io.github.quazzong.gwado.semester.ringkasanMatkul
@@ -103,10 +104,16 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
-        muatUlangDaftar()
+        pasangPenjadwal(this)
         lifecycleScope.launch { tampilSiapkan = cekSiapkan() }
         // Hanya saat pertama dibuat: rotasi layar mengirim intent yang sama lagi (passport sudah terpakai).
         if (savedInstanceState == null) intentMasuk(intent)
+    }
+
+    /** Setiap kali layar tampil lagi: Ambil otomatis di latar mungkin sudah mengubah database. */
+    override fun onStart() {
+        super.onStart()
+        muatUlangDaftar()
     }
 
     /** Baca ulang semester, kuliah pertama, daftar tugas, dan ringkasan mata kuliah. */
