@@ -42,7 +42,7 @@ fun LencanaKue(
     Box(modifier.size(ukuran)) {
         Canvas(Modifier.fillMaxSize()) {
             val s = size.minDimension / 70f
-            val kue = pathGelombang(Offset(33 * s, 33 * s), 25 * s, 9, 0.09f)
+            val kue = pathGelombang(Offset(33 * s, 33 * s), 28.5f * s, 9, 0.09f)
             if (putus) {
                 drawPath(kue, w.kartu)
                 drawPath(
@@ -55,14 +55,15 @@ fun LencanaKue(
                 drawPath(kue, isi)
                 drawPath(kue, w.garis, style = Stroke(2.2f * s, join = StrokeJoin.Round))
                 drawPath(
-                    pathGelombang(Offset(33 * s, 33 * s), 19.5f * s, 9, 0.09f),
+                    pathGelombang(Offset(33 * s, 33 * s), 23f * s, 9, 0.09f),
                     Color.White.copy(alpha = 0.7f),
                     style = Stroke(1.5f * s),
                 )
             }
         }
         Column(
-            Modifier.align(Alignment.Center).offset(x = (-2).dp, y = (-2).dp),
+            // Sedikit di atas pusat kue: jarak di atas angka dan di bawah bulan sama.
+            Modifier.align(Alignment.Center).offset(x = (-2).dp, y = (-3.5).dp),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             Text(atas, style = TextStyle(fontFamily = Fredoka, fontWeight = FontWeight.W700, fontSize = 24.sp, lineHeight = 26.sp), color = warnaTeks)
