@@ -40,7 +40,7 @@ private fun waktuKelas(k: JsonObject): Instant? =
 
 /** Seperti GooglePalsu di test_fetch.py, tapi dari fixture karangan kontrak. Daftar kelas dua halaman. */
 private class GooglePalsu(val kelasGagal: String? = null, val kodeGagal: Int = 403) : Minta {
-    val get = mutableListOf<String>()
+    val diminta = mutableListOf<String>()
     private val halaman = listOf(JsonArray(KURSUS.take(2)), JsonArray(KURSUS.drop(2)))
 
     override fun invoke(url: String, data: ByteArray?, headers: Map<String, String>): JsonElement {
@@ -49,7 +49,7 @@ private class GooglePalsu(val kelasGagal: String? = null, val kodeGagal: Int = 4
         assertFalse("akses tidak boleh di URL", AKSES_PALSU in url)
         val path = url.removePrefix(API_CLASSROOM).substringBefore("?")
         val q = uraiQuery(url.substringAfter("?", ""))
-        get += path
+        diminta += path
         if (path == "courses") {
             val i = q["pageToken"]?.toInt() ?: 0
             return buildJsonObject {
@@ -83,8 +83,8 @@ class AmbilClassroomTest {
             harap.getValue("tasks").jsonArray.sortedBy { kunciTugas(it) },
             dapat.getValue("tasks").jsonArray.sortedBy { kunciTugas(it) },
         )
-        assertEquals(2, palsu.get.count { it == "courses" })
-        assertEquals(2 + 2 * KURSUS.size, palsu.get.size)
+        assertEquals(2, palsu.diminta.count { it == "courses" })
+        assertEquals(2 + 2 * KURSUS.size, palsu.diminta.size)
     }
 
     @Test
@@ -95,7 +95,7 @@ class AmbilClassroomTest {
         val hasil = ambilClassroom(AKSES_PALSU, sekarang, palsu)
 
         val dalam = KURSUS.count { Classroom.perluDetail(it, sekarang) }
-        assertEquals(2 + 2 * dalam, palsu.get.size)
+        assertEquals(2 + 2 * dalam, palsu.diminta.size)
         assertTrue("jendela harus menyaring sebagian kelas", dalam < KURSUS.size)
         assertEquals("semua kelas tetap tersimpan", KURSUS.size, hasil.kelas.size)
     }
