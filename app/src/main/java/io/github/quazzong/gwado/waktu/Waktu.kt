@@ -19,9 +19,16 @@ data class Chip(val label: String, val makna: Makna)
 /** Teks waktu database ("2026-10-18T13:45:00Z") menjadi Instant. */
 fun dariDb(teks: String): Instant = Instant.parse(teks)
 
+private const val SEHARI = 24 * 3600L
+
+/** Sisa kurang dari ini = mepet, apa pun tanggalnya. */
+private const val BATAS_MEPET = 2 * SEHARI
+
 /**
- * Label chip sisa waktu, dihitung per tanggal WIB. Di bawah 1 jam selalu dalam menit,
- * termasuk yang melewati tengah malam. Label huruf kecil; tampilan yang mengkapitalkan.
+ * Label chip sisa waktu. Di bawah 1 jam dalam menit, di bawah 24 jam dalam jam (juga yang
+ * melewati tengah malam, jadi deadline 00.03 tidak pernah tertulis "besok"); selebihnya per
+ * tanggal WIB ("besok", "N hari", "lewat N hari"). Makna mepet = sisa kurang dari 48 jam,
+ * dihitung dari waktu, bukan tanggal. Label huruf kecil; tampilan yang mengkapitalkan.
  */
 fun sisaChip(deadline: Instant, sekarang: Instant): Chip {
     val hari = ChronoUnit.DAYS.between(sekarang.atOffset(WIB).toLocalDate(), deadline.atOffset(WIB).toLocalDate())
@@ -32,10 +39,9 @@ fun sisaChip(deadline: Instant, sekarang: Instant): Chip {
         return if (lewat) Chip("lewat $durasi", Makna.LEWAT) else Chip(durasi, Makna.MEPET)
     }
     return when {
-        lewat -> Chip(if (hari < 0) "lewat ${-hari} hari" else "lewat ${detik / 3600} jam", Makna.LEWAT)
-        hari == 0L -> Chip("${detik / 3600} jam", Makna.MEPET)
-        hari == 1L -> Chip("besok", Makna.MEPET)
-        else -> Chip("$hari hari", Makna.NORMAL)
+        lewat -> Chip(if (detik < SEHARI) "lewat ${detik / 3600} jam" else "lewat ${-hari} hari", Makna.LEWAT)
+        detik < SEHARI -> Chip("${detik / 3600} jam", Makna.MEPET)
+        else -> Chip(if (hari == 1L) "besok" else "$hari hari", if (detik < BATAS_MEPET) Makna.MEPET else Makna.NORMAL)
     }
 }
 

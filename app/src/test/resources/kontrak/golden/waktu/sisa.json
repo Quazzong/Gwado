@@ -7,6 +7,18 @@
   },
   {
     "deadline": "2026-11-02T16:59:00Z",
+    "label": "lewat 12 jam",
+    "makna": "lewat",
+    "sekarang": "2026-11-03T05:00:00Z"
+  },
+  {
+    "deadline": "2026-11-02T05:00:01Z",
+    "label": "lewat 23 jam",
+    "makna": "lewat",
+    "sekarang": "2026-11-03T05:00:00Z"
+  },
+  {
+    "deadline": "2026-11-02T05:00:00Z",
     "label": "lewat 1 hari",
     "makna": "lewat",
     "sekarang": "2026-11-03T05:00:00Z"
@@ -79,6 +91,18 @@
   },
   {
     "deadline": "2026-11-03T17:00:00Z",
+    "label": "12 jam",
+    "makna": "mepet",
+    "sekarang": "2026-11-03T05:00:00Z"
+  },
+  {
+    "deadline": "2026-11-04T04:59:59Z",
+    "label": "23 jam",
+    "makna": "mepet",
+    "sekarang": "2026-11-03T05:00:00Z"
+  },
+  {
+    "deadline": "2026-11-04T05:00:00Z",
     "label": "besok",
     "makna": "mepet",
     "sekarang": "2026-11-03T05:00:00Z"
@@ -91,6 +115,18 @@
   },
   {
     "deadline": "2026-11-04T17:00:00Z",
+    "label": "2 hari",
+    "makna": "mepet",
+    "sekarang": "2026-11-03T05:00:00Z"
+  },
+  {
+    "deadline": "2026-11-05T04:59:59Z",
+    "label": "2 hari",
+    "makna": "mepet",
+    "sekarang": "2026-11-03T05:00:00Z"
+  },
+  {
+    "deadline": "2026-11-05T05:00:00Z",
     "label": "2 hari",
     "makna": "normal",
     "sekarang": "2026-11-03T05:00:00Z"
@@ -109,9 +145,33 @@
   },
   {
     "deadline": "2026-11-03T17:45:00Z",
-    "label": "besok",
+    "label": "1 jam",
     "makna": "mepet",
     "sekarang": "2026-11-03T16:30:00Z"
+  },
+  {
+    "deadline": "2026-11-06T17:03:00Z",
+    "label": "3 jam",
+    "makna": "mepet",
+    "sekarang": "2026-11-06T14:00:00Z"
+  },
+  {
+    "deadline": "2026-11-07T16:59:00Z",
+    "label": "besok",
+    "makna": "mepet",
+    "sekarang": "2026-11-06T14:00:00Z"
+  },
+  {
+    "deadline": "2026-11-07T17:03:00Z",
+    "label": "2 hari",
+    "makna": "mepet",
+    "sekarang": "2026-11-06T14:00:00Z"
+  },
+  {
+    "deadline": "2026-11-08T16:59:00Z",
+    "label": "2 hari",
+    "makna": "normal",
+    "sekarang": "2026-11-06T14:00:00Z"
   },
   {
     "deadline": "2026-11-03T16:59:00Z",
@@ -121,7 +181,7 @@
   },
   {
     "deadline": "2026-11-03T16:59:00Z",
-    "label": "lewat 1 hari",
+    "label": "lewat 1 jam",
     "makna": "lewat",
     "sekarang": "2026-11-03T18:30:00Z"
   },
