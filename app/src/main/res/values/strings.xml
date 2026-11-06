@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">Gwado</string>
+    <string name="widget_tugas">Gwado Tugas</string>
+    <string name="widget_tugas_ket">Jumlah tugas yang harus dikerjakan dan tugas terdekat</string>
+    <string name="widget_terdekat">Gwado Terdekat</string>
+    <string name="widget_terdekat_ket">Tugas terdekat dan jam pengambilan terakhir</string>
 </resources>

@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -83,12 +84,21 @@ fun Akar(
     hasilAmbil: HasilAmbil?,
     ditahan: Map<String, Tahan>,
     lencanaLayanan: Boolean,
+    bukaTugas: String? = null,
+    onTugasDibuka: () -> Unit = {},
     layanan: @Composable (buka: (NavKey) -> Unit) -> Unit,
     masuk: @Composable (id: String, onKembali: () -> Unit) -> Unit,
     siapkan: (@Composable (buka: (NavKey) -> Unit) -> Unit)? = null,
 ) {
     val tumpukan = rememberNavBackStack(Utama)
     val buka = { k: NavKey -> if (tumpukan.lastOrNull() != k) tumpukan.add(k) }
+    // Ketuk tugas di widget: buka detailnya (diabaikan selama Siapkan Gwado tampil).
+    LaunchedEffect(bukaTugas) {
+        if (bukaTugas != null) {
+            if (siapkan == null) buka(Detail(bukaTugas))
+            onTugasDibuka()
+        }
+    }
     NavDisplay(
         backStack = tumpukan,
         onBack = { tumpukan.removeLastOrNull() },

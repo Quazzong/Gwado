@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Warna widget layar utama, tema terang (sama dengan token aplikasi). -->
+<resources>
+    <color name="widget_kartu">#FFFFFF</color>
+    <color name="widget_garis">#4A2545</color>
+    <color name="widget_bayangan">#4A2545</color>
+    <color name="widget_garis_halus">#F1E4EE</color>
+    <color name="widget_redup">#7A5872</color>
+</resources>

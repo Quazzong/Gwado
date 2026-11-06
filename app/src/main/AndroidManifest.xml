@@ -32,6 +32,29 @@
                 <data android:scheme="moodlemobile" />
             </intent-filter>
         </activity>
+
+        <receiver
+            android:name=".widget.PenerimaTugas"
+            android:exported="true"
+            android:label="@string/widget_tugas">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/widget_tugas" />
+        </receiver>
+        <receiver
+            android:name=".widget.PenerimaTerdekat"
+            android:exported="true"
+            android:label="@string/widget_terdekat">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/widget_terdekat" />
+        </receiver>
     </application>
 
 </manifest>

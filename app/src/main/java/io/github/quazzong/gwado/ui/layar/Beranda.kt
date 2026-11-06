@@ -101,7 +101,7 @@ private class DataKepala(
 )
 
 /** Selesai run sukses terakhir dari sumber mana pun. */
-private fun Db.suksesTerakhir(): Instant? =
+internal fun Db.suksesTerakhir(): Instant? =
     (satu("SELECT max(selesai) AS s FROM source_runs WHERE status = 'success'")?.get("s") as String?)?.let(::dariDb)
 
 /** Nama layanan di filter; nama panjang disingkat jadi huruf depan tiap kata (Google Classroom → GC). */

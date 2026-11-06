@@ -38,6 +38,8 @@ import io.github.quazzong.gwado.ui.layar.LayarLayanan
 import io.github.quazzong.gwado.ui.layar.LayarMasuk
 import io.github.quazzong.gwado.ui.layar.LayarSiapkan
 import io.github.quazzong.gwado.ui.tema.GwadoTema
+import io.github.quazzong.gwado.widget.EKSTRA_TUGAS
+import io.github.quazzong.gwado.widget.perbaruiWidget
 import java.time.Instant
 import java.time.LocalDate
 import kotlinx.coroutines.CancellationException
@@ -63,6 +65,7 @@ class MainActivity : ComponentActivity() {
     private var tekstur by mutableStateOf(Tekstur.BAWAAN)
     private var lencanaLayanan by mutableStateOf(false)                    // ada layanan yang menolak login/izin
     private var tampilSiapkan by mutableStateOf(false)                     // layar Siapkan Gwado menggantikan tab
+    private var bukaTugas by mutableStateOf<String?>(null)                 // detail yang diminta dari widget
     private val pengambil = Pengambil(this, onBerubah = { muatUlangDaftar() })
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -80,6 +83,8 @@ class MainActivity : ComponentActivity() {
                     hasilAmbil = pengambil.hasilTerakhir,
                     ditahan = pengambil.ditahan,
                     lencanaLayanan = lencanaLayanan,
+                    bukaTugas = bukaTugas,
+                    onTugasDibuka = { bukaTugas = null },
                     layanan = { buka ->
                         LayarLayanan(
                             pengambil, versiData, semester, kuliah, matkul,
@@ -135,6 +140,7 @@ class MainActivity : ComponentActivity() {
                 lencanaLayanan = d.ditolak
                 tekstur = d.tekstur
                 versiData++
+                perbaruiWidget(this@MainActivity)
                 ""
             } catch (e: CancellationException) {
                 throw e
@@ -192,6 +198,7 @@ class MainActivity : ComponentActivity() {
     }
 
     private fun intentMasuk(intent: Intent?) {
+        intent?.getStringExtra(EKSTRA_TUGAS)?.let { bukaTugas = it }
         val data = intent?.data ?: return
         if (data.scheme == "moodlemobile") pengambil.tangani(data.toString())
     }

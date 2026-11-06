@@ -22,6 +22,7 @@ import io.github.quazzong.gwado.layanan.tokenGoogleDiam
 import io.github.quazzong.gwado.masuk.BrankasKeystore
 import io.github.quazzong.gwado.semester.semesterTersimpan
 import io.github.quazzong.gwado.waktu.dariDb
+import io.github.quazzong.gwado.widget.perbaruiWidget
 import java.time.Duration
 import java.time.Instant
 import kotlinx.coroutines.CancellationException
@@ -58,6 +59,7 @@ class PekerjaAmbil(context: Context, params: WorkerParameters) : CoroutineWorker
         Log.i(TAG, "Ambil otomatis: $ringkas")
         prefsGwado(applicationContext).edit()
             .putString(KUNCI_OTOMATIS, "${iso(Instant.now())} $ringkas").apply()
+        perbaruiWidget(applicationContext)                                   // label sisa waktu ikut maju tiap jam
         return Result.success()
     }
 }

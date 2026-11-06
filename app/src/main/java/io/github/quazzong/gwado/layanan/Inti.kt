@@ -17,6 +17,7 @@ import io.github.quazzong.gwado.ingest.proses
 import io.github.quazzong.gwado.masuk.BrankasToken
 import io.github.quazzong.gwado.segar.sumberTerakhir
 import io.github.quazzong.gwado.sumber.HasilSumber
+import io.github.quazzong.gwado.widget.perbaruiWidget
 import java.time.Instant
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
@@ -98,6 +99,7 @@ internal suspend fun ambilDanCatat(
         isiGagal(l.id, mulai, Instant.now(), e)                    // run gagal tetap dicatat
     }
     Gudang.pakai(context) { it.proses(isi) }
+    perbaruiWidget(context)
     return null
 }
 
