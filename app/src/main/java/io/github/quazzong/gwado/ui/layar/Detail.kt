@@ -89,6 +89,7 @@ private val LABEL_KUMPUL = mapOf(
     "belum" to "belum dikumpulkan",
     "draf" to "draf di situs",
     "terkumpul" to "terkumpul di situs",
+    "selesai" to "selesai di situs",
 )
 
 private class IsiDetail(val tugas: DetailTugas, val riwayat: List<BarisRiwayat>, val domain: List<String>)
@@ -319,6 +320,7 @@ private fun ChipStatus(t: DetailTugas, sekarang: Instant) {
     when {
         t.status == "done" -> Chip("selesai", jenis = JenisChip.AKTIF)
         t.statusKumpulSitus == "terkumpul" -> Chip("terkumpul di situs")
+        t.statusKumpulSitus == "selesai" -> Chip("selesai di situs")
         c == null -> Chip("tanpa deadline", jenis = JenisChip.PUTUS)
         else -> Chip(
             c.label,

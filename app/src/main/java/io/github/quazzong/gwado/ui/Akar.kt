@@ -58,7 +58,7 @@ data class Masuk(val id: String) : NavKey
 @Serializable
 data class DaftarMatkul(val sumber: String) : NavKey
 
-/** Semua tugas yang dicentang atau terkumpul di situs. */
+/** Semua tugas yang dicentang atau beres di situs. */
 @Serializable
 data object SemuaSelesai : NavKey
 

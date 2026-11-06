@@ -2,7 +2,10 @@ package io.github.quazzong.gwado.sumber
 
 import java.time.Duration
 import java.time.Instant
+import kotlinx.serialization.json.JsonNull
 import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.JsonPrimitive
+import kotlinx.serialization.json.booleanOrNull
 
 /**
  * Parser Moodle (Brone, Eling): respons API mentah → kelas + tugas.
@@ -19,6 +22,9 @@ object Moodle {
         "submitted" to "terkumpul",
     )
 
+    /** state completion yang berarti aktivitas sudah selesai: selesai, selesai lulus, selesai gagal. */
+    private val STATE_SELESAI = setOf(1L, 2L, 3L)
+
     /** "COM60004_2024|174.04.17|2026.1" → "COM60004"; tidak ketemu → null. */
     fun kodeMk(shortname: String?): String? = KODE_MK.find(shortname ?: "")?.groupValues?.get(1)
 
@@ -28,6 +34,35 @@ object Moodle {
         val sub = mentah.obj("lastattempt")?.obj("submission") ?: return null
         return STATUS_ASSIGN[sub.teks("status")]
     }
+
+    /**
+     * Respons core_completion_get_activities_completion_status per kelas → cmid yang selesai di situs.
+     * Tanda ini dibuat mahasiswa sendiri ("Mark as done") atau oleh syarat otomatis, jadi bukan
+     * bukti pengumpulan. Dilewati: tracking mati, tanpa completion, tidak terlihat, belum selesai.
+     */
+    fun selesaiPerCm(completionPerKelas: Map<Long, JsonObject>): Set<String> {
+        val hasil = mutableSetOf<String>()
+        for (r in completionPerKelas.values) {
+            for (s in r.daftar("statuses")) {
+                val cmid = s["cmid"] as? JsonPrimitive
+                if (cmid == null || cmid is JsonNull || s.angka("tracking") !in setOf(1L, 2L)) continue
+                if (s.bernilaiSalah("hascompletion") || s.bernilaiSalah("uservisible")) continue
+                if (s.angka("state") in STATE_SELESAI) hasil += cmid.content
+            }
+        }
+        return hasil
+    }
+
+    private fun JsonObject.bernilaiSalah(k: String): Boolean =
+        (this[k] as? JsonPrimitive)?.let { !it.isString && it.booleanOrNull == false } == true
+
+    /**
+     * Status pengumpulan + tanda selesai di situs → satu status situs.
+     * Urutan: terkumpul > draf > selesai > belum > tidak diketahui. Draf tidak ditimpa karena
+     * artinya tugas memang belum terkirim. Hanya ditampilkan, tidak pernah mencentang tugas.
+     */
+    fun gabungStatus(kumpul: String?, selesai: Boolean): String? =
+        if (selesai && kumpul != "terkumpul" && kumpul != "draf") "selesai" else kumpul
 
     fun kelas(coursesAll: JsonObject): List<Kelas> = coursesAll.daftar("courses").map { c ->
         Kelas(
@@ -42,12 +77,13 @@ object Moodle {
         )
     }
 
-    /** statusPerAssign: {id assign: respons submission_status mentah}. */
+    /** statusPerAssign: {id assign: respons submission_status mentah}; selesai: dari [selesaiPerCm]. */
     fun tugas(
         situs: String,
         assignments: JsonObject,
         quizzes: JsonObject,
         statusPerAssign: Map<Long, JsonObject>,
+        selesai: Set<String> = emptySet(),
     ): List<Tugas> {
         val dasar = situs.trimEnd('/')
         val hasil = mutableListOf<Tugas>()
@@ -63,7 +99,10 @@ object Moodle {
                     deskripsi = teksPolos(a.teks("intro")),
                     deadline = isoDariUnix(a.angka("duedate")),
                     url = "$dasar/mod/assign/view.php?id=$cmid",
-                    statusKumpulSitus = statusKumpul(a.angka("id")?.let { statusPerAssign[it] }),
+                    statusKumpulSitus = gabungStatus(
+                        statusKumpul(a.angka("id")?.let { statusPerAssign[it] }),
+                        cmid in selesai,
+                    ),
                 )
             }
         }
@@ -78,7 +117,8 @@ object Moodle {
                 deskripsi = teksPolos(q.teks("intro")),
                 deadline = isoDariUnix(q.angka("timeclose")),
                 url = "$dasar/mod/quiz/view.php?id=$cmid",
-                statusKumpulSitus = null, // status percobaan kuis tidak tersedia untuk mahasiswa
+                // status percobaan kuis tidak tersedia untuk mahasiswa, hanya tanda selesai
+                statusKumpulSitus = gabungStatus(null, cmid in selesai),
             )
         }
         return hasil
@@ -90,7 +130,11 @@ object Moodle {
         assignments: JsonObject,
         quizzes: JsonObject,
         statusPerAssign: Map<Long, JsonObject>,
-    ) = HasilSumber(kelas(coursesAll), tugas(situs, assignments, quizzes, statusPerAssign))
+        completionPerKelas: Map<Long, JsonObject> = emptyMap(),
+    ) = HasilSumber(
+        kelas(coursesAll),
+        tugas(situs, assignments, quizzes, statusPerAssign, selesaiPerCm(completionPerKelas)),
+    )
 
     /** Jendela status assign (moodle.JENDELA_DETAIL). */
     val JENDELA_DETAIL: Duration = Duration.ofDays(30)

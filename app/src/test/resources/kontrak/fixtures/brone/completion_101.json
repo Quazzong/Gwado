@@ -1,0 +1,110 @@
+{
+  "statuses": [
+    {
+      "cmid": 1201,
+      "modname": "assign",
+      "instance": 201,
+      "state": 1,
+      "timecompleted": 1790812800,
+      "tracking": 1,
+      "overrideby": null,
+      "valueused": false,
+      "hascompletion": true,
+      "isautomatic": false,
+      "istrackeduser": true,
+      "uservisible": true,
+      "details": []
+    },
+    {
+      "cmid": 1202,
+      "modname": "assign",
+      "instance": 202,
+      "state": 1,
+      "timecompleted": 1790812800,
+      "tracking": 1,
+      "overrideby": null,
+      "valueused": false,
+      "hascompletion": true,
+      "isautomatic": false,
+      "istrackeduser": true,
+      "uservisible": true,
+      "details": []
+    },
+    {
+      "cmid": 1290,
+      "modname": "page",
+      "instance": 401,
+      "state": 0,
+      "timecompleted": 0,
+      "tracking": 0,
+      "overrideby": null,
+      "valueused": false,
+      "hascompletion": false,
+      "isautomatic": false,
+      "istrackeduser": true,
+      "uservisible": true,
+      "details": []
+    },
+    {
+      "cmid": 1291,
+      "modname": "forum",
+      "instance": 402,
+      "state": 1,
+      "timecompleted": 1790812800,
+      "tracking": 1,
+      "overrideby": null,
+      "valueused": false,
+      "hascompletion": true,
+      "isautomatic": false,
+      "istrackeduser": true,
+      "uservisible": true,
+      "details": []
+    },
+    {
+      "cmid": 1301,
+      "modname": "quiz",
+      "instance": 301,
+      "state": 0,
+      "timecompleted": 0,
+      "tracking": 1,
+      "overrideby": null,
+      "valueused": false,
+      "hascompletion": true,
+      "isautomatic": false,
+      "istrackeduser": true,
+      "uservisible": true,
+      "details": []
+    },
+    {
+      "cmid": 1302,
+      "modname": "quiz",
+      "instance": 302,
+      "state": 3,
+      "timecompleted": 1790812800,
+      "tracking": 2,
+      "overrideby": null,
+      "valueused": false,
+      "hascompletion": true,
+      "isautomatic": true,
+      "istrackeduser": true,
+      "uservisible": true,
+      "details": [
+        {
+          "rulename": "completionusegrade",
+          "rulevalue": {
+            "status": 1,
+            "description": "Receive a grade"
+          }
+        },
+        {
+          "rulename": "completionpassgrade",
+          "rulevalue": {
+            "status": 3,
+            "description": "Receive a passing grade"
+          }
+        }
+      ]
+    }
+  ],
+  "warnings": []
+}

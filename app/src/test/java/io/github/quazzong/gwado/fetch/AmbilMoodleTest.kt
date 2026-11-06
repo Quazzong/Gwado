@@ -8,11 +8,13 @@ import java.time.Instant
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.jsonArray
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
 import kotlinx.serialization.json.long
 import kotlinx.serialization.json.longOrNull
+import kotlinx.serialization.json.putJsonArray
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertThrows
@@ -39,12 +41,22 @@ private fun assignFixture(situs: String): List<JsonObject> =
 
 private fun JsonObject.due(): Long? = this["duedate"]?.jsonPrimitive?.longOrNull
 
+private fun ada(nama: String) = AmbilMoodleTest::class.java.getResource("/kontrak/$nama") != null
+
+/** Kelas yang punya completion_<id>.json di fixture: dianggap sedang berjalan. */
+private fun kelasBerjalan(situs: String): List<JsonObject> =
+    Kontrak.muat("fixtures/$situs/courses_all.json").getValue("courses").jsonArray
+        .map { it.jsonObject }
+        .filter { ada("fixtures/$situs/completion_${it.getValue("id").jsonPrimitive.content}.json") }
+
 /** Seperti MoodlePalsu di test_fetch.py, tapi menjawab dari fixture karangan kontrak. */
 private class MoodlePalsu(
     val situs: String,
     val tokenBenar: String = TOKEN,
     val gagalStatus: String? = null,      // null | "lain" | "jaringan"
     val tanpaKelas: Boolean = false,
+    val gagalCompletion: String? = null,  // null | "lain" | "jaringan"
+    val gagalInfo: Boolean = false,
 ) : Minta {
     val panggilan = mutableListOf<Pair<String, Map<String, String>>>()
 
@@ -59,8 +71,23 @@ private class MoodlePalsu(
         }
         val d = "fixtures/$situs"
         return when (val f = p["wsfunction"]) {
-            "core_course_get_enrolled_courses_by_timeline_classification" ->
-                if (tanpaKelas) Json.parseToJsonElement("""{"courses": []}""") else Kontrak.muat("$d/courses_all.json")
+            "core_course_get_enrolled_courses_by_timeline_classification" -> when {
+                tanpaKelas -> Json.parseToJsonElement("""{"courses": []}""")
+                p["classification"] == "inprogress" -> buildJsonObject {
+                    putJsonArray("courses") { kelasBerjalan(situs).forEach { add(it) } }
+                }
+                else -> Kontrak.muat("$d/courses_all.json")
+            }
+            "core_webservice_get_site_info" ->
+                if (gagalInfo) ERROR_BIASA else Json.parseToJsonElement("""{"sitename": "x", "userid": 999}""")
+            "core_completion_get_activities_completion_status" -> {
+                assertEquals("999", p["userid"])
+                when (gagalCompletion) {
+                    "lain" -> ERROR_BIASA
+                    "jaringan" -> throw FetchError("jaringan", "tidak tersambung setelah 3 percobaan (IOException)")
+                    else -> Kontrak.muat("$d/completion_${p.getValue("courseid")}.json")
+                }
+            }
             "mod_assign_get_assignments" -> Kontrak.muat("$d/assignments.json")
             "mod_quiz_get_quizzes_by_courses" -> Kontrak.muat("$d/quizzes.json")
             "mod_assign_get_submission_status" -> when (gagalStatus) {
@@ -69,7 +96,7 @@ private class MoodlePalsu(
                 else -> {
                     val nama = "$d/submission_status_${p.getValue("assignid")}.json"
                     // tidak ada di fixture → error biasa → status "tidak diketahui", sama seperti golden
-                    if (javaClass.getResource("/kontrak/$nama") != null) Kontrak.muat(nama) else ERROR_BIASA
+                    if (ada(nama)) Kontrak.muat(nama) else ERROR_BIASA
                 }
             }
             else -> error("fungsi tak terduga: $f")
@@ -81,16 +108,15 @@ private class MoodlePalsu(
 
 class AmbilMoodleTest {
     /** sekarang = deadline paling awal → semua assign masuk jendela → hasil harus sama dengan golden parser. */
-    private fun cekUtuh(situs: String) {
+    private fun cekUtuh(situs: String, palsu: MoodlePalsu = MoodlePalsu(situs), golden: String = "moodle_${situs}_selesai") {
         val semua = assignFixture(situs)
         val awal = semua.mapNotNull { it.due() }.filter { it > 0 }.minOrNull()
         val sekarang = if (awal != null) Instant.ofEpochSecond(awal) else SEKARANG
         val alamat = "https://$situs.ub.ac.id"
-        val palsu = MoodlePalsu(situs)
 
         val hasil = ambilMoodle(alamat, TOKEN, sekarang, palsu)
 
-        Kontrak.cocokGolden("moodle_$situs", hasil)
+        Kontrak.cocokGolden(golden, hasil)
         assertTrue(palsu.panggilan.all { (u, _) -> u == "$alamat/webservice/rest/server.php" })
         assertTrue("courseids[0]" in palsu.fungsi("mod_assign_get_assignments").single())
         assertEquals(semua.size, palsu.fungsi("mod_assign_get_submission_status").size)
@@ -99,6 +125,35 @@ class AmbilMoodleTest {
     @Test fun utuhBroneSamaDenganGolden() = cekUtuh("brone")
 
     @Test fun utuhElingSamaDenganGolden() = cekUtuh("eling")
+
+    @Test
+    fun completionHanyaKelasBerjalan() {
+        val palsu = MoodlePalsu("brone")
+        ambilMoodle(BRONE, TOKEN, SEKARANG, palsu)
+        val diminta = palsu.fungsi("core_completion_get_activities_completion_status").map { it.getValue("courseid") }
+        val harus = kelasBerjalan("brone").map { it.getValue("id").jsonPrimitive.content }
+        assertEquals(harus, diminta)
+        assertTrue("kelas semester lalu tidak boleh diminta", diminta.size < Kontrak.muat("fixtures/brone/courses_all.json").getValue("courses").jsonArray.size)
+    }
+
+    @Test
+    fun completionGagalBiasaSamaDenganTanpaCompletion() =
+        cekUtuh("brone", MoodlePalsu("brone", gagalCompletion = "lain"), golden = "moodle_brone")
+
+    @Test
+    fun infoSitusGagalBiasaTanpaCompletion() {
+        val palsu = MoodlePalsu("brone", gagalInfo = true)
+        cekUtuh("brone", palsu, golden = "moodle_brone")
+        assertTrue(palsu.fungsi("core_completion_get_activities_completion_status").isEmpty())
+    }
+
+    @Test
+    fun completionGagalJaringanMenggagalkanRun() {
+        val e = assertThrows(FetchError::class.java) {
+            ambilMoodle(BRONE, TOKEN, SEKARANG, MoodlePalsu("brone", gagalCompletion = "jaringan"))
+        }
+        assertEquals("jaringan", e.jenis)
+    }
 
     @Test
     fun statusHanyaDalamJendela() {
@@ -116,7 +171,8 @@ class AmbilMoodleTest {
 
     @Test
     fun statusGagalBiasaTidakMenggagalkanRun() {
-        val hasil = ambilMoodle(BRONE, TOKEN, SEKARANG, MoodlePalsu("brone", gagalStatus = "lain"))
+        val palsu = MoodlePalsu("brone", gagalStatus = "lain", gagalCompletion = "lain")
+        val hasil = ambilMoodle(BRONE, TOKEN, SEKARANG, palsu)
         assertTrue(hasil.tugas.isNotEmpty())
         assertTrue(hasil.tugas.filter { it.jenis == "assign" }.all { it.statusKumpulSitus == null })
     }

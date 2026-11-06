@@ -44,9 +44,13 @@ fun mingguKe(kuliahMulai: LocalDate, hariIni: LocalDate): Int? {
 
 data class Progres(val selesai: Int, val total: Int)
 
+/** Status situs yang berarti tugas sudah beres di sana: terkumpul, atau ditandai selesai. */
+fun beresDiSitus(statusKumpulSitus: String?): Boolean =
+    statusKumpulSitus == "terkumpul" || statusKumpulSitus == "selesai"
+
 /**
  * Tugas yang deadline-nya (tanggal WIB) jatuh di minggu ini, Senin–Minggu. Selesai =
- * dicentang atau terkumpul di situs. Tugas yang hilang dari situs dan belum dicentang
+ * dicentang atau beres di situs. Tugas yang hilang dari situs dan belum dicentang
  * tidak dihitung. Masukan: daftarTugas(semua = true).
  */
 fun progresMinggu(semua: List<BarisTugas>, hariIni: LocalDate): Progres {
@@ -58,17 +62,17 @@ fun progresMinggu(semua: List<BarisTugas>, hariIni: LocalDate): Progres {
         tanggal in awal..akhir && (t.statusSitus == "aktif" || t.status == "done")
     }
     return Progres(
-        selesai = mingguIni.count { it.status == "done" || it.statusKumpulSitus == "terkumpul" },
+        selesai = mingguIni.count { it.status == "done" || beresDiSitus(it.statusKumpulSitus) },
         total = mingguIni.size,
     )
 }
 
 /**
- * Tugas yang beres: dicentang pengguna, atau terkumpul di situs dan masih ada di situs.
+ * Tugas yang beres: dicentang pengguna, atau beres di situs dan masih ada di situs.
  * Centang tetap milik pengguna; status situs hanya ikut menentukan tampilan.
  */
 fun beres(t: BarisTugas): Boolean =
-    t.status == "done" || (t.statusKumpulSitus == "terkumpul" && t.statusSitus == "aktif")
+    t.status == "done" || (beresDiSitus(t.statusKumpulSitus) && t.statusSitus == "aktif")
 
 /**
  * Tugas beres yang deadline-nya (tanggal WIB) jatuh di minggu ini, Senin–Minggu, untuk

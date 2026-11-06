@@ -58,6 +58,7 @@ import io.github.quazzong.gwado.R
 import io.github.quazzong.gwado.beranda.kuliahMulai
 import io.github.quazzong.gwado.beranda.progresMinggu
 import io.github.quazzong.gwado.beranda.beres
+import io.github.quazzong.gwado.beranda.beresDiSitus
 import io.github.quazzong.gwado.beranda.selesaiMinggu
 import io.github.quazzong.gwado.db.Db
 import io.github.quazzong.gwado.db.Gudang
@@ -80,16 +81,16 @@ import io.github.quazzong.gwado.waktu.sisaChip
 import java.time.Instant
 import java.time.LocalDate
 
-/** Tugas belum dicentang yang situsnya mencatat sudah dikumpulkan. */
-internal fun terkumpul(t: BarisTugas): Boolean =
-    t.status != "done" && t.statusKumpulSitus == "terkumpul"
+/** Tugas belum dicentang yang situsnya mencatat sudah terkumpul atau ditandai selesai. */
+internal fun beresSitus(t: BarisTugas): Boolean =
+    t.status != "done" && beresDiSitus(t.statusKumpulSitus)
 
 /**
- * Tugas belum dicentang dan belum terkumpul di situs yang sudah lewat,
+ * Tugas belum dicentang dan belum beres di situs yang sudah lewat,
  * hari ini, besok, atau kurang dari 1 jam lagi.
  */
 internal fun mendesak(t: BarisTugas, sekarang: Instant): Boolean =
-    t.status != "done" && !terkumpul(t) &&
+    t.status != "done" && !beresSitus(t) &&
         (t.deadline?.let { sisaChip(dariDb(it), sekarang).makna != Makna.NORMAL } ?: false)
 
 private class DataKepala(
@@ -110,7 +111,7 @@ internal fun singkat(nama: String): String =
 /**
  * Beranda: kepala (minggu, hari, progres), ubin ringkasan, filter layanan, lalu tugas
  * dalam bagian MENDESAK, NANTI (tanpa deadline di akhirnya), dan SELESAI MINGGU INI
- * (dicentang atau terkumpul di situs, deadline minggu ini). Yang beres di minggu lain ada
+ * (dicentang atau beres di situs, deadline minggu ini). Yang beres di minggu lain ada
  * di layar semua yang selesai.
  * [versi] naik setiap kali data di database berubah. Ketuk kartu = buka detail.
  */
@@ -144,7 +145,7 @@ fun Beranda(
     val layanan = daftar.map { it.sumber ?: "Manual" }.distinct().sortedBy { it == "Manual" }
     val aktif = filter?.takeIf { it in layanan }
     val tampil = if (aktif == null) daftar else daftar.filter { (it.sumber ?: "Manual") == aktif }
-    val belum = tampil.filterNot(::terkumpul)
+    val belum = tampil.filterNot(::beresSitus)
     val (atas, bawah) = belum.partition { mendesak(it, sekarang) }
     val lewat = atas.filter { lewatDeadline(it, sekarang) }
     val selesai = selesaiMinggu(data?.semua.orEmpty(), sekarang.atOffset(WIB).toLocalDate())
@@ -205,7 +206,7 @@ fun Beranda(
         }
         item(key = "ubin") {
             Row(Modifier.fillMaxWidth().padding(top = Jarak.s4), horizontalArrangement = Arrangement.spacedBy(6.dp)) {
-                Ubin("Aktif", "${daftar.count { !terkumpul(it) }}", Modifier.weight(1f))
+                Ubin("Aktif", "${daftar.count { !beresSitus(it) }}", Modifier.weight(1f))
                 Ubin("Mendesak", "${daftar.count { mendesak(it, sekarang) }}", Modifier.weight(1f))
                 Ubin("Diambil", data?.diambil?.let { jamSingkat(it, sekarang) } ?: "—", Modifier.weight(1f))
             }

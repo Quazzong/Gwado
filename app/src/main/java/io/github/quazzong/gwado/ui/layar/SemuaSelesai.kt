@@ -19,6 +19,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import io.github.quazzong.gwado.R
+import io.github.quazzong.gwado.beranda.beresDiSitus
 import io.github.quazzong.gwado.beranda.saring
 import io.github.quazzong.gwado.beranda.semuaSelesai
 import io.github.quazzong.gwado.db.Gudang
@@ -38,9 +39,9 @@ import io.github.quazzong.gwado.ui.tema.Jarak
 import java.time.Instant
 
 /**
- * Semua tugas yang dicentang atau terkumpul di situs, dalam dua bagian: DICENTANG (belum
- * terkumpul di situs, termasuk tugas manual) lalu TERKUMPUL DI SITUS, masing-masing deadline
- * terbaru di atas. Bisa disaring per layanan dan dicari lewat judul atau mata kuliah.
+ * Semua tugas yang dicentang atau beres di situs, dalam tiga bagian: DICENTANG (belum beres
+ * di situs, termasuk tugas manual), TERKUMPUL DI SITUS, lalu SELESAI DI SITUS (ditandai
+ * selesai di situs tanpa bukti terkumpul), masing-masing deadline terbaru di atas. Bisa disaring per layanan dan dicari lewat judul atau mata kuliah.
  * [versi] naik setiap kali data berubah (misalnya setelah Batalkan selesai).
  */
 @Composable
@@ -57,7 +58,9 @@ fun LayarSemuaSelesai(versi: Int, onBuka: (String) -> Unit, onKembali: () -> Uni
     val layanan = semua.map { it.sumber ?: "Manual" }.distinct().sortedBy { it == "Manual" }
     val aktif = filter?.takeIf { it in layanan }
     val tampil = saring(semua, kata, aktif)
-    val (terkumpul, dicentang) = tampil.partition { it.statusKumpulSitus == "terkumpul" }
+    val terkumpul = tampil.filter { it.statusKumpulSitus == "terkumpul" }
+    val selesaiSitus = tampil.filter { it.statusKumpulSitus == "selesai" }
+    val dicentang = tampil.filterNot { beresDiSitus(it.statusKumpulSitus) }
 
     LazyColumn(
         Modifier.fillMaxSize().latarLayar().safeDrawingPadding(),
@@ -95,6 +98,7 @@ fun LayarSemuaSelesai(versi: Int, onBuka: (String) -> Unit, onKembali: () -> Uni
         }
         kelompok("Dicentang", dicentang, sekarang, onBuka)
         kelompok("Terkumpul di situs", terkumpul, sekarang, onBuka)
+        kelompok("Selesai di situs", selesaiSitus, sekarang, onBuka)
     }
 }
 

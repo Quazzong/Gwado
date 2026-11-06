@@ -1,0 +1,20 @@
+{
+  "statuses": [
+    {
+      "cmid": 1206,
+      "modname": "assign",
+      "instance": 206,
+      "state": 2,
+      "timecompleted": 1790812800,
+      "tracking": 1,
+      "overrideby": null,
+      "valueused": false,
+      "hascompletion": true,
+      "isautomatic": false,
+      "istrackeduser": true,
+      "uservisible": true,
+      "details": []
+    }
+  ],
+  "warnings": []
+}

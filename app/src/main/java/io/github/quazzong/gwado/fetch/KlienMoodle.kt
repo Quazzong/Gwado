@@ -54,8 +54,39 @@ class KlienMoodle(situs: String, private val token: String, private val minta: M
 }
 
 /**
- * ambil_moodle (tanpa lampiran): semua kelas → assign + kuis → status assign dalam jendela → normalisasi.
- * Blokir: panggil dari Dispatchers.IO.
+ * Tanda selesai di situs untuk kelas yang sedang berjalan: {id kelas: respons completion}.
+ * Butuh userid dari info situs. Gagal biasa (fungsi ditutup situs, kelas tanpa izin) hanya
+ * melewatkan bagian itu; gagal jaringan dan token tetap menggagalkan pengambilan.
+ */
+internal fun ambilCompletion(m: KlienMoodle): Map<Long, JsonObject> {
+    fun <T> lewatiBiasa(blok: () -> T): T? = try {
+        blok()
+    } catch (e: FetchError) {
+        if (e.jenis != "lain") throw e
+        null
+    }
+    val userid = lewatiBiasa { m.panggil("core_webservice_get_site_info").jsonObject.angka("userid") }
+        ?: return emptyMap()
+    val berjalan = lewatiBiasa {
+        m.panggil(
+            "core_course_get_enrolled_courses_by_timeline_classification",
+            "classification" to "inprogress", "limit" to 0,
+        ).jsonObject
+    } ?: return emptyMap()
+    val hasil = mutableMapOf<Long, JsonObject>()
+    for (c in berjalan.daftar("courses")) {
+        val id = c.angka("id") ?: continue
+        lewatiBiasa {
+            m.panggil("core_completion_get_activities_completion_status", "courseid" to id, "userid" to userid)
+                .jsonObject
+        }?.let { hasil[id] = it }
+    }
+    return hasil
+}
+
+/**
+ * ambil_moodle (tanpa lampiran): semua kelas → assign + kuis → status assign dalam jendela →
+ * tanda selesai kelas yang berjalan → normalisasi. Blokir: panggil dari Dispatchers.IO.
  */
 fun ambilMoodle(situs: String, token: String, sekarang: Instant, minta: Minta = mintaBawaan): HasilSumber {
     val m = KlienMoodle(situs, token, minta)
@@ -85,5 +116,6 @@ fun ambilMoodle(situs: String, token: String, sekarang: Instant, minta: Minta = 
             }
         }
     }
-    return Moodle.normalisasi(situs, coursesAll, assignments, quizzes, status)
+    val completion = if (ids.isNotEmpty()) ambilCompletion(m) else emptyMap()
+    return Moodle.normalisasi(situs, coursesAll, assignments, quizzes, status, completion)
 }

@@ -15,6 +15,7 @@ import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import io.github.quazzong.gwado.beranda.beresDiSitus
 import io.github.quazzong.gwado.tugas.BarisTugas
 import io.github.quazzong.gwado.ui.tema.GwadoTema
 import io.github.quazzong.gwado.ui.tema.Huruf
@@ -27,8 +28,9 @@ import java.time.Instant
 /**
  * Kartu satu tugas: judul, layanan + mata kuliah, dan chip sisa waktu.
  * Latar dan chip mengikuti makna sisa waktu terhadap `sekarang`. Tugas yang beres (dicentang
- * atau terkumpul di situs) datar dan bertanda kue bercentang. Yang terkumpul di situs paling
- * redup (judul redup + chip TERKUMPUL redup); yang hanya dicentang judulnya tetap jelas.
+ * atau beres di situs) datar dan bertanda kue bercentang. Yang beres di situs paling redup
+ * (judul redup + chip TERKUMPUL atau SELESAI DI SITUS redup); yang hanya dicentang judulnya
+ * tetap jelas.
  */
 @Composable
 fun KartuTugas(
@@ -40,8 +42,8 @@ fun KartuTugas(
     val w = GwadoTema.warna
     val selesai = baris.status == "done"
     val deadline = baris.deadline?.let(::dariDb)
-    val terkumpul = baris.statusKumpulSitus == "terkumpul"
-    val beres = selesai || terkumpul
+    val diSitus = beresDiSitus(baris.statusKumpulSitus)
+    val beres = selesai || diSitus
     val chip = if (beres) null else deadline?.let { sisaChip(it, sekarang) }
     val tanpaDeadline = !beres && deadline == null
     val latar = when {
@@ -69,7 +71,7 @@ fun KartuTugas(
                 Text(
                     baris.judul,
                     style = Huruf.judulKartu,
-                    color = if (terkumpul) w.tintaRedup else w.tinta,
+                    color = if (diSitus) w.tintaRedup else w.tinta,
                     maxLines = 2,
                     overflow = TextOverflow.Ellipsis,
                 )
@@ -89,7 +91,8 @@ fun KartuTugas(
                 }
             }
             when {
-                terkumpul -> Chip("terkumpul", jenis = JenisChip.REDUP)
+                baris.statusKumpulSitus == "terkumpul" -> Chip("terkumpul", jenis = JenisChip.REDUP)
+                diSitus -> Chip("selesai di situs", jenis = JenisChip.REDUP)
                 selesai -> Unit
                 chip == null -> Chip("tanpa deadline", jenis = JenisChip.PUTUS)
                 else -> Chip(

@@ -1,0 +1,35 @@
+{
+  "statuses": [
+    {
+      "cmid": 1203,
+      "modname": "assign",
+      "instance": 203,
+      "state": 1,
+      "timecompleted": 1790812800,
+      "tracking": 1,
+      "overrideby": null,
+      "valueused": false,
+      "hascompletion": true,
+      "isautomatic": false,
+      "istrackeduser": true,
+      "uservisible": true,
+      "details": []
+    },
+    {
+      "cmid": 1204,
+      "modname": "assign",
+      "instance": 204,
+      "state": 1,
+      "timecompleted": 1790812800,
+      "tracking": 1,
+      "overrideby": null,
+      "valueused": false,
+      "hascompletion": true,
+      "isautomatic": false,
+      "istrackeduser": true,
+      "uservisible": false,
+      "details": []
+    }
+  ],
+  "warnings": []
+}

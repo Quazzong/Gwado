@@ -1,0 +1,48 @@
+{
+  "courses": [
+    {
+      "dibuat": null,
+      "external_id": "101",
+      "kategori": "Praktikum",
+      "kode_mk": "ABC60005",
+      "mulai": "2026-08-24T00:00:00Z",
+      "nama": "Bahasa Inggris Akademik",
+      "selesai": "2027-01-15T00:00:00Z",
+      "shortname": "ABC60005_20261_A"
+    },
+    {
+      "dibuat": null,
+      "external_id": "150",
+      "kategori": "Praktikum",
+      "kode_mk": "ABC60006",
+      "mulai": "2026-08-24T00:00:00Z",
+      "nama": "Etika Profesi",
+      "selesai": "2027-01-15T00:00:00Z",
+      "shortname": "ABC60006_20252_C"
+    }
+  ],
+  "tasks": [
+    {
+      "course_external_id": "101",
+      "deadline": "2026-10-20T00:00:00Z",
+      "deskripsi": "Write 300 words.\nUse APA style.",
+      "external_id": "assign:201",
+      "jenis": "assign",
+      "judul": "Essay: My Learning Goals",
+      "link_id": "2201",
+      "status_kumpul_situs": "terkumpul",
+      "url": "https://eling.ub.ac.id/mod/assign/view.php?id=2201"
+    },
+    {
+      "course_external_id": "150",
+      "deadline": "2026-11-03T16:59:00Z",
+      "deskripsi": "Analisis kasus pada modul 2.",
+      "external_id": "assign:207",
+      "jenis": "assign",
+      "judul": "Studi Kasus Etika",
+      "link_id": "2207",
+      "status_kumpul_situs": "selesai",
+      "url": "https://eling.ub.ac.id/mod/assign/view.php?id=2207"
+    }
+  ]
+}

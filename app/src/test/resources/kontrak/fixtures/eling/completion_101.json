@@ -1,0 +1,53 @@
+{
+  "statuses": [
+    {
+      "cmid": 2201,
+      "modname": "assign",
+      "instance": 201,
+      "state": 1,
+      "timecompleted": 1790812800,
+      "tracking": 1,
+      "overrideby": null,
+      "valueused": false,
+      "hascompletion": true,
+      "isautomatic": false,
+      "istrackeduser": true,
+      "uservisible": true,
+      "details": [],
+      "isoverallcomplete": true
+    },
+    {
+      "cmid": 2290,
+      "modname": "vpl",
+      "instance": 501,
+      "state": 1,
+      "timecompleted": 1790812800,
+      "tracking": 1,
+      "overrideby": null,
+      "valueused": false,
+      "hascompletion": true,
+      "isautomatic": false,
+      "istrackeduser": true,
+      "uservisible": true,
+      "details": [],
+      "isoverallcomplete": true
+    },
+    {
+      "cmid": 2291,
+      "modname": "resource",
+      "instance": 502,
+      "state": 0,
+      "timecompleted": 0,
+      "tracking": 0,
+      "overrideby": null,
+      "valueused": false,
+      "hascompletion": false,
+      "isautomatic": false,
+      "istrackeduser": true,
+      "uservisible": true,
+      "details": [],
+      "isoverallcomplete": false
+    }
+  ],
+  "warnings": []
+}

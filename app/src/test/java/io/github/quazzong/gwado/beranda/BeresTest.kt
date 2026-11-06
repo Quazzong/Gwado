@@ -45,6 +45,17 @@ class BeresTest {
     }
 
     @Test
+    fun selesaiDiSitusDihitungBeres() {
+        val situs = t("ditandai", "2026-11-06T10:00:00Z", kumpul = "selesai")
+        val hilang = t("ditandai-hilang", "2026-11-06T10:00:00Z", kumpul = "selesai", situs = "hilang")
+        val draf = t("draf", "2026-11-06T10:00:00Z", kumpul = "draf")
+        val d = listOf(situs, hilang, draf)
+        assertEquals(listOf("ditandai"), selesaiMinggu(d, LocalDate.parse("2026-11-04")).map { it.id })
+        assertEquals(listOf("ditandai"), semuaSelesai(d).map { it.id })
+        assertEquals(Progres(selesai = 1, total = 2), progresMinggu(d, LocalDate.parse("2026-11-04")))
+    }
+
+    @Test
     fun semuaSelesaiTerbaruDuluTanpaDeadlineTerakhir() {
         assertEquals(listOf("terkumpul", "dicentang", "lama", "tanpa"), semuaSelesai(daftar).map { it.id })
     }

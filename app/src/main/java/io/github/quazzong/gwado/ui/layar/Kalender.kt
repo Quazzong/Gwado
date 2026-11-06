@@ -86,10 +86,10 @@ private val BULAN_NAMA = listOf(
 )
 
 /** Penanda satu deadline di grid. */
-private enum class Tanda { LEWAT, MEPET, NANTI, TERKUMPUL }
+private enum class Tanda { LEWAT, MEPET, NANTI, DI_SITUS }
 
 private fun tanda(t: BarisTugas, sekarang: Instant): Tanda = when {
-    terkumpul(t) -> Tanda.TERKUMPUL
+    beresSitus(t) -> Tanda.DI_SITUS
     else -> when (t.deadline?.let { sisaChip(dariDb(it), sekarang).makna }) {
         Makna.LEWAT -> Tanda.LEWAT
         Makna.MEPET -> Tanda.MEPET
@@ -149,9 +149,9 @@ fun LayarKalender(
     }
 
     val isiHari = hari[pilih]?.deadline.orEmpty().mapNotNull { indeks[it.kejadian.ref] }
-    val aktif = isiHari.count { !terkumpul(it) }
+    val aktif = isiHari.count { !beresSitus(it) }
     val berikutnya = daftar.firstOrNull { t ->
-        !terkumpul(t) && t.deadline?.let { dariDb(it).atOffset(WIB).toLocalDate() > pilih } == true
+        !beresSitus(t) && t.deadline?.let { dariDb(it).atOffset(WIB).toLocalDate() > pilih } == true
     }
     val tanpaDeadline = daftar.count { it.deadline == null }
 
@@ -357,9 +357,9 @@ private fun Titik(t: Tanda, ukuran: Dp) {
         Tanda.LEWAT -> WarnaStatus.lewat[1]
         Tanda.MEPET -> WarnaStatus.mepet[1]
         Tanda.NANTI -> w.garis
-        Tanda.TERKUMPUL -> Color.Transparent
+        Tanda.DI_SITUS -> Color.Transparent
     }
-    val tepi = if (t == Tanda.TERKUMPUL) w.tintaRedup else w.garis
+    val tepi = if (t == Tanda.DI_SITUS) w.tintaRedup else w.garis
     Box(Modifier.size(ukuran).background(isi, CircleShape).border(1.5.dp, tepi, CircleShape))
 }
 
@@ -372,7 +372,7 @@ private fun Legenda() {
             Modifier.fillMaxWidth().padding(start = 2.dp, top = 7.dp, end = 2.dp, bottom = 1.dp),
             horizontalArrangement = Arrangement.SpaceAround,
         ) {
-            listOf(Tanda.LEWAT to "Lewat", Tanda.MEPET to "Mepet", Tanda.NANTI to "Nanti", Tanda.TERKUMPUL to "Terkumpul")
+            listOf(Tanda.LEWAT to "Lewat", Tanda.MEPET to "Mepet", Tanda.NANTI to "Nanti", Tanda.DI_SITUS to "Beres di situs")
                 .forEach { (t, nama) ->
                     Row(horizontalArrangement = Arrangement.spacedBy(4.dp), verticalAlignment = Alignment.CenterVertically) {
                         Titik(t, 7.dp)
