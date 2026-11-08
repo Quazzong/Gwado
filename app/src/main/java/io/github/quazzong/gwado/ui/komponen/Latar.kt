@@ -15,7 +15,10 @@ import androidx.compose.ui.graphics.ImageShader
 import androidx.compose.ui.graphics.Paint
 import androidx.compose.ui.graphics.ShaderBrush
 import androidx.compose.ui.graphics.TileMode
+import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.rotate
+import androidx.compose.ui.graphics.layer.CompositingStrategy
+import androidx.compose.ui.graphics.layer.drawLayer
 import androidx.compose.ui.unit.dp
 import io.github.quazzong.gwado.tampilan.Tekstur
 import io.github.quazzong.gwado.ui.tema.GwadoTema
@@ -88,7 +91,7 @@ fun Modifier.tekstur(t: Tekstur, w: Warna, skalaBentuk: Float = 1f): Modifier = 
                 val r = (s.r * skalaBentuk).dp.toPx()
                 Triple(s, pusat, if (s.pil) null else pathGelombang(pusat, r, s.n, s.a))
             }
-            onDrawBehind {
+            val gambarSemua: DrawScope.() -> Unit = {
                 for ((s, pusat, jalur) in gambar) {
                     val warna = if (s.pink) w.bentukLatarPink else w.bentukLatar
                     rotate(s.putar, pusat) {
@@ -105,6 +108,17 @@ fun Modifier.tekstur(t: Tekstur, w: Warna, skalaBentuk: Float = 1f): Modifier = 
                         }
                     }
                 }
+            }
+            if (skalaBentuk < 1f) {
+                // Pratinjau kecil: digambar langsung supaya ikut clip dan urutan gambar induknya.
+                onDrawBehind(gambarSemua)
+            } else {
+                // Bentuk cekung besar mahal digambar ulang tiap frame; gambar sekali ke lapisan
+                // offscreen, lalu tiap frame cukup tempel lapisannya.
+                val lapis = obtainGraphicsLayer()
+                lapis.compositingStrategy = CompositingStrategy.Offscreen
+                lapis.record(block = gambarSemua)
+                onDrawBehind { drawLayer(lapis) }
             }
         }
     }

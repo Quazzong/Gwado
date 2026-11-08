@@ -115,16 +115,15 @@ fun Kotak(
                 val g = Jarak.garis.toPx()
                 val luar = bentuk.pathMasuk(size, 0f, layoutDirection, this)
                 val tengahGaris = bentuk.pathMasuk(size, g / 2, layoutDirection, this)
-                val dalam = bentuk.pathMasuk(size, g, layoutDirection, this)
+                // Kilau cincin = garis selebar g di tengah pita g..2g. Satu bentuk bergaris
+                // jauh lebih ringan digambar GPU daripada selisih dua bentuk.
+                val cincin = if (kilau is Kilau.Cincin) bentuk.pathMasuk(size, g * 1.5f, layoutDirection, this) else null
+                val gayaKilau = Stroke(width = g)
                 val pita = when (kilau) {
-                    is Kilau.Cincin -> Path.combine(
-                        PathOperation.Difference,
-                        dalam,
-                        bentuk.pathMasuk(size, g * 2, layoutDirection, this),
-                    )
+                    is Kilau.Cincin -> null
                     is Kilau.Atas -> Path.combine(
                         PathOperation.Difference,
-                        dalam,
+                        bentuk.pathMasuk(size, g, layoutDirection, this),
                         bentuk.pathMasuk(size, g, layoutDirection, this)
                             .apply { translate(Offset(0f, kilau.tebal.toPx())) },
                     )
@@ -141,6 +140,7 @@ fun Kotak(
                 )
                 onDrawBehind {
                     drawPath(luar, latar)
+                    if (cincin != null) drawPath(cincin, warnaKilau, style = gayaKilau)
                     if (pita != null) drawPath(pita, warnaKilau)
                     drawPath(tengahGaris, garis, style = gaya)
                 }
