@@ -1,5 +1,6 @@
 package io.github.quazzong.gwado.tampilan
 
+import android.content.SharedPreferences
 import io.github.quazzong.gwado.db.Db
 
 /** Tekstur latar layar (DESAIN §7). kode = nilai di preferences `tekstur`. */
@@ -27,4 +28,37 @@ fun Db.simpanTekstur(t: Tekstur) {
         "INSERT INTO preferences (kunci, nilai) VALUES (?, ?) ON CONFLICT (kunci) DO UPDATE SET nilai = excluded.nilai",
         KUNCI_TEKSTUR, t.kode,
     )
+}
+
+/** Tema tampilan (DESAIN §9.10). kode = nilai di SharedPreferences `tema`. */
+enum class Tema(val kode: String, val label: String) {
+    SISTEM("sistem", "Ikut sistem"),
+    TERANG("terang", "Terang"),
+    GELAP("gelap", "Gelap");
+
+    /** Apakah tampilan gelap, kalau tampilan sistem sedang [sistemGelap]. */
+    fun gelap(sistemGelap: Boolean): Boolean = when (this) {
+        SISTEM -> sistemGelap
+        TERANG -> false
+        GELAP -> true
+    }
+
+    companion object {
+        val BAWAAN = SISTEM
+
+        /** Kode tak dikenal atau kosong → bawaan. */
+        fun dariKode(kode: String?): Tema = entries.firstOrNull { it.kode == kode } ?: BAWAAN
+    }
+}
+
+private const val KUNCI_TEMA = "tema"
+
+/**
+ * Tema disimpan di SharedPreferences, bukan database, supaya bisa dibaca langsung saat
+ * aplikasi dibuka (tanpa kedip tema yang salah selama database dimuat).
+ */
+fun SharedPreferences.tema(): Tema = Tema.dariKode(getString(KUNCI_TEMA, null))
+
+fun SharedPreferences.simpanTema(t: Tema) {
+    edit().putString(KUNCI_TEMA, t.kode).apply()
 }

@@ -6,10 +6,13 @@ import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
+import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateMapOf
@@ -38,8 +41,12 @@ import io.github.quazzong.gwado.ui.DaftarMatkul
 import io.github.quazzong.gwado.ui.Masuk
 import io.github.quazzong.gwado.ui.Pengaturan
 import io.github.quazzong.gwado.ui.komponen.LocalTekstur
+import io.github.quazzong.gwado.layanan.prefsGwado
 import io.github.quazzong.gwado.tampilan.Tekstur
 import io.github.quazzong.gwado.tampilan.tekstur
+import io.github.quazzong.gwado.tampilan.Tema
+import io.github.quazzong.gwado.tampilan.tema
+import io.github.quazzong.gwado.ui.tema.LocalPilihanTema
 import io.github.quazzong.gwado.ui.layar.LayarLayanan
 import io.github.quazzong.gwado.ui.layar.LayarMasuk
 import io.github.quazzong.gwado.ui.layar.LayarSiapkan
@@ -50,6 +57,12 @@ import java.time.Instant
 import java.time.LocalDate
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.launch
+
+private const val TRANSPARAN = android.graphics.Color.TRANSPARENT
+
+/** Selubung bilah navigasi tiga tombol (sama dengan bawaan enableEdgeToEdge). */
+private val SELUBUNG_TERANG = android.graphics.Color.argb(0xe6, 0xFF, 0xFF, 0xFF)
+private val SELUBUNG_GELAP = android.graphics.Color.argb(0x80, 0x1b, 0x1b, 0x1b)
 
 /** Isi database yang dibaca sekaligus untuk layar. */
 private class DataLayar(
@@ -69,6 +82,7 @@ class MainActivity : ComponentActivity() {
     private var kuliah by mutableStateOf<LocalDate?>(null)
     private val matkul = mutableStateMapOf<String, String>()               // sumber → "N diikuti · M dilewati"
     private var tekstur by mutableStateOf(Tekstur.BAWAAN)
+    private var tema by mutableStateOf(Tema.BAWAAN)
     private var lencanaLayanan by mutableStateOf(false)                    // ada layanan yang menolak login/izin
     private var tampilSiapkan by mutableStateOf(false)                     // layar Siapkan Gwado menggantikan tab
     private var bukaTugas by mutableStateOf<String?>(null)                 // detail yang diminta dari widget
@@ -80,9 +94,19 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+        tema = prefsGwado(this).tema()
         setContent {
-            GwadoTema {
-                CompositionLocalProvider(LocalTekstur provides tekstur) {
+            val gelap = tema.gelap(isSystemInDarkTheme())
+            // Ikon status bar dan navigasi mengikuti tema Gwado, bukan tema sistem.
+            DisposableEffect(gelap) {
+                enableEdgeToEdge(
+                    statusBarStyle = SystemBarStyle.auto(TRANSPARAN, TRANSPARAN) { gelap },
+                    navigationBarStyle = SystemBarStyle.auto(SELUBUNG_TERANG, SELUBUNG_GELAP) { gelap },
+                )
+                onDispose {}
+            }
+            GwadoTema(gelap) {
+                CompositionLocalProvider(LocalTekstur provides tekstur, LocalPilihanTema provides tema) {
                 Akar(
                     daftar = daftar,
                     versi = versiData,
@@ -139,6 +163,7 @@ class MainActivity : ComponentActivity() {
 
     /** Baca ulang semester, kuliah pertama, daftar tugas, dan ringkasan mata kuliah. */
     private fun muatUlangDaftar() {
+        tema = prefsGwado(this).tema()
         lifecycleScope.launch {
             umum = try {
                 val d = Gudang.pakai(this@MainActivity) { db ->

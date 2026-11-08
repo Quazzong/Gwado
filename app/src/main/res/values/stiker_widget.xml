@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Stiker untuk widget: launcher memilih versi terang/gelap menurut mode gelap sistem. -->
+<resources>
+    <item name="widget_stiker_netral" type="drawable">@drawable/stiker_netral</item>
+    <item name="widget_stiker_melambai" type="drawable">@drawable/stiker_melambai</item>
+    <item name="widget_stiker_santai" type="drawable">@drawable/stiker_santai</item>
+    <item name="widget_stiker_bersorak" type="drawable">@drawable/stiker_bersorak</item>
+    <item name="widget_stiker_bingung" type="drawable">@drawable/stiker_bingung</item>
+    <item name="widget_stiker_tidur" type="drawable">@drawable/stiker_tidur</item>
+</resources>

@@ -24,4 +24,15 @@ class TampilanTest {
         assertEquals(Tekstur.TITIK, Tekstur.dariKode(null))
         assertEquals(Tekstur.KOTAK, Tekstur.dariKode("kotak"))
     }
+
+    @Test
+    fun temaDariKodeDanGelap() {
+        assertEquals(Tema.SISTEM, Tema.dariKode(null))
+        assertEquals(Tema.SISTEM, Tema.dariKode("ungu"))
+        assertEquals(Tema.GELAP, Tema.dariKode("gelap"))
+        assertEquals(true, Tema.SISTEM.gelap(sistemGelap = true))
+        assertEquals(false, Tema.SISTEM.gelap(sistemGelap = false))
+        assertEquals(false, Tema.TERANG.gelap(sistemGelap = true))
+        assertEquals(true, Tema.GELAP.gelap(sistemGelap = false))
+    }
 }

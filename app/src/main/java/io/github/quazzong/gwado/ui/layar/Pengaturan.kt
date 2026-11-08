@@ -31,9 +31,13 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import io.github.quazzong.gwado.R
 import io.github.quazzong.gwado.db.Gudang
+import io.github.quazzong.gwado.layanan.prefsGwado
 import io.github.quazzong.gwado.tampilan.Tekstur
+import io.github.quazzong.gwado.tampilan.Tema
+import io.github.quazzong.gwado.tampilan.simpanTema
 import io.github.quazzong.gwado.tampilan.simpanTekstur
 import io.github.quazzong.gwado.ui.komponen.Kotak
+import io.github.quazzong.gwado.ui.komponen.Segmen
 import io.github.quazzong.gwado.ui.komponen.LocalTekstur
 import io.github.quazzong.gwado.ui.komponen.StripSub
 import io.github.quazzong.gwado.ui.komponen.TombolPlumIkon
@@ -43,12 +47,13 @@ import io.github.quazzong.gwado.ui.komponen.tekstur
 import io.github.quazzong.gwado.ui.tema.GwadoTema
 import io.github.quazzong.gwado.ui.tema.Huruf
 import io.github.quazzong.gwado.ui.tema.Jarak
+import io.github.quazzong.gwado.ui.tema.LocalPilihanTema
 import kotlinx.coroutines.launch
 
 /**
- * Pengaturan tampilan (DESAIN §9.10): tekstur latar sebagai ubin pratinjau 2×2 dan keterangan tema.
- * Pilihan langsung tersimpan; [onBerubah] memuat ulang supaya semua layar ikut berganti.
- * Sakelar "Gerakkan latar" menyusul bersama gerak latar di GW8c; pilihan stiker di GW11.
+ * Pengaturan tampilan (DESAIN §9.10): tekstur latar sebagai ubin pratinjau 2×2 dan pilihan tema
+ * (ikut sistem, terang, gelap). Pilihan langsung tersimpan; [onBerubah] memuat ulang supaya semua
+ * layar ikut berganti.
  */
 @Composable
 fun LayarPengaturan(onKembali: () -> Unit, onBerubah: () -> Unit) {
@@ -56,6 +61,11 @@ fun LayarPengaturan(onKembali: () -> Unit, onBerubah: () -> Unit) {
     val konteks = LocalContext.current
     val cakupan = rememberCoroutineScope()
     val dipilih = LocalTekstur.current
+    val temaDipilih = LocalPilihanTema.current
+    val pilihTema: (Tema) -> Unit = { t ->
+        prefsGwado(konteks).simpanTema(t)
+        onBerubah()
+    }
     val pilih: (Tekstur) -> Unit = { t ->
         cakupan.launch {
             runCatching { Gudang.pakai(konteks) { it.simpanTekstur(t) } }
@@ -82,17 +92,16 @@ fun LayarPengaturan(onKembali: () -> Unit, onBerubah: () -> Unit) {
             color = w.tintaRedup,
         )
         Text("TEMA", style = Huruf.label, color = w.tintaRedup, modifier = Modifier.padding(top = Jarak.s8))
-        Kotak(Modifier.fillMaxWidth()) {
-            Column {
-                Text("Ikut sistem", style = Huruf.judulKartu, color = w.tinta)
-                Text(
-                    "Terang atau gelap mengikuti pengaturan tampilan HP.",
-                    style = Huruf.meta,
-                    color = w.tintaRedup,
-                    modifier = Modifier.padding(top = 2.dp),
-                )
-            }
-        }
+        Segmen(Tema.entries.map { it to it.label }, temaDipilih, pilihTema)
+        Text(
+            when (temaDipilih) {
+                Tema.SISTEM -> "Terang atau gelap mengikuti pengaturan tampilan HP."
+                Tema.TERANG -> "Gwado selalu terang, apa pun pengaturan HP."
+                Tema.GELAP -> "Gwado selalu gelap, apa pun pengaturan HP."
+            } + " Widget di layar utama tetap mengikuti HP.",
+            style = Huruf.meta,
+            color = w.tintaRedup,
+        )
     }
 }
 

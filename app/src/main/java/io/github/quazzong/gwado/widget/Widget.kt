@@ -197,7 +197,7 @@ private fun StikerWidget(isi: IsiWidget?) {
         isi.diambil == null -> Ekspresi.SANTAI
         else -> Ekspresi.BERSORAK
     }
-    Image(ImageProvider(ekspresi.gambar), contentDescription = null, modifier = GlanceModifier.size(56.dp))
+    Image(ImageProvider(ekspresi.widget), contentDescription = null, modifier = GlanceModifier.size(56.dp))
 }
 
 @Composable
