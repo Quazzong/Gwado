@@ -1,5 +1,7 @@
 package io.github.quazzong.gwado.ui.layar
 
+import io.github.quazzong.gwado.ui.komponen.Ekspresi
+import io.github.quazzong.gwado.ui.komponen.Stiker
 import io.github.quazzong.gwado.ui.komponen.latarLayar
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
@@ -217,7 +219,7 @@ fun LayarSiapkan(
     }
 }
 
-/** Strip judul: nama aplikasi sebagai teks stiker + satu kalimat. */
+/** Strip judul: stiker maskot, nama aplikasi sebagai teks stiker, dan satu kalimat. */
 @Composable
 private fun KepalaSiapkan() {
     val w = GwadoTema.warna
@@ -229,7 +231,13 @@ private fun KepalaSiapkan() {
         padding = PaddingValues(Jarak.garis * 2),
     ) {
         Taburan(31, Modifier.matchParentSize().clip(RoundedCornerShape(12.dp)), tinggi = 110f, mulai = 0.4f)
-        Column(Modifier.fillMaxWidth().padding(horizontal = 10.dp, vertical = 12.dp)) {
+        Row(
+            Modifier.fillMaxWidth().padding(horizontal = 10.dp, vertical = 12.dp),
+            horizontalArrangement = Arrangement.spacedBy(12.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+          Stiker(Ekspresi.NETRAL)
+          Column {
             TeksStiker("Gwado", ukuran = 30.sp)
             Text(
                 "Semua tugas kuliahmu di satu tempat",
@@ -237,6 +245,7 @@ private fun KepalaSiapkan() {
                 color = w.tinta,
                 modifier = Modifier.padding(top = 6.dp),
             )
+          }
         }
     }
 }
@@ -282,7 +291,14 @@ private fun LayarTunggu() {
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        Text("Mengambil tugas pertamamu", style = Huruf.judulDetail, color = w.tinta, textAlign = TextAlign.Center)
+        Stiker(Ekspresi.NETRAL)
+        Text(
+            "Mengambil tugas pertamamu",
+            style = Huruf.judulDetail,
+            color = w.tinta,
+            textAlign = TextAlign.Center,
+            modifier = Modifier.padding(top = 14.dp),
+        )
         Text(
             "Ini hanya sekali dan butuh sekitar satu menit. Setelah itu tarik beranda ke bawah untuk mengambil lagi.",
             style = Huruf.meta,

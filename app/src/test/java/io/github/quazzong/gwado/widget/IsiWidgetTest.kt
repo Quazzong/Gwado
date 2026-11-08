@@ -71,8 +71,18 @@ class IsiWidgetTest {
     @Test
     fun tugasSedikitMemakaiBarisRinciLaluProgres() {
         assertEquals(TataTerdekat(5, rinci = true, progres = false), tataTerdekat(288f, 5, adaProgres = true))
-        assertEquals(TataTerdekat(2, rinci = true, progres = true), tataTerdekat(288f, 2, adaProgres = true))
-        assertEquals(TataTerdekat(2, rinci = true, progres = false), tataTerdekat(288f, 2, adaProgres = false))
+        assertEquals(TataTerdekat(2, rinci = true, progres = true, stiker = true), tataTerdekat(288f, 2, adaProgres = true))
+        assertEquals(TataTerdekat(2, rinci = true, progres = false, stiker = true), tataTerdekat(288f, 2, adaProgres = false))
         assertEquals(TataTerdekat(2, rinci = false, progres = false), tataTerdekat(130f, 2, adaProgres = true))
+    }
+
+    @Test
+    fun stikerHanyaKalauSisaRuangCukup() {
+        // 4×2 kosong (belum ada tugas): ruang penuh untuk stiker.
+        assertEquals(TataTerdekat(0, rinci = true, progres = false, stiker = true), tataTerdekat(288f, 0, adaProgres = false))
+        // 4×1 dengan satu tugas rinci: sisa 32dp, tidak cukup.
+        assertEquals(false, tataTerdekat(130f, 1, adaProgres = false).stiker)
+        // 4×2 dengan lima tugas rinci: sisa 8dp.
+        assertEquals(false, tataTerdekat(288f, 5, adaProgres = true).stiker)
     }
 }

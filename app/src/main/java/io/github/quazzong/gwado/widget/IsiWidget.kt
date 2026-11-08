@@ -68,8 +68,11 @@ fun pesanKosong(isi: IsiWidget, singkat: Boolean): String = when {
     else -> "Semua tugas beres"
 }
 
-/** Tata letak widget Terdekat: berapa baris, baris ringkas atau rinci, dan apakah progres ikut. */
-data class TataTerdekat(val baris: Int, val rinci: Boolean, val progres: Boolean)
+/**
+ * Tata letak widget Terdekat: berapa baris, baris ringkas atau rinci, apakah progres ikut, dan
+ * apakah sisa ruangnya cukup untuk stiker.
+ */
+data class TataTerdekat(val baris: Int, val rinci: Boolean, val progres: Boolean, val stiker: Boolean = false)
 
 /**
  * Launcher (misalnya Samsung) melaporkan tinggi widget lebih besar daripada yang digambar,
@@ -81,11 +84,12 @@ internal const val TINGGI_BAWAH = 13f       // padding bawah + bayangan
 internal const val BARIS_RINGKAS = 24f      // chip + judul satu baris + garis
 internal const val BARIS_RINCI = 40f        // + mata kuliah dan tanggal
 internal const val TINGGI_PROGRES = 34f
+internal const val TINGGI_STIKER = 60f     // stiker 56dp + jarak
 
 /**
  * Hitung tata letak dari tinggi laporan (dp) dan jumlah tugas yang tersedia. Kalau tugasnya lebih
  * banyak dari yang muat, semua baris ringkas. Kalau semuanya muat, ruang sisa dipakai baris rinci,
- * lalu progres minggu ini di bawah.
+ * lalu progres minggu ini di bawah, lalu stiker di ruang yang masih kosong.
  */
 fun tataTerdekat(tinggiLapor: Float, tersedia: Int, adaProgres: Boolean): TataTerdekat {
     val ruang = tinggiLapor * KOREKSI_TINGGI - TINGGI_KEPALA - TINGGI_BAWAH
@@ -93,5 +97,7 @@ fun tataTerdekat(tinggiLapor: Float, tersedia: Int, adaProgres: Boolean): TataTe
     if (tersedia >= muat) return TataTerdekat(muat.coerceAtMost(tersedia), rinci = false, progres = false)
     val rinci = tersedia * BARIS_RINCI <= ruang
     val sisa = ruang - tersedia * (if (rinci) BARIS_RINCI else BARIS_RINGKAS)
-    return TataTerdekat(tersedia, rinci, progres = adaProgres && sisa >= TINGGI_PROGRES)
+    val progres = adaProgres && sisa >= TINGGI_PROGRES
+    val sisaStiker = sisa - if (progres) TINGGI_PROGRES else 0f
+    return TataTerdekat(tersedia, rinci, progres, stiker = sisaStiker >= TINGGI_STIKER)
 }

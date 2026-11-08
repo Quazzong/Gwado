@@ -157,7 +157,7 @@ internal fun bangunNotif(context: Context, n: IsiNotif): NotificationCompat.Buil
         PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT,
     )
     val b = NotificationCompat.Builder(context, kanal(n.jenis))
-        .setSmallIcon(R.drawable.ikon_jam)
+        .setSmallIcon(R.drawable.ikon_notif)
         .setContentTitle(n.teks.judul)
         .setContentText(n.teks.isi)
         .setContentIntent(ketuk)

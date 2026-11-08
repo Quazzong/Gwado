@@ -27,6 +27,8 @@ import androidx.compose.ui.unit.sp
 import io.github.quazzong.gwado.fetch.SebabTertahan
 import io.github.quazzong.gwado.layanan.DAFTAR_LAYANAN
 import io.github.quazzong.gwado.segar.StatusSumber
+import io.github.quazzong.gwado.ui.komponen.Ekspresi
+import io.github.quazzong.gwado.ui.komponen.Stiker
 import io.github.quazzong.gwado.ui.komponen.Kotak
 import io.github.quazzong.gwado.ui.komponen.TombolPlum
 import java.time.Duration
@@ -226,19 +228,20 @@ fun Beranda(
         when {
             daftar.isNotEmpty() && belum.isNotEmpty() -> Unit
             !adaLayanan && daftar.isEmpty() && !adaBeres -> item(key = "kosong") {
-                Kosong("Belum ada layanan tersambung", "Sambungkan Brone, Eling, atau Classroom supaya tugasmu muncul di sini.") {
+                Kosong(Ekspresi.MELAMBAI, "Belum ada layanan tersambung", "Sambungkan Brone, Eling, atau Classroom supaya tugasmu muncul di sini.") {
                     TombolPermen("Tambah layanan", onBukaLayanan, Modifier.padding(top = Jarak.s12))
                     TombolGaris("Tugas manual", onTambah, Modifier.padding(top = Jarak.s8))
                 }
             }
             daftar.isEmpty() && !adaBeres -> item(key = "kosong") {
-                Kosong("Belum ada tugas", "Tarik ke bawah untuk mengambil tugas dari situs kuliah, atau catat tugas dari grup kelas sendiri.") {
+                Kosong(Ekspresi.SANTAI, "Belum ada tugas", "Tarik ke bawah untuk mengambil tugas dari situs kuliah, atau catat tugas dari grup kelas sendiri.") {
                     TombolPermen(if (menyegarkan) "Mengambil…" else "Ambil sekarang", onSegarkan, Modifier.padding(top = Jarak.s12))
                     TombolGaris("Tugas manual", onTambah, Modifier.padding(top = Jarak.s8))
                 }
             }
             else -> item(key = "kosong") {
                 Kosong(
+                    Ekspresi.BERSORAK,
                     if (aktif == null) "Semua tugas beres" else "Semua tugas ${singkat(aktif)} beres",
                     "Tidak ada tugas aktif. Yang sudah selesai tetap bisa dilihat di bawah.",
                 )
@@ -315,12 +318,13 @@ private fun LazyListScope.bagian(
     items(isi, key = { it.id }) { t -> KartuTugas(t, sekarang, onClick = { onBuka(t.id) }) }
 }
 
-/** Keadaan kosong di beranda: judul, satu kalimat, dan tombol opsional. */
+/** Keadaan kosong di beranda: stiker, judul, satu kalimat, dan tombol opsional. */
 @Composable
-private fun Kosong(judul: String, kalimat: String, tombol: @Composable ColumnScope.() -> Unit = {}) {
+private fun Kosong(stiker: Ekspresi, judul: String, kalimat: String, tombol: @Composable ColumnScope.() -> Unit = {}) {
     val w = GwadoTema.warna
     Column(Modifier.fillMaxWidth().padding(vertical = Jarak.s24), horizontalAlignment = Alignment.CenterHorizontally) {
-        Text(judul, style = Huruf.judulBagian, color = w.tinta, textAlign = TextAlign.Center)
+        Stiker(stiker, ukuran = 64.dp)
+        Text(judul, style = Huruf.judulBagian, color = w.tinta, textAlign = TextAlign.Center, modifier = Modifier.padding(top = 10.dp))
         Text(kalimat, style = Huruf.isi, color = w.tintaRedup, textAlign = TextAlign.Center, modifier = Modifier.padding(top = 4.dp))
         tombol()
     }
@@ -354,7 +358,9 @@ private fun KotakGagal(
         if (normal.isNotEmpty()) add("${normal.joinToString(" dan ") { it.nama }} berhasil diambil.")
     }
     Kotak(Modifier.fillMaxWidth(), latar = SolidColor(w.latarLewat), bayangan = Jarak.bayanganKecil) {
-        Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+      Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+        Stiker(Ekspresi.BINGUNG, ukuran = 64.dp)
+        Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(4.dp)) {
             Text("Gagal mengambil dari ${merah.joinToString(" dan ") { it.nama }}", style = Huruf.judulKartu, color = w.tinta)
             Text(kalimat.joinToString(" "), style = Huruf.isi.copy(fontSize = 13.sp), color = w.tinta)
             Row(Modifier.padding(top = Jarak.s4), horizontalArrangement = Arrangement.spacedBy(Jarak.s8)) {
@@ -362,6 +368,7 @@ private fun KotakGagal(
                 if (ditolak.isNotEmpty()) TombolGaris("Buka Layanan", onLayanan)
             }
         }
+      }
     }
 }
 
@@ -378,7 +385,9 @@ private fun KotakDitahan(ditahan: Map<String, Tahan>) {
     val masih = DAFTAR_LAYANAN.mapNotNull { l -> ditahan[l.id]?.takeIf { it.sampai.isAfter(kini) }?.let { l to it } }
     if (masih.isEmpty()) return
     Kotak(Modifier.fillMaxWidth(), latar = SolidColor(w.latarMepet), bayangan = Jarak.bayanganKecil) {
-        Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+      Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+        Stiker(Ekspresi.TIDUR, ukuran = 64.dp)
+        Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(4.dp)) {
             Text("Ditahan sementara", style = Huruf.judulKartu, color = w.tinta)
             for ((l, t) in masih) {
                 val teks = when (t.sebab) {
@@ -396,5 +405,6 @@ private fun KotakDitahan(ditahan: Map<String, Tahan>) {
             }
             Text("Tugas lama tetap aman di HP.", style = Huruf.meta, color = w.tintaRedup)
         }
+      }
     }
 }

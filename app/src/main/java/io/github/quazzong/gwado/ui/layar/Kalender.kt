@@ -1,5 +1,7 @@
 package io.github.quazzong.gwado.ui.layar
 
+import io.github.quazzong.gwado.ui.komponen.Stiker
+import io.github.quazzong.gwado.ui.komponen.Ekspresi
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -395,7 +397,9 @@ private fun HariKosong(berikutnya: BarisTugas?, onLompat: (LocalDate) -> Unit) {
         bayangan = 0.dp,
         onClick = tanggal?.let { d -> { onLompat(d) } },
     ) {
-        Column {
+      Row(horizontalArrangement = Arrangement.spacedBy(10.dp), verticalAlignment = Alignment.CenterVertically) {
+        Stiker(Ekspresi.SANTAI, ukuran = 48.dp)
+        Column(Modifier.weight(1f)) {
             Text("Tidak ada deadline di hari ini", style = Huruf.judulKartu, color = w.tinta)
             if (berikutnya != null && tanggal != null) {
                 Text(
@@ -408,5 +412,6 @@ private fun HariKosong(berikutnya: BarisTugas?, onLompat: (LocalDate) -> Unit) {
                 )
             }
         }
+      }
     }
 }
