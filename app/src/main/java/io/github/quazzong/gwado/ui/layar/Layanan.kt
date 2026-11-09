@@ -382,7 +382,14 @@ private fun KartuLayanan(
                 horizontalArrangement = Arrangement.spacedBy(Jarak.s8),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
-                if (ditolak || belumLogin) TombolPlum(if (moodle) "Login" else "Beri izin lagi", onAmbil)
+                if (ditolak || belumLogin) {
+                    // Login Moodle membuka layar Masuk yang melebar dari tombol ini.
+                    TombolPlum(
+                        if (moodle) "Login" else "Beri izin lagi",
+                        onAmbil,
+                        if (moodle) Modifier.asalTombol("layar-masuk-${info.layanan.id}") else Modifier,
+                    )
+                }
                 TombolGaris("Mata kuliah", onMatkul, Modifier.asalTombol("layar-matkul-${info.layanan.id}"))
                 Spacer(Modifier.weight(1f))
                 Box {

@@ -48,6 +48,16 @@ import androidx.compose.runtime.withFrameNanos
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.SideEffect
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.graphics.Outline
+import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.graphics.layer.drawLayer
+import androidx.compose.ui.graphics.rememberGraphicsLayer
+import androidx.compose.ui.draw.drawWithContent
+import androidx.compose.ui.geometry.Rect
+import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.unit.Density
+import androidx.compose.ui.unit.LayoutDirection
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.ui.input.pointer.PointerEventPass
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.input.pointer.positionChange
@@ -308,14 +318,45 @@ private fun PenandaUtama(tujuan: (EnterExitState) -> Unit, tampil: (Boolean) -> 
     }
 }
 
+/** Bentuk tanpa bidang: lapisan yang dipotong dengan bentuk ini tidak tergambar dan tidak bisa disentuh. */
+private val TANPA_BIDANG = object : Shape {
+    override fun createOutline(size: Size, layoutDirection: LayoutDirection, density: Density) = Outline.Rectangle(Rect.Zero)
+}
+
 /**
  * Isi satu layar di NavDisplay. Selama layar ini keluar (masih digambar untuk gerak tutupnya),
- * sentuhan ditelan supaya tombolnya yang sedang memudar tidak tertekan tanpa sengaja.
+ * ketukan tembus ke layar di bawahnya: isinya dipotong ke bidang kosong (tidak ikut uji sentuhan,
+ * jadi tombolnya yang sedang memudar juga tidak bisa tertekan), sementara gambarnya direkam ke
+ * lapisan sendiri dan tetap digambar di tempatnya sampai gerak tutup selesai.
  */
 @Composable
 private fun LayarNav(isi: @Composable () -> Unit) {
-    val keluar = LocalNavAnimatedContentScope.current.transition.targetState == EnterExitState.PostExit
-    Box(if (keluar) Modifier.fillMaxSize().tahanSentuhan() else Modifier.fillMaxSize()) { isi() }
+    val lingkup = LocalNavAnimatedContentScope.current.transition
+    val keluar by remember(lingkup) { derivedStateOf { lingkup.targetState == EnterExitState.PostExit } }
+    val lapisan = rememberGraphicsLayer()
+    Box(
+        Modifier
+            .fillMaxSize()
+            .drawWithContent {
+                drawContent()
+                if (keluar) drawLayer(lapisan)
+            },
+    ) {
+        Box(
+            Modifier
+                .fillMaxSize()
+                .graphicsLayer {
+                    if (keluar) {
+                        clip = true
+                        shape = TANPA_BIDANG
+                    }
+                }
+                .drawWithContent {
+                    if (keluar) lapisan.record { this@drawWithContent.drawContent() } else drawContent()
+                }
+                .then(if (keluar) Modifier.clearAndSetSemantics {} else Modifier),
+        ) { isi() }
+    }
 }
 
 /** Geser tab dianggap jadi kalau jarinya bergeser sejauh ini, atau dilempar secepat ini (per detik). */

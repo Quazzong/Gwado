@@ -26,7 +26,15 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.animation.animateContentSize
+import androidx.compose.ui.draw.drawWithContent
+import androidx.compose.ui.graphics.drawscope.clipRect
+import androidx.compose.ui.layout.layout
+import kotlinx.coroutines.launch
 import androidx.compose.ui.layout.onPlaced
+import androidx.compose.ui.layout.LayoutCoordinates
+import androidx.compose.ui.layout.boundsInRoot
+import androidx.compose.runtime.withFrameNanos
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 import androidx.navigation3.ui.LocalNavAnimatedContentScope
@@ -38,13 +46,34 @@ import kotlin.math.sign
 
 /**
  * Lingkup masuk-keluar isi satu tab: [lingkup] = keadaan tab (tampil atau keluar). [arah] dibaca
- * saat gerak dimulai (1 = tab di kanan, -1 = tab di kiri). Urutan elemen dihitung dari urutan
- * penyusunannya (atas ke bawah).
+ * saat gerak dimulai (1 = tab di kanan, -1 = tab di kiri). Elemen mencatat letaknya di sini,
+ * supaya urutan geraknya mengikuti posisinya di layar saat tab berganti.
  */
 class MasukTab(val lingkup: Transition<EnterExitState>, val arah: () -> Int) {
-    private var berikut = 0
-    internal fun ambilUrutan(): Int = berikut++
+    internal val letak = mutableMapOf<Any, LayoutCoordinates>()
+
+    /**
+     * Urutan elemen [kunci] di antara elemen yang terlihat di layar (atas ke bawah, lalu kiri ke
+     * kanan) dan jumlah elemen yang terlihat; null kalau elemen ini tidak terlihat.
+     */
+    internal fun urutan(kunci: Any): Pair<Int, Int>? {
+        val terlihat = letak.mapNotNull { (k, c) ->
+            if (!c.isAttached) return@mapNotNull null
+            val b = c.boundsInRoot()                     // sudah dipotong oleh daftar yang menggulir
+            if (b.width <= 0f || b.height <= 0f) null else k to b
+        }.sortedWith(compareBy({ it.second.top }, { it.second.left }))
+        val i = terlihat.indexOfFirst { it.first == kunci }
+        return if (i < 0) null else i to terlihat.size
+    }
 }
+
+/**
+ * Jeda per elemen untuk [jumlah] elemen yang bergerak berurutan: [jeda] ms, mengecil kalau
+ * elemennya lebih dari [Gerak.MAKS_BERJEDA] supaya elemen terakhir tetap mulai paling lambat
+ * jeda × MAKS_BERJEDA setelah yang pertama. Jadi semuanya tetap satu per satu.
+ */
+internal fun jedaBerurutan(jeda: Int, jumlah: Int): Int =
+    if (jumlah <= 1) jeda else minOf(jeda, jeda * Gerak.MAKS_BERJEDA / (jumlah - 1))
 
 val LocalMasukTab = compositionLocalOf<MasukTab?> { null }
 
@@ -89,8 +118,9 @@ private fun lingkupLayar(): Transition<EnterExitState>? =
 @Composable
 private fun Modifier.gerakLingkup(
     lingkup: Transition<EnterExitState>,
-    masuk: (() -> Masuk)?,
-    keluar: (() -> Keluar)?,
+    masuk: (() -> Masuk?)?,
+    keluar: (() -> Keluar?)?,
+    tungguTata: Boolean = false,
 ): Modifier {
     val px = LocalDensity.current.density
     val awalMasuk = remember { masuk != null && lingkup.sedangMasuk() }
@@ -102,9 +132,15 @@ private fun Modifier.gerakLingkup(
     val x = remember { arrayOfNulls<Keluar>(1) }
     if (awalMasuk) {
         LaunchedEffect(Unit) {
+            // Letak elemen baru diketahui setelah satu frame tata letak.
+            if (tungguTata) withFrameNanos { }
             val s = masuk!!()
-            m[0] = s
-            a.animateTo(1f, gtween(s.durasi, s.tunda, s.kurva))
+            if (s == null) {
+                a.snapTo(1f)                                // tanpa gerak: langsung di tempatnya
+            } else {
+                m[0] = s
+                a.animateTo(1f, gtween(s.durasi, s.tunda, s.kurva))
+            }
         }
     }
     val pernahKeluar = remember { booleanArrayOf(false) }
@@ -112,8 +148,8 @@ private fun Modifier.gerakLingkup(
         snapshotFlow { lingkup.targetState }.collectLatest { st ->
             if (st == EnterExitState.PostExit) {
                 pernahKeluar[0] = true
-                if (keluar != null) {
-                    val s = keluar()
+                val s = keluar?.invoke()
+                if (s != null) {
                     x[0] = s
                     k.animateTo(1f, gtween(s.durasi, s.tunda, s.kurva))
                 }
@@ -165,16 +201,28 @@ private fun Modifier.gerakLingkup(
 /**
  * Elemen terluar isi tab: saat ganti tab, isi lama mengalir keluar berlawanan arah tab sambil
  * memudar (jeda 14 ms per elemen), lalu isi baru mengalir masuk dari arah tab dan memantul ke
- * tempatnya (jeda 60 ms). Tanpa efek di luar isi tab atau saat tab tidak sedang berganti.
+ * tempatnya (jeda 60 ms). Hanya elemen yang terlihat di layar yang bergerak, berurutan menurut
+ * posisinya (atas ke bawah); jedanya mengecil kalau elemen terlihat banyak ([jedaBerurutan]).
+ * Elemen di luar layar langsung di tempatnya. Tanpa efek di luar isi tab.
  */
 @Composable
 fun Modifier.masukTab(): Modifier {
     val mt = LocalMasukTab.current ?: return this
-    val u = remember(mt) { mt.ambilUrutan() }.coerceAtMost(Gerak.MAKS_BERJEDA)
-    return gerakLingkup(
+    val kunci = remember { Any() }
+    DisposableEffect(mt) { onDispose { mt.letak.remove(kunci) } }
+    return onPlaced { mt.letak[kunci] = it }.gerakLingkup(
         mt.lingkup,
-        masuk = { Masuk(mt.arah() * 40f, 36f, 0.9f, Gerak.PEGAS, MULAI_MASUK + u * Gerak.JEDA_TAB, Gerak.Pegas) },
-        keluar = { Keluar(-mt.arah() * 26f, 0f, Gerak.PUDAR, u * Gerak.JEDA_KELUAR, Gerak.Keluar) },
+        masuk = {
+            mt.urutan(kunci)?.let { (u, n) ->
+                Masuk(mt.arah() * 40f, 36f, 0.9f, Gerak.PEGAS, MULAI_MASUK + u * jedaBerurutan(Gerak.JEDA_TAB, n), Gerak.Pegas)
+            }
+        },
+        keluar = {
+            mt.urutan(kunci)?.let { (u, n) ->
+                Keluar(-mt.arah() * 26f, 0f, Gerak.PUDAR, u * jedaBerurutan(Gerak.JEDA_KELUAR, n), Gerak.Keluar)
+            }
+        },
+        tungguTata = true,
     )
 }
 
@@ -333,4 +381,40 @@ fun LayarPenuh(kunciAsal: Any?, modifier: Modifier = Modifier, isi: @Composable 
         // Dari tombol: isi mulai masuk lebih awal (100 ms), menyambung dengan bidang yang melebar.
         Box(Modifier.fillMaxSize().isiLayar(0, mulai = if (dariTombol) 100 else 170), content = isi)
     }
+}
+
+/**
+ * Kotak yang muncul saat layar sudah tampil (pita, kotak gagal/ditahan, keadaan kosong): ruangnya
+ * membuka (`pindah`) sementara isinya melompat masuk dari atas 12dp, skala 0,92 (`isiMasuk`).
+ * [gerak] false = langsung tampil (misalnya saat layar baru dibuka). Ukuran yang berubah
+ * sesudahnya (isi pita berganti) ikut memanjang/memendek dengan mulus.
+ */
+@Composable
+fun Modifier.munculKotak(gerak: Boolean): Modifier {
+    val px = LocalDensity.current.density
+    val ruang = remember { Animatable(if (gerak) 0f else 1f) }
+    val isi = remember { Animatable(if (gerak) 0f else 1f) }
+    if (gerak) {
+        LaunchedEffect(Unit) {
+            launch { ruang.animateTo(1f, gtween(Gerak.PINDAH, easing = Gerak.Pindah)) }
+            isi.animateTo(1f, gtween(Gerak.ISI_MASUK, easing = Gerak.Pegas))
+        }
+    }
+    return this
+        // Selama ruangnya membuka, isi yang belum muat dipotong supaya tidak menimpa item di bawahnya.
+        .drawWithContent { if (ruang.value < 1f) clipRect { this@drawWithContent.drawContent() } else drawContent() }
+        .layout { m, c ->
+            val pl = m.measure(c)
+            val tinggi = (pl.height * ruang.value).roundToInt()
+            layout(pl.width, tinggi) { pl.place(0, 0) }
+        }
+        .animateContentSize(gtween(Gerak.PINDAH, easing = Gerak.Pindah))
+        .graphicsLayer {
+            val v = isi.value
+            translationY = (1f - v) * -12f * px
+            val sk = 0.92f + 0.08f * v
+            scaleX = sk
+            scaleY = sk
+            alpha = v.coerceIn(0f, 1f)
+        }
 }

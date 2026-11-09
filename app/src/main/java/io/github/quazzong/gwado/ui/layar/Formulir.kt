@@ -175,7 +175,7 @@ fun LayarFormulir(id: String?, onKembali: () -> Unit, onTersimpan: () -> Unit) {
 
     val namaMk = kode?.let { k -> matkul.firstOrNull { it.first == k }?.second ?: k } ?: "Tanpa mata kuliah"
 
-    LayarPenuh(if (id == null) "layar-formulir" else null) {
+    LayarPenuh(if (id == null) "layar-formulir" else "layar-ubah-$id") {
         Column(Modifier.fillMaxSize().safeDrawingPadding()) {
             Column(
                 Modifier.weight(1f).verticalScroll(rememberScrollState()).padding(Jarak.tepiLayar),

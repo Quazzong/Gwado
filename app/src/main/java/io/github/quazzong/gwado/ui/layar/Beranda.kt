@@ -20,6 +20,11 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.SideEffect
+import androidx.compose.foundation.layout.size
+import io.github.quazzong.gwado.ui.komponen.Letupan
+import io.github.quazzong.gwado.ui.komponen.munculKotak
+import io.github.quazzong.gwado.ui.tema.Gerak
 import androidx.compose.runtime.mutableIntStateOf
 import io.github.quazzong.gwado.layanan.HasilAmbil
 import androidx.compose.foundation.layout.ColumnScope
@@ -105,6 +110,31 @@ private class DataKepala(
     val sumber: List<SumberTerakhir>,
 )
 
+/** Kartu "Centang N yang lewat" yang keluar satu per satu; sisanya keluar bersamaan. */
+private const val MAKS_KELUAR_BERJEDA = 8
+private const val JEDA_KELUAR_LEWAT = 40
+
+/** Beranda dianggap sudah tampil (ms setelah disusun): kotak yang muncul sesudahnya diberi gerak masuk. */
+private const val SIAP_GERAK = 600L
+
+/**
+ * Mencatat kotak beranda (pita, kotak gagal/ditahan, keadaan kosong) yang sedang ada, supaya
+ * gerak muncul hanya diputar saat kotak itu benar-benar baru muncul ketika beranda sudah tampil:
+ * tidak saat beranda baru dibuka, dan tidak saat kotaknya tergulir keluar lalu masuk lagi.
+ */
+private class Kemunculan {
+    var siap = false
+    private val ada = mutableSetOf<String>()
+
+    /** True kalau kotak [kunci] baru muncul sekarang dan perlu gerak masuk. */
+    fun baru(kunci: String): Boolean = (siap && kunci !in ada).also { ada += kunci }
+
+    /** Lupakan kotak yang sudah tidak ada, supaya kalau muncul lagi diberi gerak lagi. */
+    fun sisakan(kunci: Set<String>) {
+        ada.retainAll(kunci)
+    }
+}
+
 /** Selesai run sukses terakhir dari sumber mana pun. */
 internal fun Db.suksesTerakhir(): Instant? =
     (satu("SELECT max(selesai) AS s FROM source_runs WHERE status = 'success'")?.get("s") as String?)?.let(::dariDb)
@@ -147,6 +177,15 @@ fun Beranda(
     val konteks = LocalContext.current
     val cakupan = rememberCoroutineScope()
     var konfirmasiLewat by remember { mutableStateOf(false) }
+    // Tugas yang sedang dicentang lewat "Centang N yang lewat": disembunyikan satu per satu dulu
+    // (kartunya keluar berurutan), baru disimpan ke database.
+    var menghilang by remember { mutableStateOf(emptySet<String>()) }
+    LaunchedEffect(versi) { menghilang = emptySet() }
+    val kemunculan = remember { Kemunculan() }
+    LaunchedEffect(Unit) {
+        delay(SIAP_GERAK)
+        kemunculan.siap = true
+    }
     val data by produceState(kepalaTerakhir, versi) {
         value = runCatching {
             Gudang.pakai(konteks) { db -> DataKepala(db.kuliahMulai(), db.daftarTugas(semua = true), db.suksesTerakhir(), db.sumberTerakhir()) }
@@ -156,7 +195,8 @@ fun Beranda(
     var filter by rememberSaveable { mutableStateOf<String?>(null) }
     val layanan = daftar.map { it.sumber ?: "Manual" }.distinct().sortedBy { it == "Manual" }
     val aktif = filter?.takeIf { it in layanan }
-    val tampil = if (aktif == null) daftar else daftar.filter { (it.sumber ?: "Manual") == aktif }
+    val tampil = (if (aktif == null) daftar else daftar.filter { (it.sumber ?: "Manual") == aktif })
+        .filterNot { it.id in menghilang }
     val belum = tampil.filterNot(::beresSitus)
     val (atas, bawah) = belum.partition { mendesak(it, sekarang) }
     val lewat = atas.filter { lewatDeadline(it, sekarang) }
@@ -173,6 +213,22 @@ fun Beranda(
         }
     }
     val tarik = rememberPullToRefreshState()
+    val adaBeres = data?.semua.orEmpty().any(::beres)
+    val adaLayanan = data?.sumber?.any { it.status != null } ?: true      // true selama memuat: tidak berkedip
+    val kosong = when {
+        daftar.isNotEmpty() && belum.isNotEmpty() -> null
+        !adaLayanan && daftar.isEmpty() && !adaBeres -> Kosong.BELUM_LAYANAN
+        daftar.isEmpty() && !adaBeres -> Kosong.BELUM_TUGAS
+        else -> Kosong.BERES
+    }
+    val adaKotak = buildSet {
+        if (pitaSumber != null && stSumber.any { it.tingkat == Tingkat.MERAH }) add("gagal")
+        if (pitaSumber != null && stSumber.any { it.tingkat == Tingkat.KUNING }) add("pita-sumber")
+        if (ditahan.isNotEmpty()) add("ditahan")
+        if (hasilBaru != null) add("pita-ambil")
+        if (kosong == Kosong.BERES) add("beres")
+    }
+    SideEffect { kemunculan.sisakan(adaKotak) }
 
     PullToRefreshBox(
         isRefreshing = menyegarkan,
@@ -198,23 +254,30 @@ fun Beranda(
             val kuning = stSumber.filter { it.tingkat == Tingkat.KUNING }
             if (merah.isNotEmpty()) {
                 itemTab(key = "gagal") {
-                    KotakGagal(merah, stSumber.filter { it.tingkat == Tingkat.NORMAL }, data?.sumber.orEmpty(), menyegarkan, onSegarkan, onBukaLayanan)
+                    Box(Modifier.munculKotak(remember { kemunculan.baru("gagal") })) {
+                        KotakGagal(merah, stSumber.filter { it.tingkat == Tingkat.NORMAL }, data?.sumber.orEmpty(), menyegarkan, onSegarkan, onBukaLayanan)
+                    }
                 }
             }
             if (kuning.isNotEmpty()) {
                 itemTab(key = "pita-sumber") {
                     Pita(
                         kuning.joinToString(", ", postfix = ". Ketuk untuk membuka Layanan.") { "${it.nama} ${chipStatus(it).first}" },
+                        Modifier.munculKotak(remember { kemunculan.baru("pita-sumber") }),
                         onClick = onBukaLayanan,
                     )
                 }
             }
         }
         if (ditahan.isNotEmpty()) {
-            itemTab(key = "ditahan") { KotakDitahan(ditahan) }
+            itemTab(key = "ditahan") {
+                Box(Modifier.munculKotak(remember { kemunculan.baru("ditahan") })) { KotakDitahan(ditahan) }
+            }
         }
         if (hasilBaru != null) {
-            itemTab(key = "pita-ambil") { Pita(hasilBaru.pesan.joinToString("\n")) }
+            itemTab(key = "pita-ambil") {
+                Pita(hasilBaru.pesan.joinToString("\n"), Modifier.munculKotak(remember { kemunculan.baru("pita-ambil") }))
+            }
         }
         itemTab(key = "ubin") {
             Row(Modifier.fillMaxWidth().padding(top = Jarak.s4), horizontalArrangement = Arrangement.spacedBy(6.dp)) {
@@ -233,28 +296,31 @@ fun Beranda(
                 )
             }
         }
-        val adaBeres = data?.semua.orEmpty().any(::beres)
-        val adaLayanan = data?.sumber?.any { it.status != null } ?: true      // true selama memuat: tidak berkedip
-        when {
-            daftar.isNotEmpty() && belum.isNotEmpty() -> Unit
-            !adaLayanan && daftar.isEmpty() && !adaBeres -> itemTab(key = "kosong") {
-                Kosong(Ekspresi.MELAMBAI, "Belum ada layanan tersambung", "Sambungkan Brone, Eling, atau Classroom supaya tugasmu muncul di sini.") {
+        when (kosong) {
+            null -> Unit
+            Kosong.BELUM_LAYANAN -> itemTab(key = "kosong") {
+                IsiKosong(Ekspresi.MELAMBAI, "Belum ada layanan tersambung", "Sambungkan Brone, Eling, atau Classroom supaya tugasmu muncul di sini.") {
                     TombolPermen("Tambah layanan", onBukaLayanan, Modifier.padding(top = Jarak.s12))
                     TombolGaris("Tugas manual", onTambah, Modifier.padding(top = Jarak.s8))
                 }
             }
-            daftar.isEmpty() && !adaBeres -> itemTab(key = "kosong") {
-                Kosong(Ekspresi.SANTAI, "Belum ada tugas", "Tarik ke bawah untuk mengambil tugas dari situs kuliah, atau catat tugas dari grup kelas sendiri.") {
+            Kosong.BELUM_TUGAS -> itemTab(key = "kosong") {
+                IsiKosong(Ekspresi.SANTAI, "Belum ada tugas", "Tarik ke bawah untuk mengambil tugas dari situs kuliah, atau catat tugas dari grup kelas sendiri.") {
                     TombolPermen(if (menyegarkan) "Mengambil…" else "Ambil sekarang", onSegarkan, Modifier.padding(top = Jarak.s12))
                     TombolGaris("Tugas manual", onTambah, Modifier.padding(top = Jarak.s8))
                 }
             }
-            else -> itemTab(key = "kosong") {
-                Kosong(
-                    Ekspresi.BERSORAK,
-                    if (aktif == null) "Semua tugas beres" else "Semua tugas ${singkat(aktif)} beres",
-                    "Tidak ada tugas aktif. Yang sudah selesai tetap bisa dilihat di bawah.",
-                )
+            Kosong.BERES -> itemTab(key = "beres") {
+                // Berubah jadi beres saat beranda terlihat: kotaknya muncul + stiker dirayakan dengan letupan.
+                val rayakan = remember { kemunculan.baru("beres") }
+                Box(Modifier.munculKotak(rayakan)) {
+                    IsiKosong(
+                        Ekspresi.BERSORAK,
+                        if (aktif == null) "Semua tugas beres" else "Semua tugas ${singkat(aktif)} beres",
+                        "Tidak ada tugas aktif. Yang sudah selesai tetap bisa dilihat di bawah.",
+                        rayakan = rayakan,
+                    )
+                }
             }
         }
         bagian("Mendesak", atas, sekarang, onBuka) {
@@ -293,6 +359,15 @@ fun Beranda(
                     konfirmasiLewat = false
                     val id = lewat.map { it.id }
                     cakupan.launch {
+                        // Kartu keluar berurutan (jeda 40 ms, paling banyak 8 berjeda), baru disimpan.
+                        if (Gerak.skala > 0f) {
+                            id.take(MAKS_KELUAR_BERJEDA).forEach {
+                                menghilang = menghilang + it
+                                delay(Gerak.ms(JEDA_KELUAR_LEWAT).toLong())
+                            }
+                            menghilang = menghilang + id
+                            delay(Gerak.ms(Gerak.PUDAR).toLong())
+                        }
                         runCatching { Gudang.pakai(konteks) { it.tandaiSemua(id, Instant.now()) } }
                         onBerubah()
                     }
@@ -302,6 +377,9 @@ fun Beranda(
         )
     }
 }
+
+/** Keadaan kosong beranda (tanpa tugas aktif yang tampil). */
+private enum class Kosong { BELUM_LAYANAN, BELUM_TUGAS, BERES }
 
 /** Tugas belum selesai yang deadline-nya sudah lewat (chip LEWAT). */
 private fun lewatDeadline(t: BarisTugas, sekarang: Instant): Boolean =
@@ -330,10 +408,20 @@ private fun LazyListScope.bagian(
 
 /** Keadaan kosong di beranda: stiker, judul, satu kalimat, dan tombol opsional. */
 @Composable
-private fun Kosong(stiker: Ekspresi, judul: String, kalimat: String, tombol: @Composable ColumnScope.() -> Unit = {}) {
+private fun IsiKosong(
+    stiker: Ekspresi,
+    judul: String,
+    kalimat: String,
+    rayakan: Boolean = false,
+    tombol: @Composable ColumnScope.() -> Unit = {},
+) {
     val w = GwadoTema.warna
     Column(Modifier.fillMaxWidth().padding(vertical = Jarak.s24), horizontalAlignment = Alignment.CenterHorizontally) {
-        Stiker(stiker, ukuran = 64.dp)
+        Box(contentAlignment = Alignment.Center) {
+            Stiker(stiker, ukuran = 64.dp)
+            // Letupan bentuk kecil dari stiker, sekali saat keadaan ini baru muncul.
+            if (rayakan) Letupan(1, Modifier.size(64.dp))
+        }
         Text(judul, style = Huruf.judulBagian, color = w.tinta, textAlign = TextAlign.Center, modifier = Modifier.padding(top = 10.dp))
         Text(kalimat, style = Huruf.isi, color = w.tintaRedup, textAlign = TextAlign.Center, modifier = Modifier.padding(top = 4.dp))
         tombol()

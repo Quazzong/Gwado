@@ -45,6 +45,7 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.DropdownMenu
+import io.github.quazzong.gwado.ui.komponen.asalTombol
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -207,7 +208,8 @@ fun LayarDetail(id: String, onKembali: () -> Unit, onBerubah: () -> Unit, onUbah
             Text("DETAIL TUGAS", style = Huruf.label, color = w.tintaRedup, modifier = Modifier.weight(1f))
             if ((keadaan as? Keadaan.Ada)?.isi?.tugas?.asal == "manual") {
                 Box {
-                    TombolGarisIkon(R.drawable.ikon_menu, "Menu tugas", { menu = true })
+                    // Ubah membuka formulir yang melebar dari tombol menu ini (item menunya sudah tertutup).
+                    TombolGarisIkon(R.drawable.ikon_menu, "Menu tugas", { menu = true }, Modifier.asalTombol("layar-ubah-$id"))
                     DropdownMenu(
                         expanded = menu,
                         onDismissRequest = { menu = false },
