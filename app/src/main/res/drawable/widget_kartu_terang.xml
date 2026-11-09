@@ -4,14 +4,14 @@
     <item android:left="3dp" android:top="3dp">
         <shape android:shape="rectangle">
             <corners android:radius="18dp" />
-            <solid android:color="@color/widget_bayangan" />
+            <solid android:color="@color/widget_bayangan_terang" />
         </shape>
     </item>
     <item android:right="3dp" android:bottom="3dp">
         <shape android:shape="rectangle">
             <corners android:radius="18dp" />
-            <solid android:color="@color/widget_kartu" />
-            <stroke android:width="2dp" android:color="@color/widget_garis" />
+            <solid android:color="@color/widget_kartu_terang" />
+            <stroke android:width="2dp" android:color="@color/widget_garis_terang" />
         </shape>
     </item>
 </layer-list>

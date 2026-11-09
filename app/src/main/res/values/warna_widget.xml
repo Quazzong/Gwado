@@ -1,9 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Warna widget layar utama, tema terang (sama dengan token aplikasi). -->
+<!-- Warna widget layar utama. `_terang`/`_gelap` dipakai saat tema Gwado dipilih sendiri;
+     tanpa akhiran dipilih launcher menurut mode gelap sistem (values-night). -->
 <resources>
-    <color name="widget_kartu">#FFFFFF</color>
-    <color name="widget_garis">#4A2545</color>
-    <color name="widget_bayangan">#4A2545</color>
-    <color name="widget_garis_halus">#F1E4EE</color>
-    <color name="widget_redup">#7A5872</color>
+    <color name="widget_kartu_terang">#FFFFFF</color>
+    <color name="widget_garis_terang">#4A2545</color>
+    <color name="widget_bayangan_terang">#4A2545</color>
+    <color name="widget_garis_halus_terang">#F1E4EE</color>
+    <color name="widget_redup_terang">#7A5872</color>
+    <color name="widget_kartu_gelap">#2A1B30</color>
+    <color name="widget_garis_gelap">#EBC2E0</color>
+    <color name="widget_bayangan_gelap">#EBC2E0</color>
+    <color name="widget_garis_halus_gelap">#3A2842</color>
+    <color name="widget_redup_gelap">#C4ABBF</color>
+    <color name="widget_kartu">@color/widget_kartu_terang</color>
+    <color name="widget_garis">@color/widget_garis_terang</color>
+    <color name="widget_bayangan">@color/widget_bayangan_terang</color>
+    <color name="widget_garis_halus">@color/widget_garis_halus_terang</color>
+    <color name="widget_redup">@color/widget_redup_terang</color>
 </resources>

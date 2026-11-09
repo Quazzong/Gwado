@@ -3,6 +3,9 @@ package io.github.quazzong.gwado.widget
 import android.content.Context
 import android.content.Intent
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.produceState
 import androidx.compose.ui.graphics.Color
@@ -26,6 +29,8 @@ import androidx.glance.appwidget.provideContent
 import androidx.glance.appwidget.state.updateAppWidgetState
 import androidx.glance.background
 import androidx.glance.color.ColorProvider
+import androidx.glance.unit.ColorProvider
+import androidx.glance.unit.ColorProvider as GlanceColor
 import androidx.glance.currentState
 import androidx.glance.layout.Alignment
 import androidx.glance.layout.Box
@@ -46,6 +51,9 @@ import io.github.quazzong.gwado.MainActivity
 import io.github.quazzong.gwado.R
 import io.github.quazzong.gwado.beranda.progresMinggu
 import io.github.quazzong.gwado.db.Gudang
+import io.github.quazzong.gwado.layanan.prefsGwado
+import io.github.quazzong.gwado.tampilan.Tema
+import io.github.quazzong.gwado.tampilan.tema
 import io.github.quazzong.gwado.tugas.daftarTugas
 import io.github.quazzong.gwado.ui.komponen.Ekspresi
 import io.github.quazzong.gwado.ui.layar.suksesTerakhir
@@ -61,17 +69,60 @@ const val EKSTRA_TUGAS = "io.github.quazzong.gwado.TUGAS"
 /** Naik setiap kali data berubah, supaya widget yang sedang hidup membaca ulang database. */
 private val VERSI = intPreferencesKey("versi")
 
-private fun warna(terang: Long, gelap: Long = terang) =
-    ColorProvider(day = Color(terang), night = Color(gelap))
+/** Warna widget yang berbeda antara tema terang dan gelap. */
+private class Palet(val tinta: Long, val redup: Long, val garisHalus: Long, val ubin: Long, val merah: Long)
 
-private val TINTA = warna(0xFF3A1D36, 0xFFF6E9F2)
-private val REDUP = warna(0xFF7A5872, 0xFFC4ABBF)
-private val GARIS_HALUS = warna(0xFFF1E4EE, 0xFF3A2842)
-private val UBIN = warna(0xFFF1ECFA, 0xFF33233B)
-private val AKSEN = warna(0xFFF7A8D8)
-private val MERAH = warna(0xFFC8303B, 0xFFFF8A8F)
-private val DI_ATAS_LEWAT = warna(0xFF3A0F18)
-private val DI_ATAS_MEPET = warna(0xFF3A2A00)
+private val PALET_TERANG = Palet(0xFF3A1D36, 0xFF7A5872, 0xFFF1E4EE, 0xFFF1ECFA, 0xFFC8303B)
+private val PALET_GELAP = Palet(0xFFF6E9F2, 0xFFC4ABBF, 0xFF3A2842, 0xFF33233B, 0xFFFF8A8F)
+
+private val AKSEN = ColorProvider(Color(0xFFF7A8D8))
+private val DI_ATAS_LEWAT = ColorProvider(Color(0xFF3A0F18))
+private val DI_ATAS_MEPET = ColorProvider(Color(0xFF3A2A00))
+
+/**
+ * Warna, gaya teks, dan gambar widget untuk satu pilihan tema. [Tema.SISTEM] memakai warna
+ * siang/malam dan gambar tanpa akhiran (dipilih launcher menurut mode gelap sistem); Terang dan
+ * Gelap memakai warna dan gambar `_terang`/`_gelap` yang tetap, apa pun mode sistemnya.
+ */
+private class GayaWidget(tema: Tema) {
+    private val gelap: Boolean? = when (tema) {
+        Tema.SISTEM -> null
+        Tema.TERANG -> false
+        Tema.GELAP -> true
+    }
+
+    private fun warna(pilih: (Palet) -> Long): GlanceColor = when (gelap) {
+        null -> ColorProvider(day = Color(pilih(PALET_TERANG)), night = Color(pilih(PALET_GELAP)))
+        false -> ColorProvider(Color(pilih(PALET_TERANG)))
+        true -> ColorProvider(Color(pilih(PALET_GELAP)))
+    }
+
+    private fun gambar(sistem: Int, terang: Int, gelap: Int) = when (this.gelap) {
+        null -> sistem
+        false -> terang
+        true -> gelap
+    }
+
+    val tinta = warna { it.tinta }
+    val redup = warna { it.redup }
+    val garisHalus = warna { it.garisHalus }
+    val ubin = warna { it.ubin }
+    val merah = warna { it.merah }
+
+    val label = TextStyle(color = redup, fontSize = 11.sp, fontWeight = FontWeight.Bold)
+    val judul = TextStyle(color = tinta, fontSize = 13.sp, fontWeight = FontWeight.Bold)
+    val kecil = TextStyle(color = redup, fontSize = 11.sp, fontWeight = FontWeight.Bold)
+
+    val kartu = gambar(R.drawable.widget_kartu, R.drawable.widget_kartu_terang, R.drawable.widget_kartu_gelap)
+    val chipLewat = gambar(R.drawable.widget_chip_lewat, R.drawable.widget_chip_lewat_terang, R.drawable.widget_chip_lewat_gelap)
+    val chipMepet = gambar(R.drawable.widget_chip_mepet, R.drawable.widget_chip_mepet_terang, R.drawable.widget_chip_mepet_gelap)
+    val chipNetral = gambar(R.drawable.widget_chip_netral, R.drawable.widget_chip_netral_terang, R.drawable.widget_chip_netral_gelap)
+    val chipPutus = gambar(R.drawable.widget_chip_putus, R.drawable.widget_chip_putus_terang, R.drawable.widget_chip_putus_gelap)
+
+    fun stiker(e: Ekspresi) = gambar(e.widget, e.gambar, e.gambarGelap)
+}
+
+private val LocalGaya = staticCompositionLocalOf { GayaWidget(Tema.SISTEM) }
 
 /** Tugas terbanyak yang dibaca untuk widget Terdekat. */
 private const val MAKS_BARIS = 12
@@ -80,10 +131,6 @@ private const val MAKS_BARIS = 12
 private val TINGGI_ANGKA_BESAR = 150.dp
 private val LEBAR_SATU_KOTAK = 120.dp
 private val LEBAR_DUA_KOTAK = 220.dp
-
-private val GAYA_LABEL = TextStyle(color = REDUP, fontSize = 11.sp, fontWeight = FontWeight.Bold)
-private val GAYA_JUDUL = TextStyle(color = TINTA, fontSize = 13.sp, fontWeight = FontWeight.Bold)
-private val GAYA_KECIL = TextStyle(color = REDUP, fontSize = 11.sp, fontWeight = FontWeight.Bold)
 
 /** Baca isi widget dari database; null kalau database tidak bisa dibuka. */
 private suspend fun muatIsi(context: Context): IsiWidget? = try {
@@ -129,10 +176,13 @@ abstract class WidgetGwado : GlanceAppWidget() {
 
     override suspend fun provideGlance(context: Context, id: GlanceId) {
         val awal = muatIsi(context)
+        val prefs = prefsGwado(context)
         provideContent {
             val versi = currentState(VERSI) ?: 0
             val isi by produceState(awal, versi) { value = muatIsi(context) }
-            Isi(context, isi)
+            // Tema dibaca ulang setiap versi naik: mengganti tema di Gwado ikut memperbarui widget.
+            val gaya = remember(versi) { GayaWidget(prefs.tema()) }
+            CompositionLocalProvider(LocalGaya provides gaya) { Isi(context, isi) }
         }
     }
 }
@@ -162,7 +212,7 @@ class PenerimaTerdekat : GlanceAppWidgetReceiver() {
 private fun Kartu(isi: @Composable ColumnScope.() -> Unit) {
     Column(
         modifier = GlanceModifier.fillMaxSize()
-            .background(ImageProvider(R.drawable.widget_kartu))
+            .background(ImageProvider(LocalGaya.current.kartu))
             .padding(start = 12.dp, top = 10.dp, end = 15.dp, bottom = 13.dp),
         content = isi,
     )
@@ -170,11 +220,12 @@ private fun Kartu(isi: @Composable ColumnScope.() -> Unit) {
 
 @Composable
 private fun ChipWidget(chip: Chip?) {
+    val g = LocalGaya.current
     val (latar, warnaTeks) = when (chip?.makna) {
-        null -> R.drawable.widget_chip_putus to REDUP
-        Makna.LEWAT -> R.drawable.widget_chip_lewat to DI_ATAS_LEWAT
-        Makna.MEPET -> R.drawable.widget_chip_mepet to DI_ATAS_MEPET
-        Makna.NORMAL -> R.drawable.widget_chip_netral to TINTA
+        null -> g.chipPutus to g.redup
+        Makna.LEWAT -> g.chipLewat to DI_ATAS_LEWAT
+        Makna.MEPET -> g.chipMepet to DI_ATAS_MEPET
+        Makna.NORMAL -> g.chipNetral to g.tinta
     }
     Box(GlanceModifier.background(ImageProvider(latar)).padding(horizontal = 8.dp, vertical = 2.dp)) {
         Text(
@@ -197,12 +248,12 @@ private fun StikerWidget(isi: IsiWidget?) {
         isi.diambil == null -> Ekspresi.SANTAI
         else -> Ekspresi.BERSORAK
     }
-    Image(ImageProvider(ekspresi.widget), contentDescription = null, modifier = GlanceModifier.size(56.dp))
+    Image(ImageProvider(LocalGaya.current.stiker(ekspresi)), contentDescription = null, modifier = GlanceModifier.size(56.dp))
 }
 
 @Composable
 private fun TeksKosong(teks: String) {
-    Text(teks, style = TextStyle(color = REDUP, fontSize = 12.sp, fontWeight = FontWeight.Bold), maxLines = 2)
+    Text(teks, style = TextStyle(color = LocalGaya.current.redup, fontSize = 12.sp, fontWeight = FontWeight.Bold), maxLines = 2)
 }
 
 /**
@@ -211,16 +262,17 @@ private fun TeksKosong(teks: String) {
  */
 @Composable
 private fun LabelTugas(isi: IsiWidget?, duaBaris: Boolean, modifier: GlanceModifier = GlanceModifier) {
+    val g = LocalGaya.current
     val mendesak = isi?.mendesak ?: 0
-    val gayaMerah = GAYA_LABEL.copy(color = MERAH)
+    val gayaMerah = g.label.copy(color = g.merah)
     if (duaBaris) {
         Column(modifier) {
-            Text("TUGAS", style = GAYA_LABEL)
+            Text("TUGAS", style = g.label)
             if (mendesak > 0) Text("$mendesak MENDESAK", style = gayaMerah, maxLines = 1)
         }
     } else {
         Row(modifier) {
-            Text("TUGAS", style = GAYA_LABEL)
+            Text("TUGAS", style = g.label)
             if (mendesak > 0) Text(" · $mendesak MENDESAK", style = gayaMerah, maxLines = 1)
         }
     }
@@ -230,11 +282,12 @@ private fun LabelTugas(isi: IsiWidget?, duaBaris: Boolean, modifier: GlanceModif
 @Composable
 private fun TugasPertama(context: Context, isi: IsiWidget?, barisJudul: Int) {
     val pertama = isi?.terdekat?.firstOrNull()
+    val g = LocalGaya.current
     when {
         isi == null -> TeksKosong("Buka Gwado")
         pertama == null -> TeksKosong(pesanKosong(isi, singkat = true))
         else -> Column(GlanceModifier.fillMaxWidth().clickable(bukaGwado(context, pertama.id))) {
-            Text(pertama.judul, style = GAYA_JUDUL.copy(fontSize = 12.sp), maxLines = barisJudul)
+            Text(pertama.judul, style = g.judul.copy(fontSize = 12.sp), maxLines = barisJudul)
             Spacer(GlanceModifier.height(4.dp))
             ChipWidget(pertama.chip)
         }
@@ -249,9 +302,10 @@ private fun TugasPertama(context: Context, isi: IsiWidget?, barisJudul: Int) {
  */
 @Composable
 private fun IsiTugas(context: Context, isi: IsiWidget?) {
+    val g = LocalGaya.current
     val beranda = bukaGwado(context)
     val angka = isi?.jumlah?.toString() ?: "–"
-    val gayaAngka = TextStyle(color = TINTA, fontSize = 40.sp, fontWeight = FontWeight.Bold)
+    val gayaAngka = TextStyle(color = g.tinta, fontSize = 40.sp, fontWeight = FontWeight.Bold)
     val ukuran = LocalSize.current
     Kartu {
         when {
@@ -261,7 +315,11 @@ private fun IsiTugas(context: Context, isi: IsiWidget?) {
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 val pertama = isi?.terdekat?.firstOrNull()
-                Text(angka, style = gayaAngka.copy(fontSize = 48.sp), modifier = GlanceModifier.clickable(beranda))
+                val besar = ukuranAngkaSempit(
+                    ukuran.width.value, ukuran.height.value, angka.length, adaChip = pertama != null,
+                    skalaHuruf = context.resources.configuration.fontScale,
+                )
+                Text(angka, style = gayaAngka.copy(fontSize = besar.sp), maxLines = 1, modifier = GlanceModifier.clickable(beranda))
                 if (pertama != null) {
                     Spacer(GlanceModifier.height(4.dp))
                     Box(GlanceModifier.clickable(bukaGwado(context, pertama.id))) { ChipWidget(pertama.chip) }
@@ -302,8 +360,8 @@ private fun IsiTugas(context: Context, isi: IsiWidget?) {
                         isi == null -> TeksKosong("Buka Gwado")
                         pertama == null -> TeksKosong(pesanKosong(isi, singkat = false))
                         else -> Column(GlanceModifier.fillMaxWidth().clickable(bukaGwado(context, pertama.id))) {
-                            Text(pertama.judul, style = GAYA_JUDUL, maxLines = 2)
-                            Text(pertama.keterangan, style = GAYA_KECIL, maxLines = 1)
+                            Text(pertama.judul, style = g.judul, maxLines = 2)
+                            Text(pertama.keterangan, style = g.kecil, maxLines = 1)
                         }
                     }
                 }
@@ -319,6 +377,7 @@ private fun IsiTugas(context: Context, isi: IsiWidget?) {
  */
 @Composable
 private fun IsiTerdekat(context: Context, isi: IsiWidget?) {
+    val g = LocalGaya.current
     val beranda = bukaGwado(context)
     val tata = tataTerdekat(LocalSize.current.height.value, isi?.terdekat?.size ?: 0, isi?.progres != null)
     val tampil = isi?.terdekat.orEmpty().take(tata.baris)
@@ -328,16 +387,16 @@ private fun IsiTerdekat(context: Context, isi: IsiWidget?) {
             GlanceModifier.fillMaxWidth().padding(bottom = 4.dp).clickable(beranda),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            Text("TERDEKAT", style = GAYA_LABEL)
-            if (lagi > 0) Text("  · +$lagi LAGI", style = GAYA_LABEL, maxLines = 1)
+            Text("TERDEKAT", style = g.label)
+            if (lagi > 0) Text("  · +$lagi LAGI", style = g.label, maxLines = 1)
             Spacer(GlanceModifier.defaultWeight())
-            isi?.diambil?.let { Text("diambil $it", style = GAYA_LABEL, maxLines = 1) }
+            isi?.diambil?.let { Text("diambil $it", style = g.label, maxLines = 1) }
         }
         when {
             isi == null -> TeksKosong("Buka Gwado")
             tampil.isEmpty() -> TeksKosong(pesanKosong(isi, singkat = false))
             else -> tampil.forEachIndexed { i, b ->
-                if (i > 0) Spacer(GlanceModifier.fillMaxWidth().height(2.dp).background(GARIS_HALUS))
+                if (i > 0) Spacer(GlanceModifier.fillMaxWidth().height(2.dp).background(g.garisHalus))
                 Row(
                     GlanceModifier.fillMaxWidth().padding(vertical = if (tata.rinci) 5.dp else 3.dp)
                         .clickable(bukaGwado(context, b.id)),
@@ -346,8 +405,8 @@ private fun IsiTerdekat(context: Context, isi: IsiWidget?) {
                     ChipWidget(b.chip)
                     Spacer(GlanceModifier.width(8.dp))
                     Column(GlanceModifier.defaultWeight()) {
-                        Text(b.judul, style = GAYA_JUDUL, maxLines = 1)
-                        if (tata.rinci) Text(b.keterangan, style = GAYA_KECIL, maxLines = 1)
+                        Text(b.judul, style = g.judul, maxLines = 1)
+                        if (tata.rinci) Text(b.keterangan, style = g.kecil, maxLines = 1)
                     }
                 }
             }
@@ -359,13 +418,13 @@ private fun IsiTerdekat(context: Context, isi: IsiWidget?) {
         if (tata.progres && progres != null) {
             if (!tata.stiker) Spacer(GlanceModifier.defaultWeight())
             Column(GlanceModifier.fillMaxWidth().clickable(beranda)) {
-                Text("MINGGU INI · ${progres.selesai} DARI ${progres.total} SELESAI", style = GAYA_LABEL, maxLines = 1)
+                Text("MINGGU INI · ${progres.selesai} DARI ${progres.total} SELESAI", style = g.label, maxLines = 1)
                 Spacer(GlanceModifier.height(5.dp))
                 LinearProgressIndicator(
                     progress = progres.selesai.toFloat() / progres.total,
                     modifier = GlanceModifier.fillMaxWidth().height(8.dp),
                     color = AKSEN,
-                    backgroundColor = UBIN,
+                    backgroundColor = g.ubin,
                 )
             }
         }

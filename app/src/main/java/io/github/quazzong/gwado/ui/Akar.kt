@@ -50,6 +50,13 @@ import androidx.compose.runtime.SideEffect
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.PointerEventPass
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.input.pointer.positionChange
+import androidx.compose.ui.input.pointer.util.VelocityTracker
+import androidx.compose.foundation.gestures.awaitEachGesture
+import androidx.compose.foundation.gestures.awaitFirstDown
+import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.ui.unit.dp
+import kotlin.math.abs
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import io.github.quazzong.gwado.ui.komponen.LocalLingkupUtama
 import io.github.quazzong.gwado.R
@@ -311,6 +318,55 @@ private fun LayarNav(isi: @Composable () -> Unit) {
     Box(if (keluar) Modifier.fillMaxSize().tahanSentuhan() else Modifier.fillMaxSize()) { isi() }
 }
 
+/** Geser tab dianggap jadi kalau jarinya bergeser sejauh ini, atau dilempar secepat ini (per detik). */
+private val JARAK_GESER_TAB = 72.dp
+private val LAJU_GESER_TAB = 900.dp
+
+/**
+ * Geser mendatar di isi tab untuk pindah tab: ke kiri = tab di kanan ([onGeser] dengan 1), ke kanan
+ * = tab di kiri (-1). Sentuhan dibaca sesudah isi tab, jadi gestur yang sudah dipakai isinya
+ * (geser bulan di grid kalender, gulir daftar, tarik untuk ambil) tidak ikut memindah tab. Begitu
+ * geserannya jelas mendatar, sentuhan dipakai di sini supaya kartu di bawah jari tidak terketuk.
+ */
+private fun Modifier.geserTab(onGeser: (Int) -> Unit): Modifier = pointerInput(Unit) {
+    val jarak = JARAK_GESER_TAB.toPx()
+    val laju = LAJU_GESER_TAB.toPx()
+    val slop = viewConfiguration.touchSlop
+    awaitEachGesture {
+        val turun = awaitFirstDown(requireUnconsumed = false)
+        val pelacak = VelocityTracker().apply { addPosition(turun.uptimeMillis, turun.position) }
+        var dx = 0f
+        var dy = 0f
+        var milik = false
+        while (true) {
+            val e = awaitPointerEvent()
+            if (e.changes.size > 1) break                       // dua jari: bukan geser tab
+            val c = e.changes.firstOrNull { it.id == turun.id } ?: break
+            if (!milik && c.isConsumed) break                   // sudah dipakai isi tab
+            if (!c.pressed) {
+                if (milik) {
+                    val v = pelacak.calculateVelocity().x
+                    when {
+                        dx < 0 && (dx <= -jarak || v <= -laju) -> onGeser(1)
+                        dx > 0 && (dx >= jarak || v >= laju) -> onGeser(-1)
+                    }
+                    c.consume()
+                }
+                break
+            }
+            val d = c.positionChange()
+            dx += d.x
+            dy += d.y
+            pelacak.addPosition(c.uptimeMillis, c.position)
+            if (!milik) {
+                if (abs(dy) > slop && abs(dy) >= abs(dx)) break   // gulir tegak
+                if (abs(dx) > slop && abs(dx) > 2 * abs(dy)) milik = true
+            }
+            if (milik) c.consume()
+        }
+    }
+}
+
 /** Menelan semua sentuhan sebelum sampai ke isinya (layar yang sedang tertutup layar lain). */
 private fun Modifier.tahanSentuhan(): Modifier = pointerInput(Unit) {
     awaitPointerEventScope {
@@ -419,7 +475,8 @@ private fun LayarUtama(
     ) {
         // Ganti tab: isi lama mengalir keluar, isi baru mengalir masuk lalu memantul, per elemen
         // (Modifier.masukTab di tiap layar). Isi pertama saat dibuka tidak dianimasikan.
-        Box(Modifier.weight(1f).fillMaxWidth()) {
+        val geser by rememberUpdatedState { langkah: Int -> Tab.entries.getOrNull(tab.ordinal + langkah)?.let(pilihTab) }
+        Box(Modifier.weight(1f).fillMaxWidth().geserTab { geser(it) }) {
             for (t in dikunjungi) {
                 key(t) {
                     IsiTab(aktif = t == tab, pertama = t == tabAwal, arah = { arah }) {

@@ -20,7 +20,7 @@ import io.github.quazzong.gwado.ui.tema.GwadoTema
 /**
  * Ekspresi maskot kue; gambarnya vector drawable `stiker_*`. Versi `_gelap` memakai garis dan
  * hiasan terang supaya terlihat di latar gelap. [widget] = alias yang dipilih launcher sendiri
- * menurut mode gelap sistem (`values-night`), karena widget selalu ikut tema sistem.
+ * menurut mode gelap sistem (`values-night`), dipakai widget saat tema Gwado ikut sistem.
  */
 enum class Ekspresi(
     @param:DrawableRes val gambar: Int,

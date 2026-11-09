@@ -85,4 +85,27 @@ class IsiWidgetTest {
         // 4×2 dengan lima tugas rinci: sisa 8dp.
         assertEquals(false, tataTerdekat(288f, 5, adaProgres = true).stiker)
     }
+
+    @Test
+    fun angkaSempitMengecilSupayaChipMuat() {
+        // Kartu tinggi: angka penuh 48sp.
+        assertEquals(ANGKA_MAKS, ukuranAngkaSempit(110f, 200f, 1, adaChip = true), 0.01f)
+        // 1×1 rendah: angka + chip harus muat di tinggi isi kartu.
+        val ukuran = ukuranAngkaSempit(80f, 90f, 1, adaChip = true)
+        assert(ukuran < ANGKA_MAKS)
+        assert(ukuran * TINGGI_BARIS + TINGGI_CHIP <= 90f * KOREKSI_TINGGI - PADDING_TEGAK + 0.01f)
+        // Tanpa chip ada ruang lebih untuk angka.
+        assert(ukuranAngkaSempit(80f, 90f, 1, adaChip = false) > ukuran)
+    }
+
+    @Test
+    fun angkaSempitIkutLebarDanUkuranHuruf() {
+        // Dua angka di kartu sempit dibatasi lebarnya.
+        val dua = ukuranAngkaSempit(60f, 200f, 2, adaChip = true)
+        assert(dua * LEBAR_DIGIT * 2 <= 60f - PADDING_DATAR + 0.01f)
+        // Huruf sistem diperbesar: ukuran sp dikecilkan supaya hasil di layar tetap muat.
+        assert(ukuranAngkaSempit(80f, 90f, 1, adaChip = true, skalaHuruf = 1.3f) < ukuranAngkaSempit(80f, 90f, 1, adaChip = true))
+        // Tidak pernah lebih kecil dari batas bawah.
+        assertEquals(ANGKA_MIN, ukuranAngkaSempit(40f, 40f, 3, adaChip = true), 0.01f)
+    }
 }

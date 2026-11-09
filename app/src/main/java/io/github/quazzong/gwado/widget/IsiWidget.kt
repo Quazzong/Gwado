@@ -101,3 +101,29 @@ fun tataTerdekat(tinggiLapor: Float, tersedia: Int, adaProgres: Boolean): TataTe
     val sisaStiker = sisa - if (progres) TINGGI_PROGRES else 0f
     return TataTerdekat(tersedia, rinci, progres, stiker = sisaStiker >= TINGGI_STIKER)
 }
+
+internal const val PADDING_DATAR = 27f      // padding kiri + kanan kartu (termasuk bayangan)
+internal const val PADDING_TEGAK = 23f      // padding atas + bawah kartu (termasuk bayangan)
+internal const val TINGGI_CHIP = 24f        // chip 11sp + padding + garis, ditambah jarak di atasnya
+internal const val TINGGI_BARIS = 1.2f      // tinggi baris teks dibanding ukuran hurufnya
+internal const val LEBAR_DIGIT = 0.6f       // lebar satu angka tebal dibanding ukuran hurufnya
+internal const val ANGKA_MAKS = 48f
+internal const val ANGKA_MIN = 14f
+
+/**
+ * Ukuran angka (sp) widget Tugas yang sempit: sebesar mungkin sampai [ANGKA_MAKS], asal angka dan
+ * chip di bawahnya muat di dalam kartu. Angka yang lebih tinggi dari ruangnya ikut terjepit dan
+ * hanya potongan tengahnya yang tampak. [skalaHuruf] = ukuran huruf sistem (1 = normal).
+ */
+fun ukuranAngkaSempit(
+    lebarLapor: Float,
+    tinggiLapor: Float,
+    digit: Int,
+    adaChip: Boolean,
+    skalaHuruf: Float = 1f,
+): Float {
+    val tinggi = tinggiLapor * KOREKSI_TINGGI - PADDING_TEGAK - if (adaChip) TINGGI_CHIP * skalaHuruf else 0f
+    val lebar = lebarLapor - PADDING_DATAR
+    val dp = minOf(tinggi / TINGGI_BARIS, lebar / (LEBAR_DIGIT * digit.coerceAtLeast(1)))
+    return (dp / skalaHuruf).coerceIn(ANGKA_MIN, ANGKA_MAKS)
+}

@@ -1,6 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Stiker untuk widget: launcher memilih versi terang/gelap menurut mode gelap sistem. -->
+<!-- Gambar widget tanpa akhiran: launcher memilih versi terang/gelap menurut mode gelap sistem. -->
 <resources>
+    <item name="widget_kartu" type="drawable">@drawable/widget_kartu_terang</item>
+    <item name="widget_chip_lewat" type="drawable">@drawable/widget_chip_lewat_terang</item>
+    <item name="widget_chip_mepet" type="drawable">@drawable/widget_chip_mepet_terang</item>
+    <item name="widget_chip_netral" type="drawable">@drawable/widget_chip_netral_terang</item>
+    <item name="widget_chip_putus" type="drawable">@drawable/widget_chip_putus_terang</item>
     <item name="widget_stiker_netral" type="drawable">@drawable/stiker_netral</item>
     <item name="widget_stiker_melambai" type="drawable">@drawable/stiker_melambai</item>
     <item name="widget_stiker_santai" type="drawable">@drawable/stiker_santai</item>

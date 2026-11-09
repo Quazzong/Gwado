@@ -94,10 +94,10 @@ fun LayarPengaturan(onKembali: () -> Unit, onBerubah: () -> Unit) {
             Segmen(Tema.entries.map { it to it.label }, temaDipilih, pilihTema)
             Text(
                 when (temaDipilih) {
-                    Tema.SISTEM -> "Terang atau gelap mengikuti pengaturan tampilan HP."
-                    Tema.TERANG -> "Gwado selalu terang, apa pun pengaturan HP."
-                    Tema.GELAP -> "Gwado selalu gelap, apa pun pengaturan HP."
-                } + " Widget di layar utama tetap mengikuti HP.",
+                    Tema.SISTEM -> "Gwado dan widgetnya terang atau gelap mengikuti pengaturan tampilan HP."
+                    Tema.TERANG -> "Gwado dan widgetnya selalu terang, apa pun pengaturan HP."
+                    Tema.GELAP -> "Gwado dan widgetnya selalu gelap, apa pun pengaturan HP."
+                },
                 style = Huruf.meta,
                 color = w.tintaRedup,
             )
