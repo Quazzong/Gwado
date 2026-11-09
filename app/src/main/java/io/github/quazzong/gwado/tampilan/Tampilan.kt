@@ -7,13 +7,15 @@ import io.github.quazzong.gwado.db.Db
 enum class Tekstur(val kode: String, val label: String) {
     POLOS("polos", "Polos"),
     TITIK("titik", "Titik"),
-    KOTAK("kotak", "Kotak"),
-    BENTUK("bentuk", "Bentuk acak");
+    KOTAK("kotak", "Kotak");
 
     companion object {
         val BAWAAN = TITIK
 
-        /** Kode tak dikenal atau kosong → bawaan, supaya preferences yang rusak tidak membuat layar galat. */
+        /**
+         * Kode tak dikenal atau kosong → bawaan, supaya preferences yang rusak (atau pilihan yang
+         * sudah tidak ada, misalnya "bentuk") tidak membuat layar galat.
+         */
         fun dariKode(kode: String?): Tekstur = entries.firstOrNull { it.kode == kode } ?: BAWAAN
     }
 }

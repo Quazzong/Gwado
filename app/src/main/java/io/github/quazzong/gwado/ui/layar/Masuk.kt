@@ -1,6 +1,6 @@
 package io.github.quazzong.gwado.ui.layar
 
-import io.github.quazzong.gwado.ui.komponen.latarLayar
+import io.github.quazzong.gwado.ui.komponen.LayarPenuh
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -60,74 +60,75 @@ fun LayarMasuk(pengambil: Pengambil, id: String, onKembali: () -> Unit) {
         if (kini != awal && kini?.first == id) onKembali()
     }
 
-    Column(
-        Modifier
-            .fillMaxSize()
-            .latarLayar()
-            .safeDrawingPadding()
-            .verticalScroll(rememberScrollState())
-            .padding(Jarak.tepiLayar),
-        verticalArrangement = Arrangement.spacedBy(Jarak.s16),
-    ) {
-        StripSub(
-            "Masuk ${l?.label.orEmpty()}",
-            kiri = { TombolPlumIkon(R.drawable.ikon_kembali, "Kembali", onKembali) },
-        )
-        if (l == null) {
-            Text("Layanan ini tidak memakai login lewat browser.", style = Huruf.isi, color = w.tintaRedup)
-            return@Column
-        }
-        Kotak(Modifier.fillMaxWidth()) {
-            Column {
-                Text("Browser akan membuka halaman login ${l.label}", style = Huruf.judulKartu, color = w.tinta)
-                Text(
-                    "Setelah login berhasil, HP mungkin bertanya aplikasi mana yang membuka tautannya. " +
-                        "Pilih Gwado, bukan Moodle.",
-                    style = Huruf.meta,
-                    color = w.tintaRedup,
-                    modifier = Modifier.padding(top = 4.dp),
-                )
-                ContohBukaDengan(Modifier.padding(top = 10.dp))
-            }
-        }
-        Column(verticalArrangement = Arrangement.spacedBy(Jarak.s8)) {
-            TombolPermen("Buka halaman login", { pengambil.tambah(l) }, Modifier.fillMaxWidth())
-            pengambil.status[l.id]?.takeIf { it.isNotBlank() }?.let {
-                Text(it, style = Huruf.meta.copy(fontWeight = FontWeight.W800), color = w.tinta)
-            }
-        }
-        Box(
+    LayarPenuh("layar-masuk-$id") {
+        Column(
             Modifier
-                .defaultMinSize(minHeight = Jarak.sentuh)
-                .clickable(role = Role.Button) { tempel = !tempel },
-            contentAlignment = Alignment.CenterStart,
+                .fillMaxSize()
+                .safeDrawingPadding()
+                .verticalScroll(rememberScrollState())
+                .padding(Jarak.tepiLayar),
+            verticalArrangement = Arrangement.spacedBy(Jarak.s16),
         ) {
-            Text(
-                "Tidak kembali ke Gwado setelah login?",
-                style = Huruf.meta.copy(fontSize = 13.sp, fontWeight = FontWeight.W800, textDecoration = TextDecoration.Underline),
-                color = w.tinta,
+            StripSub(
+                "Masuk ${l?.label.orEmpty()}",
+                kiri = { TombolPlumIkon(R.drawable.ikon_kembali, "Kembali", onKembali) },
             )
-        }
-        if (tempel) {
-            Kotak(Modifier.fillMaxWidth(), putus = true, kilau = null, bayangan = 0.dp) {
-                Column(verticalArrangement = Arrangement.spacedBy(Jarak.s8)) {
+            if (l == null) {
+                Text("Layanan ini tidak memakai login lewat browser.", style = Huruf.isi, color = w.tintaRedup)
+                return@Column
+            }
+            Kotak(Modifier.fillMaxWidth()) {
+                Column {
+                    Text("Browser akan membuka halaman login ${l.label}", style = Huruf.judulKartu, color = w.tinta)
                     Text(
-                        "Kalau HP langsung membuka aplikasi Moodle, salin alamat yang diawali moodlemobile:// " +
-                            "lalu tempel di sini. Tekan Buka halaman login dulu kalau belum.",
+                        "Setelah login berhasil, HP mungkin bertanya aplikasi mana yang membuka tautannya. " +
+                            "Pilih Gwado, bukan Moodle.",
                         style = Huruf.meta,
                         color = w.tintaRedup,
+                        modifier = Modifier.padding(top = 4.dp),
                     )
-                    IsianTeks(alamat, { alamat = it }, petunjuk = "moodlemobile://token=…", satuBaris = true)
-                    TombolPlum("Tempel dan sambungkan", {
-                        if (alamat.isNotBlank()) {
-                            pengambil.tangani(alamat, untuk = l.id)
-                            alamat = ""
-                        }
-                    })
+                    ContohBukaDengan(Modifier.padding(top = 10.dp))
                 }
             }
+            Column(verticalArrangement = Arrangement.spacedBy(Jarak.s8)) {
+                TombolPermen("Buka halaman login", { pengambil.tambah(l) }, Modifier.fillMaxWidth())
+                pengambil.status[l.id]?.takeIf { it.isNotBlank() }?.let {
+                    Text(it, style = Huruf.meta.copy(fontWeight = FontWeight.W800), color = w.tinta)
+                }
+            }
+            Box(
+                Modifier
+                    .defaultMinSize(minHeight = Jarak.sentuh)
+                    .clickable(role = Role.Button) { tempel = !tempel },
+                contentAlignment = Alignment.CenterStart,
+            ) {
+                Text(
+                    "Tidak kembali ke Gwado setelah login?",
+                    style = Huruf.meta.copy(fontSize = 13.sp, fontWeight = FontWeight.W800, textDecoration = TextDecoration.Underline),
+                    color = w.tinta,
+                )
+            }
+            if (tempel) {
+                Kotak(Modifier.fillMaxWidth(), putus = true, kilau = null, bayangan = 0.dp) {
+                    Column(verticalArrangement = Arrangement.spacedBy(Jarak.s8)) {
+                        Text(
+                            "Kalau HP langsung membuka aplikasi Moodle, salin alamat yang diawali moodlemobile:// " +
+                                "lalu tempel di sini. Tekan Buka halaman login dulu kalau belum.",
+                            style = Huruf.meta,
+                            color = w.tintaRedup,
+                        )
+                        IsianTeks(alamat, { alamat = it }, petunjuk = "moodlemobile://token=…", satuBaris = true)
+                        TombolPlum("Tempel dan sambungkan", {
+                            if (alamat.isNotBlank()) {
+                                pengambil.tangani(alamat, untuk = l.id)
+                                alamat = ""
+                            }
+                        })
+                    }
+                }
+            }
+            Text("Password tidak pernah disimpan. Token login hanya ada di HP ini.", style = Huruf.meta, color = w.tintaRedup)
         }
-        Text("Password tidak pernah disimpan. Token login hanya ada di HP ini.", style = Huruf.meta, color = w.tintaRedup)
     }
 }
 

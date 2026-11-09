@@ -1,8 +1,8 @@
 package io.github.quazzong.gwado.ui.komponen
 
+import io.github.quazzong.gwado.ui.tema.gtween
 import androidx.annotation.DrawableRes
 import androidx.compose.animation.core.animateDpAsState
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -55,6 +55,7 @@ import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import io.github.quazzong.gwado.R
+import io.github.quazzong.gwado.ui.tema.Gerak
 import io.github.quazzong.gwado.ui.tema.Bentuk
 import io.github.quazzong.gwado.ui.tema.GwadoTema
 import io.github.quazzong.gwado.ui.tema.Huruf
@@ -162,7 +163,7 @@ fun Pemilih(
 @Composable
 fun Sakelar(nyala: Boolean, onUbah: (Boolean) -> Unit, label: String, modifier: Modifier = Modifier) {
     val w = GwadoTema.warna
-    val geser by animateDpAsState(if (nyala) 20.dp else 0.dp, tween(120), label = "sakelar")
+    val geser by animateDpAsState(if (nyala) 20.dp else 0.dp, gtween(Gerak.CEPAT), label = "sakelar")
     val bentuk = RoundedCornerShape(12.dp)
     Row(
         modifier.minimumInteractiveComponentSize().toggleable(value = nyala, role = Role.Switch, onValueChange = onUbah),

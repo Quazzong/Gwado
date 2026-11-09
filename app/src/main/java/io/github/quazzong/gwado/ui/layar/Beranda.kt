@@ -1,5 +1,7 @@
 package io.github.quazzong.gwado.ui.layar
 
+import io.github.quazzong.gwado.ui.komponen.asalTombol
+import io.github.quazzong.gwado.ui.komponen.ikutLayar
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -10,7 +12,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
-import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -27,6 +28,8 @@ import androidx.compose.ui.unit.sp
 import io.github.quazzong.gwado.fetch.SebabTertahan
 import io.github.quazzong.gwado.layanan.DAFTAR_LAYANAN
 import io.github.quazzong.gwado.segar.StatusSumber
+import io.github.quazzong.gwado.ui.komponen.itemsTab
+import io.github.quazzong.gwado.ui.komponen.itemTab
 import io.github.quazzong.gwado.ui.komponen.Ekspresi
 import io.github.quazzong.gwado.ui.komponen.Stiker
 import io.github.quazzong.gwado.ui.komponen.Kotak
@@ -118,6 +121,12 @@ internal fun singkat(nama: String): String =
  * [versi] naik setiap kali data di database berubah. Ketuk kartu = buka detail.
  */
 @OptIn(ExperimentalMaterial3Api::class)
+/**
+ * Hasil muat terakhir, dipakai sebagai nilai awal saat layar disusun ulang (misalnya kembali dari
+ * detail), supaya layar langsung tampil lengkap dan tidak berkedip ke keadaan kosong.
+ */
+private var kepalaTerakhir: DataKepala? = null
+
 @Composable
 fun Beranda(
     daftar: List<BarisTugas>,
@@ -138,10 +147,11 @@ fun Beranda(
     val konteks = LocalContext.current
     val cakupan = rememberCoroutineScope()
     var konfirmasiLewat by remember { mutableStateOf(false) }
-    val data by produceState<DataKepala?>(null, versi) {
+    val data by produceState(kepalaTerakhir, versi) {
         value = runCatching {
             Gudang.pakai(konteks) { db -> DataKepala(db.kuliahMulai(), db.daftarTugas(semua = true), db.suksesTerakhir(), db.sumberTerakhir()) }
         }.getOrNull()
+        kepalaTerakhir = value
     }
     var filter by rememberSaveable { mutableStateOf<String?>(null) }
     val layanan = daftar.map { it.sumber ?: "Manual" }.distinct().sortedBy { it == "Manual" }
@@ -176,7 +186,7 @@ fun Beranda(
         contentPadding = PaddingValues(start = Jarak.tepiLayar, top = Jarak.tepiLayar, end = Jarak.tepiLayar, bottom = 80.dp),
         verticalArrangement = Arrangement.spacedBy(Jarak.s8),
     ) {
-        item(key = "kepala") {
+        itemTab(key = "kepala") {
             KepalaBeranda(
                 sekarang,
                 data?.kuliahMulai,
@@ -187,12 +197,12 @@ fun Beranda(
             val merah = stSumber.filter { it.tingkat == Tingkat.MERAH }
             val kuning = stSumber.filter { it.tingkat == Tingkat.KUNING }
             if (merah.isNotEmpty()) {
-                item(key = "gagal") {
+                itemTab(key = "gagal") {
                     KotakGagal(merah, stSumber.filter { it.tingkat == Tingkat.NORMAL }, data?.sumber.orEmpty(), menyegarkan, onSegarkan, onBukaLayanan)
                 }
             }
             if (kuning.isNotEmpty()) {
-                item(key = "pita-sumber") {
+                itemTab(key = "pita-sumber") {
                     Pita(
                         kuning.joinToString(", ", postfix = ". Ketuk untuk membuka Layanan.") { "${it.nama} ${chipStatus(it).first}" },
                         onClick = onBukaLayanan,
@@ -201,12 +211,12 @@ fun Beranda(
             }
         }
         if (ditahan.isNotEmpty()) {
-            item(key = "ditahan") { KotakDitahan(ditahan) }
+            itemTab(key = "ditahan") { KotakDitahan(ditahan) }
         }
         if (hasilBaru != null) {
-            item(key = "pita-ambil") { Pita(hasilBaru.pesan.joinToString("\n")) }
+            itemTab(key = "pita-ambil") { Pita(hasilBaru.pesan.joinToString("\n")) }
         }
-        item(key = "ubin") {
+        itemTab(key = "ubin") {
             Row(Modifier.fillMaxWidth().padding(top = Jarak.s4), horizontalArrangement = Arrangement.spacedBy(6.dp)) {
                 Ubin("Aktif", "${daftar.count { !beresSitus(it) }}", Modifier.weight(1f))
                 Ubin("Mendesak", "${daftar.count { mendesak(it, sekarang) }}", Modifier.weight(1f))
@@ -214,7 +224,7 @@ fun Beranda(
             }
         }
         if (layanan.size > 1) {
-            item(key = "filter") {
+            itemTab(key = "filter") {
                 Segmen(
                     listOf<Pair<String?, String>>(null to "Semua") + layanan.map { it to singkat(it) },
                     aktif = aktif,
@@ -227,19 +237,19 @@ fun Beranda(
         val adaLayanan = data?.sumber?.any { it.status != null } ?: true      // true selama memuat: tidak berkedip
         when {
             daftar.isNotEmpty() && belum.isNotEmpty() -> Unit
-            !adaLayanan && daftar.isEmpty() && !adaBeres -> item(key = "kosong") {
+            !adaLayanan && daftar.isEmpty() && !adaBeres -> itemTab(key = "kosong") {
                 Kosong(Ekspresi.MELAMBAI, "Belum ada layanan tersambung", "Sambungkan Brone, Eling, atau Classroom supaya tugasmu muncul di sini.") {
                     TombolPermen("Tambah layanan", onBukaLayanan, Modifier.padding(top = Jarak.s12))
                     TombolGaris("Tugas manual", onTambah, Modifier.padding(top = Jarak.s8))
                 }
             }
-            daftar.isEmpty() && !adaBeres -> item(key = "kosong") {
+            daftar.isEmpty() && !adaBeres -> itemTab(key = "kosong") {
                 Kosong(Ekspresi.SANTAI, "Belum ada tugas", "Tarik ke bawah untuk mengambil tugas dari situs kuliah, atau catat tugas dari grup kelas sendiri.") {
                     TombolPermen(if (menyegarkan) "Mengambil…" else "Ambil sekarang", onSegarkan, Modifier.padding(top = Jarak.s12))
                     TombolGaris("Tugas manual", onTambah, Modifier.padding(top = Jarak.s8))
                 }
             }
-            else -> item(key = "kosong") {
+            else -> itemTab(key = "kosong") {
                 Kosong(
                     Ekspresi.BERSORAK,
                     if (aktif == null) "Semua tugas beres" else "Semua tugas ${singkat(aktif)} beres",
@@ -253,8 +263,8 @@ fun Beranda(
         bagian("Nanti", bawah, sekarang, onBuka)
         bagian("Selesai minggu ini", selesai, sekarang, onBuka)
         if (data?.semua.orEmpty().any(::beres)) {
-            item(key = "semua-selesai") {
-                TombolGaris("Lihat semua yang selesai", onSemuaSelesai, Modifier.padding(top = Jarak.s4))
+            itemTab(key = "semua-selesai") {
+                TombolGaris("Lihat semua yang selesai", onSemuaSelesai, Modifier.padding(top = Jarak.s4).asalTombol("layar-selesai"))
             }
         }
     }
@@ -262,7 +272,7 @@ fun Beranda(
         R.drawable.ikon_tambah,
         "Tambah tugas manual",
         onTambah,
-        Modifier.align(Alignment.BottomEnd).padding(Jarak.tepiLayar),
+        Modifier.align(Alignment.BottomEnd).padding(Jarak.tepiLayar).ikutLayar().asalTombol("layar-formulir"),
     )
     }
 
@@ -305,7 +315,7 @@ private fun LazyListScope.bagian(
     aksi: @Composable () -> Unit = {},
 ) {
     if (isi.isEmpty()) return
-    item(key = "bagian-$judul") {
+    itemTab(key = "bagian-$judul") {
         Row(
             Modifier.fillMaxWidth().padding(top = Jarak.s8),
             horizontalArrangement = Arrangement.SpaceBetween,
@@ -315,7 +325,7 @@ private fun LazyListScope.bagian(
             aksi()
         }
     }
-    items(isi, key = { it.id }) { t -> KartuTugas(t, sekarang, onClick = { onBuka(t.id) }) }
+    itemsTab(isi, key = { it.id }) { t -> KartuTugas(t, sekarang, onClick = { onBuka(t.id) }) }
 }
 
 /** Keadaan kosong di beranda: stiker, judul, satu kalimat, dan tombol opsional. */

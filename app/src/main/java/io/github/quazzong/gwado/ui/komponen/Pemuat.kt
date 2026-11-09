@@ -1,6 +1,6 @@
 package io.github.quazzong.gwado.ui.komponen
 
-import android.provider.Settings
+import io.github.quazzong.gwado.ui.tema.animasiMati
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
@@ -14,7 +14,6 @@ import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.StrokeJoin
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.drawscope.translate
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.Dp
@@ -65,14 +64,6 @@ private fun pathPemuat(pusat: Offset, r: Float, dari: Lekuk, ke: Lekuk, e: Float
 /** Putaran yang sedang berjalan. Diubah dari fase gambar, bukan state Compose. */
 private class Putaran(var dari: Lekuk, var ke: Lekuk, var mulai: Long)
 
-/** True kalau animasi sistem dimatikan (skala durasi animator 0). */
-@Composable
-private fun animasiMati(): Boolean {
-    val konteks = LocalContext.current
-    return remember {
-        Settings.Global.getFloat(konteks.contentResolver, Settings.Global.ANIMATOR_DURATION_SCALE, 1f) == 0f
-    }
-}
 
 /**
  * Pemuat: kue yang berputar sekali per putaran (ease in-out) sambil berubah bentuk; jumlah

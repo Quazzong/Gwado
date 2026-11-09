@@ -1,8 +1,8 @@
 package io.github.quazzong.gwado.ui.komponen
 
+import io.github.quazzong.gwado.ui.tema.gtween
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.FastOutSlowInEasing
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -11,6 +11,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.unit.dp
+import io.github.quazzong.gwado.ui.tema.Gerak
 import io.github.quazzong.gwado.ui.tema.GwadoTema
 import io.github.quazzong.gwado.ui.tema.WarnaStatus
 import kotlin.math.PI
@@ -29,7 +30,7 @@ fun Letupan(pemicu: Int, modifier: Modifier = Modifier) {
     LaunchedEffect(pemicu) {
         if (pemicu > 0) {
             maju.snapTo(0f)
-            maju.animateTo(1f, tween(520, easing = FastOutSlowInEasing))
+            maju.animateTo(1f, gtween(Gerak.RAYAKAN, easing = FastOutSlowInEasing))
         }
     }
     val warna = listOf(w.aksen, w.lavender, WarnaStatus.mepet[1], w.aksenTerang)

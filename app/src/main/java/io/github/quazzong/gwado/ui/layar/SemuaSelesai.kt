@@ -1,6 +1,8 @@
 package io.github.quazzong.gwado.ui.layar
 
-import io.github.quazzong.gwado.ui.komponen.latarLayar
+import io.github.quazzong.gwado.ui.komponen.LayarPenuh
+import io.github.quazzong.gwado.ui.komponen.itemsTab
+import io.github.quazzong.gwado.ui.komponen.itemTab
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
@@ -8,7 +10,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
-import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -39,6 +40,12 @@ import io.github.quazzong.gwado.ui.tema.Jarak
 import java.time.Instant
 
 /**
+ * Hasil muat terakhir, dipakai sebagai nilai awal saat layar disusun ulang (misalnya kembali dari
+ * detail), supaya layar langsung tampil lengkap dan tidak berkedip ke keadaan kosong.
+ */
+private var selesaiTerakhir: List<BarisTugas>? = null
+
+/**
  * Semua tugas yang dicentang atau beres di situs, dalam tiga bagian: DICENTANG (belum beres
  * di situs, termasuk tugas manual), TERKUMPUL DI SITUS, lalu SELESAI DI SITUS (ditandai
  * selesai di situs tanpa bukti terkumpul), masing-masing deadline terbaru di atas. Bisa disaring per layanan dan dicari lewat judul atau mata kuliah.
@@ -49,8 +56,9 @@ fun LayarSemuaSelesai(versi: Int, onBuka: (String) -> Unit, onKembali: () -> Uni
     val w = GwadoTema.warna
     val konteks = LocalContext.current
     val sekarang = rememberSekarang()
-    val daftar by produceState<List<BarisTugas>?>(null, versi) {
+    val daftar by produceState(selesaiTerakhir, versi) {
         value = runCatching { Gudang.pakai(konteks) { semuaSelesai(it.daftarTugas(semua = true)) } }.getOrDefault(emptyList())
+        selesaiTerakhir = value
     }
     var kata by rememberSaveable { mutableStateOf("") }
     var filter by rememberSaveable { mutableStateOf<String?>(null) }
@@ -62,49 +70,51 @@ fun LayarSemuaSelesai(versi: Int, onBuka: (String) -> Unit, onKembali: () -> Uni
     val selesaiSitus = tampil.filter { it.statusKumpulSitus == "selesai" }
     val dicentang = tampil.filterNot { beresDiSitus(it.statusKumpulSitus) }
 
-    LazyColumn(
-        Modifier.fillMaxSize().latarLayar().safeDrawingPadding(),
-        contentPadding = PaddingValues(Jarak.tepiLayar),
-        verticalArrangement = Arrangement.spacedBy(Jarak.s8),
-    ) {
-        item(key = "strip") {
-            StripSub(
-                "Selesai",
-                Modifier.padding(bottom = Jarak.s4),
-                kiri = { TombolPlumIkon(R.drawable.ikon_kembali, "Kembali", onKembali) },
-                kanan = { if (daftar != null) Chip("${tampil.size} tugas", jenis = JenisChip.PUTIH) },
-            )
-        }
-        item(key = "cari") {
-            IsianTeks(kata, { kata = it }, petunjuk = "Cari judul atau mata kuliah", satuBaris = true)
-        }
-        if (layanan.size > 1) {
-            item(key = "filter") {
-                Segmen(
-                    listOf<Pair<String?, String>>(null to "Semua") + layanan.map { it to singkat(it) },
-                    aktif = aktif,
-                    onPilih = { filter = it },
+    LayarPenuh("layar-selesai") {
+        LazyColumn(
+            Modifier.fillMaxSize().safeDrawingPadding(),
+            contentPadding = PaddingValues(Jarak.tepiLayar),
+            verticalArrangement = Arrangement.spacedBy(Jarak.s8),
+        ) {
+            itemTab(key = "strip") {
+                StripSub(
+                    "Selesai",
+                    Modifier.padding(bottom = Jarak.s4),
+                    kiri = { TombolPlumIkon(R.drawable.ikon_kembali, "Kembali", onKembali) },
+                    kanan = { if (daftar != null) Chip("${tampil.size} tugas", jenis = JenisChip.PUTIH) },
                 )
             }
-        }
-        if (daftar != null && tampil.isEmpty()) {
-            item(key = "kosong") {
-                Text(
-                    if (semua.isEmpty()) "Belum ada tugas yang selesai." else "Tidak ada yang cocok dengan pencarian ini.",
-                    style = Huruf.isi,
-                    color = w.tintaRedup,
-                )
+            itemTab(key = "cari") {
+                IsianTeks(kata, { kata = it }, petunjuk = "Cari judul atau mata kuliah", satuBaris = true)
             }
+            if (layanan.size > 1) {
+                itemTab(key = "filter") {
+                    Segmen(
+                        listOf<Pair<String?, String>>(null to "Semua") + layanan.map { it to singkat(it) },
+                        aktif = aktif,
+                        onPilih = { filter = it },
+                    )
+                }
+            }
+            if (daftar != null && tampil.isEmpty()) {
+                itemTab(key = "kosong") {
+                    Text(
+                        if (semua.isEmpty()) "Belum ada tugas yang selesai." else "Tidak ada yang cocok dengan pencarian ini.",
+                        style = Huruf.isi,
+                        color = w.tintaRedup,
+                    )
+                }
+            }
+            kelompok("Dicentang", dicentang, sekarang, onBuka)
+            kelompok("Terkumpul di situs", terkumpul, sekarang, onBuka)
+            kelompok("Selesai di situs", selesaiSitus, sekarang, onBuka)
         }
-        kelompok("Dicentang", dicentang, sekarang, onBuka)
-        kelompok("Terkumpul di situs", terkumpul, sekarang, onBuka)
-        kelompok("Selesai di situs", selesaiSitus, sekarang, onBuka)
     }
 }
 
 private fun LazyListScope.kelompok(judul: String, isi: List<BarisTugas>, sekarang: Instant, onBuka: (String) -> Unit) {
     if (isi.isEmpty()) return
-    item(key = "kelompok-$judul") {
+    itemTab(key = "kelompok-$judul") {
         Text(
             "${judul.uppercase()} · ${isi.size}",
             style = Huruf.label,
@@ -112,5 +122,5 @@ private fun LazyListScope.kelompok(judul: String, isi: List<BarisTugas>, sekaran
             modifier = Modifier.padding(top = Jarak.s8),
         )
     }
-    items(isi, key = { it.id }) { t -> KartuTugas(t, sekarang, onClick = { onBuka(t.id) }) }
+    itemsTab(isi, key = { it.id }) { t -> KartuTugas(t, sekarang, onClick = { onBuka(t.id) }) }
 }

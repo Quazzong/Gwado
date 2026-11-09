@@ -1,9 +1,8 @@
 package io.github.quazzong.gwado.ui.komponen
 
+import io.github.quazzong.gwado.ui.tema.gtween
 import androidx.annotation.DrawableRes
 import androidx.compose.animation.core.Animatable
-import androidx.compose.animation.core.CubicBezierEasing
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -24,6 +23,10 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
+import kotlinx.coroutines.launch
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
@@ -38,6 +41,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import io.github.quazzong.gwado.ui.tema.Gerak
 import io.github.quazzong.gwado.ui.tema.Bentuk
 import io.github.quazzong.gwado.ui.tema.GwadoTema
 import io.github.quazzong.gwado.ui.tema.Huruf
@@ -69,13 +73,22 @@ private fun <T> SatuTab(t: ItemTab<T>, aktif: Boolean, onClick: () -> Unit, modi
     val w = GwadoTema.warna
     val isiKue = w.gradasiAksen()
     val letup = remember { Animatable(if (aktif) 1f else 0f) }
+    val lompat = remember { Animatable(0f) }
+    var pertama by remember { mutableStateOf(true) }
     LaunchedEffect(aktif) {
         if (aktif) {
             letup.snapTo(0f)
-            letup.animateTo(1f, tween(260, easing = CubicBezierEasing(0.34f, 1.6f, 0.64f, 1f)))
+            launch { letup.animateTo(1f, gtween(Gerak.LETUP, easing = Gerak.Letup)) }
+            // Ikon tab yang baru dipilih melompat sekali (bukan saat layar pertama dibuka).
+            if (!pertama) {
+                lompat.animateTo(1f, gtween(Gerak.LOMPAT_IKON / 3, easing = Gerak.Keluar))
+                lompat.animateTo(0f, gtween(Gerak.LOMPAT_IKON * 2 / 3, easing = Gerak.Pegas))
+            }
         } else {
             letup.snapTo(0f)
+            lompat.snapTo(0f)
         }
+        pertama = false
     }
     Column(
         modifier
@@ -110,7 +123,11 @@ private fun <T> SatuTab(t: ItemTab<T>, aktif: Boolean, onClick: () -> Unit, modi
                 painterResource(t.ikon),
                 contentDescription = null,
                 tint = if (aktif) Color(0xFF3A1D36) else w.tintaRedup,
-                modifier = Modifier.size(21.dp),
+                modifier = Modifier.size(21.dp).graphicsLayer {
+                    translationY = -6.dp.toPx() * lompat.value
+                    scaleX = 1f + 0.3f * lompat.value
+                    scaleY = 1f + 0.3f * lompat.value
+                },
             )
             t.lencana?.let {
                 LencanaTab(it, Modifier.align(Alignment.TopEnd).offset(x = 2.dp, y = (-2).dp))

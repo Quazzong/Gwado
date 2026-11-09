@@ -1,7 +1,7 @@
 package io.github.quazzong.gwado.ui.komponen
 
+import io.github.quazzong.gwado.ui.tema.gtween
 import androidx.compose.animation.core.animateDpAsState
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
@@ -33,6 +33,7 @@ import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
+import io.github.quazzong.gwado.ui.tema.Gerak
 import io.github.quazzong.gwado.ui.tema.Bentuk
 import io.github.quazzong.gwado.ui.tema.GwadoTema
 import io.github.quazzong.gwado.ui.tema.Jarak
@@ -86,7 +87,7 @@ fun Kotak(
     val ditekan by sumber.collectIsPressedAsState()
     val geser by animateDpAsState(
         targetValue = if (ditekan && onClick != null) bayangan else 0.dp,
-        animationSpec = tween(80),
+        animationSpec = gtween(Gerak.TEKAN),
         label = "geser",
     )
     val klik = if (onClick != null) {

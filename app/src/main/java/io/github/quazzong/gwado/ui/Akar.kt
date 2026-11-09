@@ -1,16 +1,31 @@
 package io.github.quazzong.gwado.ui
 
-import io.github.quazzong.gwado.ui.komponen.latarLayar
+import io.github.quazzong.gwado.ui.tema.Gerak
+import io.github.quazzong.gwado.ui.komponen.ikutLayar
+import io.github.quazzong.gwado.ui.komponen.Terbang
+import io.github.quazzong.gwado.ui.komponen.LocalTerbang
 import androidx.compose.foundation.layout.Box
+import io.github.quazzong.gwado.ui.komponen.tahanSampaiSelesai
+import kotlinx.coroutines.launch
+import io.github.quazzong.gwado.ui.layar.praMuatDetail
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.animation.ContentTransform
+import io.github.quazzong.gwado.ui.komponen.latarLayar
+import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.ExitTransition
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.saveable.rememberSaveableStateHolder
 import androidx.compose.runtime.setValue
@@ -19,11 +34,31 @@ import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.ui.NavDisplay
+import androidx.navigation3.ui.LocalNavAnimatedContentScope
+import androidx.compose.animation.EnterExitState
+import androidx.compose.animation.core.updateTransition
+import androidx.compose.animation.core.MutableTransitionState
+import androidx.compose.animation.core.rememberTransition
+import androidx.compose.runtime.key
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.ui.zIndex
+import kotlinx.coroutines.delay
+import android.os.SystemClock
+import androidx.compose.runtime.withFrameNanos
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.SideEffect
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.input.pointer.PointerEventPass
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.semantics.clearAndSetSemantics
+import io.github.quazzong.gwado.ui.komponen.LocalLingkupUtama
 import io.github.quazzong.gwado.R
 import io.github.quazzong.gwado.layanan.HasilAmbil
 import io.github.quazzong.gwado.layanan.Tahan
 import io.github.quazzong.gwado.tugas.BarisTugas
 import io.github.quazzong.gwado.ui.komponen.ItemTab
+import io.github.quazzong.gwado.ui.komponen.LocalMasukTab
+import io.github.quazzong.gwado.ui.komponen.MasukTab
 import io.github.quazzong.gwado.ui.komponen.TabBar
 import io.github.quazzong.gwado.ui.komponen.rememberSekarang
 import io.github.quazzong.gwado.ui.layar.Beranda
@@ -73,6 +108,18 @@ data object AturSemester : NavKey
 
 private enum class Tab { TUGAS, KALENDER, LAYANAN }
 
+/** Layar lama ditahan (ms) saat layar penuh dibuka dari layar selain layar utama: selama bidang baru melebar. */
+private const val TAHAN_BUKA = Gerak.MULUS + 150
+
+/** Layar yang ditutup ditahan (ms) selama gerak tutupnya (isi memudar, kartu/bidang menyusut). */
+private const val TAHAN_TUTUP = Gerak.TUTUP + 40 + 150
+
+/** Layar utama disembunyikan (ms, waktu nyata) setelah tertutup layar penuh, sesudah gerak bukanya selesai. */
+private const val SEMBUNYIKAN_UTAMA = (Gerak.MULUS + 460).toLong()
+
+/** Lama layar tidak disentuh (ms) sebelum tab yang belum dibuka disusun di belakang layar. */
+private const val DIAM_SEBELUM_SUSUN = 1500L
+
 /** Akar tampilan: back stack layar, dimulai dari layar utama (atau Siapkan Gwado kalau [siapkan] diisi). */
 @Composable
 fun Akar(
@@ -91,7 +138,30 @@ fun Akar(
     siapkan: (@Composable (buka: (NavKey) -> Unit) -> Unit)? = null,
 ) {
     val tumpukan = rememberNavBackStack(Utama)
-    val buka = { k: NavKey -> if (tumpukan.lastOrNull() != k) tumpukan.add(k) }
+    val konteks = LocalContext.current
+    val cakupan = rememberCoroutineScope()
+    val terbang = remember { Terbang(cakupan) }
+    val buka = { k: NavKey ->
+        if (k !is Detail) terbang.lupakan()       // layar lain tidak dibuka dari kartu: daftar tidak terbelah
+        if (tumpukan.lastOrNull() != k) tumpukan.add(k)
+    }
+    // Menutup layar [k] hanya kalau ia masih paling atas. Layar yang sedang ditutup masih tampil
+    // selama geraknya, dan tombol kembalinya masih bisa diketuk lagi: tanpa pengecekan ini ketukan
+    // kedua ikut menutup layar di bawahnya (sampai tumpukan kosong dan aplikasi berhenti).
+    val tutup = { k: NavKey ->
+        if (tumpukan.size > 1 && tumpukan.lastOrNull() == k) tumpukan.removeAt(tumpukan.lastIndex)
+        Unit
+    }
+    // Kartu yang diketuk dicatat posisinya, detail dimuat dulu (beberapa ms), baru dibuka:
+    // kepala detail sudah ada di frame pertama dan kartu terbang dari posisi diamnya.
+    val bukaDetail = { id: String ->
+        terbang.siapkan(id)
+        cakupan.launch {
+            runCatching { praMuatDetail(konteks, id) }
+            buka(Detail(id))
+        }
+        Unit
+    }
     // Ketuk tugas di widget: buka detailnya (diabaikan selama Siapkan Gwado tampil).
     LaunchedEffect(bukaTugas) {
         if (bukaTugas != null) {
@@ -99,56 +169,188 @@ fun Akar(
             onTugasDibuka()
         }
     }
+    // Layar utama (tab) disusun sekali di bawah tumpukan layar dan tidak dibuang saat layar penuh
+    // dibuka, supaya kembali dari detail tidak menyusun ulang seluruh daftar. Entri Utama di
+    // NavDisplay hanya penanda tembus pandang yang melaporkan keadaannya: [tujuanUtama] = masuk
+    // atau keluar (penggerak gerak elemen), [utamaTampil] = masih tampil di NavDisplay (termasuk
+    // selama ditahan sampai gerak buka selesai, dan selama gestur kembali).
+    var tujuanUtama by remember { mutableStateOf(EnterExitState.Visible) }
+    var utamaTampil by remember { mutableStateOf(true) }
+    val lingkupUtama = updateTransition(tujuanUtama, label = "utama")
+    // Layar utama tetap digambar sampai gerak buka layar di atasnya selesai, lalu disembunyikan.
+    var utamaTersembunyi by remember { mutableStateOf(false) }
+    LaunchedEffect(tujuanUtama) {
+        if (tujuanUtama == EnterExitState.Visible) {
+            utamaTersembunyi = false
+        } else {
+            delay(SEMBUNYIKAN_UTAMA)
+            utamaTersembunyi = true
+        }
+    }
+    Box(Modifier.fillMaxSize()) {
+    CompositionLocalProvider(LocalTerbang provides terbang) {
+    if (siapkan == null) {
+        val tertutup = tujuanUtama != EnterExitState.Visible
+        Box(
+            Modifier
+                .fillMaxSize()
+                // Tertutup penuh oleh layar lain: tidak ikut digambar.
+                .graphicsLayer {
+                    alpha = if (!utamaTersembunyi || utamaTampil || tumpukan.lastOrNull() == Utama) 1f else 0f
+                }
+                .then(if (tertutup) Modifier.tahanSentuhan().clearAndSetSemantics {} else Modifier),
+        ) {
+            CompositionLocalProvider(LocalLingkupUtama provides lingkupUtama) {
+                LayarUtama(daftar, versi, bukaDetail, { buka(Formulir()) }, menyegarkan, onSegarkan, hasilAmbil, muatUlang, { buka(SemuaSelesai) }, ditahan, lencanaLayanan) {
+                    layanan(buka)
+                }
+            }
+        }
+    }
     NavDisplay(
         backStack = tumpukan,
-        onBack = { tumpukan.removeLastOrNull() },
+        onBack = { if (tumpukan.size > 1) tumpukan.removeAt(tumpukan.lastIndex) },
+        // Layar penuh tidak bergeser sebagai satu lembar: bidangnya melebar dari yang diketuk dan
+        // isinya masuk sendiri (KartuTerbang, LayarPenuh, isiLayar). Layar lama ditahan sampai
+        // gerak itu selesai; saat kembali, layar bawah digambar di bawah layar yang ditutup.
+        // Selama transisi NavDisplay berjalan, tombol kembali harus menunggu transisi itu diputar
+        // mundur, jadi penahanan dibuat sesingkat mungkin. Dari layar utama tidak perlu menahan
+        // apa pun (layar utama tetap tersusun di bawah NavDisplay): transisinya selesai seketika.
+        transitionSpec = {
+            if (siapkan == null && tumpukan.size == 2) {
+                ContentTransform(EnterTransition.None, ExitTransition.None, sizeTransform = null)
+            } else {
+                ContentTransform(EnterTransition.None, tahanSampaiSelesai(TAHAN_BUKA), sizeTransform = null)
+            }
+        },
+        popTransitionSpec = {
+            ContentTransform(EnterTransition.None, tahanSampaiSelesai(TAHAN_TUTUP), targetContentZIndex = -1f, sizeTransform = null)
+        },
+        predictivePopTransitionSpec = {
+            ContentTransform(EnterTransition.None, tahanSampaiSelesai(TAHAN_TUTUP), targetContentZIndex = -1f, sizeTransform = null)
+        },
         entryProvider = entryProvider {
             entry<Utama> {
                 if (siapkan != null) {
-                    siapkan(buka)
+                    LayarNav { siapkan(buka) }
                 } else {
-                    LayarUtama(daftar, versi, { id -> buka(Detail(id)) }, { buka(Formulir()) }, menyegarkan, onSegarkan, hasilAmbil, muatUlang, { buka(SemuaSelesai) }, ditahan, lencanaLayanan) {
-                        layanan(buka)
-                    }
+                    PenandaUtama({ tujuanUtama = it }, { utamaTampil = it })
                 }
             }
             entry<Detail> { k ->
-                LayarDetail(
-                    k.id,
-                    onKembali = { tumpukan.removeLastOrNull() },
-                    onBerubah = muatUlang,
-                    onUbah = { id -> buka(Formulir(id)) },
-                )
+                LayarNav {
+                    LayarDetail(
+                        k.id,
+                        onKembali = { tutup(k) },
+                        onBerubah = muatUlang,
+                        onUbah = { id -> buka(Formulir(id)) },
+                    )
+                }
             }
             entry<Formulir> { k ->
-                LayarFormulir(
-                    k.id,
-                    onKembali = { tumpukan.removeLastOrNull() },
-                    onTersimpan = {
-                        muatUlang()
-                        tumpukan.removeLastOrNull()
-                    },
-                )
+                LayarNav {
+                    LayarFormulir(
+                        k.id,
+                        onKembali = { tutup(k) },
+                        onTersimpan = {
+                            muatUlang()
+                            tutup(k)
+                        },
+                    )
+                }
             }
-            entry<Masuk> { k -> masuk(k.id) { tumpukan.removeLastOrNull() } }
-            entry<DaftarMatkul> { k -> LayarMatkul(k.sumber, onKembali = { tumpukan.removeLastOrNull() }) }
-            entry<Pengaturan> {
-                LayarPengaturan(onKembali = { tumpukan.removeLastOrNull() }, onBerubah = muatUlang)
+            entry<Masuk> { k -> LayarNav { masuk(k.id) { tutup(k) } } }
+            entry<DaftarMatkul> { k -> LayarNav { LayarMatkul(k.sumber, onKembali = { tutup(k) }) } }
+            entry<Pengaturan> { k ->
+                LayarNav { LayarPengaturan(onKembali = { tutup(k) }, onBerubah = muatUlang) }
             }
-            entry<SemuaSelesai> {
-                LayarSemuaSelesai(versi, onBuka = { id -> buka(Detail(id)) }, onKembali = { tumpukan.removeLastOrNull() })
+            entry<SemuaSelesai> { k ->
+                LayarNav { LayarSemuaSelesai(versi, onBuka = bukaDetail, onKembali = { tutup(k) }) }
             }
-            entry<AturSemester> {
-                LayarSemester(
-                    onKembali = { tumpukan.removeLastOrNull() },
-                    onTersimpan = {
-                        muatUlang()
-                        tumpukan.removeLastOrNull()
-                    },
-                )
+            entry<AturSemester> { k ->
+                LayarNav {
+                    LayarSemester(
+                        onKembali = { tutup(k) },
+                        onTersimpan = {
+                            muatUlang()
+                            tutup(k)
+                        },
+                    )
+                }
             }
         },
     )
+    }
+    }
+}
+
+/**
+ * Isi entri Utama di NavDisplay: tembus pandang, hanya melaporkan apakah layar utama sedang
+ * masuk/tampil atau keluar ([tujuan]) dan apakah entrinya masih tersusun ([tampil]).
+ */
+@Composable
+private fun PenandaUtama(tujuan: (EnterExitState) -> Unit, tampil: (Boolean) -> Unit) {
+    val target = LocalNavAnimatedContentScope.current.transition.targetState
+    SideEffect { tujuan(target) }
+    DisposableEffect(Unit) {
+        tampil(true)
+        onDispose {
+            tampil(false)
+            tujuan(EnterExitState.PostExit)
+        }
+    }
+}
+
+/**
+ * Isi satu layar di NavDisplay. Selama layar ini keluar (masih digambar untuk gerak tutupnya),
+ * sentuhan ditelan supaya tombolnya yang sedang memudar tidak tertekan tanpa sengaja.
+ */
+@Composable
+private fun LayarNav(isi: @Composable () -> Unit) {
+    val keluar = LocalNavAnimatedContentScope.current.transition.targetState == EnterExitState.PostExit
+    Box(if (keluar) Modifier.fillMaxSize().tahanSentuhan() else Modifier.fillMaxSize()) { isi() }
+}
+
+/** Menelan semua sentuhan sebelum sampai ke isinya (layar yang sedang tertutup layar lain). */
+private fun Modifier.tahanSentuhan(): Modifier = pointerInput(Unit) {
+    awaitPointerEventScope {
+        while (true) awaitPointerEvent(PointerEventPass.Initial).changes.forEach { it.consume() }
+    }
+}
+
+/**
+ * Isi satu tab yang tetap tersusun. Saat tab lain dipilih, elemennya mengalir keluar
+ * ([LocalMasukTab]), lalu isinya disembunyikan: tidak digambar, tidak menerima sentuhan, dan
+ * tidak terbaca pembaca layar. Saat dipilih lagi, elemennya masuk seperti baru. [pertama] = tab
+ * yang tampil saat layar utama dibuka (tanpa gerak masuk).
+ */
+@Composable
+private fun IsiTab(aktif: Boolean, pertama: Boolean, arah: () -> Int, isi: @Composable () -> Unit) {
+    val keadaan = remember {
+        MutableTransitionState(if (pertama) EnterExitState.Visible else EnterExitState.PreEnter)
+            .apply { targetState = EnterExitState.Visible }
+    }
+    SideEffect { keadaan.targetState = if (aktif) EnterExitState.Visible else EnterExitState.PostExit }
+    val lingkup = rememberTransition(keadaan, label = "tab")
+    val masuk = remember { MasukTab(lingkup, arah) }
+    var tersembunyi by remember { mutableStateOf(!aktif) }
+    LaunchedEffect(aktif) {
+        if (aktif) {
+            tersembunyi = false
+        } else {
+            delay((Gerak.PUDAR + 6 * Gerak.JEDA_KELUAR + 60).toLong())
+            tersembunyi = true
+        }
+    }
+    Box(
+        Modifier
+            .fillMaxSize()
+            .zIndex(if (aktif) 1f else 0f)
+            .graphicsLayer { alpha = if (tersembunyi) 0f else 1f }
+            .then(if (aktif) Modifier else Modifier.tahanSentuhan().clearAndSetSemantics {}),
+    ) {
+        CompositionLocalProvider(LocalMasukTab provides masuk) { isi() }
+    }
 }
 
 @Composable
@@ -169,6 +371,31 @@ private fun LayarUtama(
     val w = GwadoTema.warna
     val sekarang = rememberSekarang()
     var tab by rememberSaveable { mutableStateOf(Tab.TUGAS) }
+    var arah by remember { mutableIntStateOf(1) }
+    // Tab yang pernah dibuka tetap tersusun (hanya disembunyikan), supaya kembali ke tab itu tidak
+    // menyusun ulang seluruh isinya.
+    val tabAwal = remember { tab }
+    val dikunjungi = remember { mutableStateListOf(tab) }
+    val pilihTab = { baru: Tab ->
+        if (baru != tab) {
+            arah = if (baru.ordinal > tab.ordinal) 1 else -1
+            if (baru !in dikunjungi) dikunjungi.add(baru)
+            tab = baru
+        }
+    }
+    // Tab lain disusun lebih dulu di belakang layar, satu per satu, saat layar sudah 1,5 detik tidak
+    // disentuh: menyusun satu tab bisa makan beberapa frame, jadi jangan sampai terjadi saat
+    // pengguna sedang menggulir atau mengetuk.
+    val terakhirSentuh = remember { longArrayOf(SystemClock.uptimeMillis()) }
+    LaunchedEffect(Unit) {
+        for (t in Tab.entries) {
+            if (t in dikunjungi) continue
+            while (SystemClock.uptimeMillis() - terakhirSentuh[0] < DIAM_SEBELUM_SUSUN) delay(250)
+            if (t !in dikunjungi) dikunjungi.add(t)
+            withFrameNanos { }
+            withFrameNanos { }
+        }
+    }
     val penyimpan = rememberSaveableStateHolder()
     val jumlahMendesak = daftar.count { mendesak(it, sekarang) }
     val item = listOf(
@@ -176,27 +403,48 @@ private fun LayarUtama(
         ItemTab(Tab.KALENDER, "Kalender", R.drawable.ikon_kalender),
         ItemTab(Tab.LAYANAN, "Layanan", R.drawable.ikon_layanan, if (lencanaLayanan) "!" else null),
     )
-    Column(Modifier.fillMaxSize().latarLayar().safeDrawingPadding()) {
+    Column(
+        Modifier
+            .fillMaxSize()
+            .latarLayar()
+            .safeDrawingPadding()
+            .pointerInput(Unit) {
+                awaitPointerEventScope {
+                    while (true) {
+                        awaitPointerEvent(PointerEventPass.Initial)
+                        terakhirSentuh[0] = SystemClock.uptimeMillis()
+                    }
+                }
+            },
+    ) {
+        // Ganti tab: isi lama mengalir keluar, isi baru mengalir masuk lalu memantul, per elemen
+        // (Modifier.masukTab di tiap layar). Isi pertama saat dibuka tidak dianimasikan.
         Box(Modifier.weight(1f).fillMaxWidth()) {
-            penyimpan.SaveableStateProvider(tab) {
-                when (tab) {
-                    Tab.TUGAS -> Beranda(
-                        daftar, versi, sekarang, bukaDetail, tambah, menyegarkan, onSegarkan, hasilAmbil,
-                        onBukaLayanan = { tab = Tab.LAYANAN },
-                        onBerubah = muatUlang,
-                        onSemuaSelesai = bukaSelesai,
-                        ditahan = ditahan,
-                    )
-                    Tab.KALENDER -> LayarKalender(daftar, versi, sekarang, bukaDetail)
-                    Tab.LAYANAN -> layanan()
+            for (t in dikunjungi) {
+                key(t) {
+                    IsiTab(aktif = t == tab, pertama = t == tabAwal, arah = { arah }) {
+                        penyimpan.SaveableStateProvider(t) {
+                            when (t) {
+                                Tab.TUGAS -> Beranda(
+                                    daftar, versi, sekarang, bukaDetail, tambah, menyegarkan, onSegarkan, hasilAmbil,
+                                    onBukaLayanan = { pilihTab(Tab.LAYANAN) },
+                                    onBerubah = muatUlang,
+                                    onSemuaSelesai = bukaSelesai,
+                                    ditahan = ditahan,
+                                )
+                                Tab.KALENDER -> LayarKalender(daftar, versi, sekarang, bukaDetail)
+                                Tab.LAYANAN -> layanan()
+                            }
+                        }
+                    }
                 }
             }
         }
         TabBar(
             item,
             aktif = tab,
-            onPilih = { tab = it },
-            modifier = Modifier.padding(start = Jarak.tepiLayar, end = Jarak.tepiLayar, top = Jarak.s8, bottom = Jarak.s12),
+            onPilih = pilihTab,
+            modifier = Modifier.ikutLayar().padding(start = Jarak.tepiLayar, end = Jarak.tepiLayar, top = Jarak.s8, bottom = Jarak.s12),
         )
     }
 }

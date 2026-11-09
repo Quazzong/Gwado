@@ -25,8 +25,9 @@ android {
     buildTypes {
         release {
             optimization {
+                // Seluruh aplikasi dioptimalkan R8. Optimasi sebagian (packageScope) memindahkan
+                // sebagian kelas kotlin.collections keluar paketnya sehingga aplikasi crash saat dibuka.
                 enable = true
-                packageScope = setOf("androidx.**", "kotlin.**", "kotlinx.**")
             }
         }
     }

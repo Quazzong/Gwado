@@ -1,5 +1,20 @@
 package io.github.quazzong.gwado.ui.layar
 
+import io.github.quazzong.gwado.ui.komponen.tahanSampaiSelesai
+import io.github.quazzong.gwado.ui.komponen.keluarSearah
+import io.github.quazzong.gwado.ui.tema.gtween
+import io.github.quazzong.gwado.ui.komponen.letupButir
+import io.github.quazzong.gwado.ui.tema.Gerak
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.animation.togetherWith
+import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.SizeTransform
+import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.AnimatedContent
+import io.github.quazzong.gwado.ui.komponen.masukButir
+import io.github.quazzong.gwado.ui.komponen.itemsTab
+import io.github.quazzong.gwado.ui.komponen.itemTab
 import io.github.quazzong.gwado.ui.komponen.Stiker
 import io.github.quazzong.gwado.ui.komponen.Ekspresi
 import androidx.compose.foundation.Canvas
@@ -19,7 +34,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Text
@@ -106,6 +120,12 @@ private fun keBulanKe(d: LocalDate) = d.year * 12 + d.monthValue - 1
 private fun dariBulanKe(n: Int): YearMonth = YearMonth.of(Math.floorDiv(n, 12), Math.floorMod(n, 12) + 1)
 
 /**
+ * Hasil muat terakhir, dipakai sebagai nilai awal saat layar disusun ulang (misalnya kembali dari
+ * detail), supaya layar langsung tampil lengkap dan tidak berkedip ke keadaan kosong.
+ */
+private val hariTerakhir = mutableMapOf<Int, Map<LocalDate, Hari>>()
+
+/**
  * Kalender deadline satu bulan: grid mulai Senin dengan titik status (maks. 3 per hari),
  * lalu tugas pada hari terpilih. Hari kosong menunjuk ke deadline berikutnya.
  * Geser grid ke kiri/kanan atau ketuk panah untuk pindah bulan.
@@ -127,7 +147,7 @@ fun LayarKalender(
     val pilih = LocalDate.ofEpochDay(pilihHari)
     val indeks = remember(daftar) { daftar.associateBy { it.id } }
 
-    val hari by produceState<Map<LocalDate, Hari>>(emptyMap(), versi, bulanKe) {
+    val hari by produceState(hariTerakhir[bulanKe].orEmpty(), versi, bulanKe) {
         val b = dariBulanKe(bulanKe)
         val dari = b.atDay(1)
         val sampai = b.atEndOfMonth()
@@ -138,6 +158,7 @@ fun LayarKalender(
         } catch (e: Exception) {
             emptyMap()
         }
+        hariTerakhir[bulanKe] = value
     }
 
     fun lompat(tanggal: LocalDate) {
@@ -162,7 +183,7 @@ fun LayarKalender(
         contentPadding = PaddingValues(Jarak.tepiLayar),
         verticalArrangement = Arrangement.spacedBy(Jarak.s8),
     ) {
-        item(key = "strip") {
+        itemTab(key = "strip") {
             StripSub(
                 BULAN_NAMA[bulan.monthValue - 1],
                 benih = 9,
@@ -176,7 +197,7 @@ fun LayarKalender(
                 },
             )
         }
-        item(key = "grid") {
+        itemTab(key = "grid") {
             GridBulan(
                 bulan, hariIni, pilih, hari, indeks, sekarang,
                 onPilih = { pilihHari = it.toEpochDay() },
@@ -184,7 +205,7 @@ fun LayarKalender(
                 modifier = Modifier.padding(top = Jarak.s8, bottom = 6.dp),
             )
         }
-        item(key = "judul-hari") {
+        itemTab(key = "judul-hari") {
             Row(
                 Modifier.fillMaxWidth().padding(horizontal = 2.dp),
                 horizontalArrangement = Arrangement.SpaceBetween,
@@ -199,12 +220,12 @@ fun LayarKalender(
             }
         }
         if (isiHari.isNotEmpty()) {
-            items(isiHari, key = { it.id }) { t -> KartuTugas(t, sekarang, onClick = { onBuka(t.id) }) }
+            itemsTab(isiHari, key = { it.id }) { t -> KartuTugas(t, sekarang, onClick = { onBuka(t.id) }) }
         } else {
-            item(key = "kosong") { HariKosong(berikutnya) { lompat(it) } }
+            itemTab(key = "kosong") { HariKosong(berikutnya) { lompat(it) } }
         }
         if (tanpaDeadline > 0) {
-            item(key = "tanpa-deadline") {
+            itemTab(key = "tanpa-deadline") {
                 Text(
                     "$tanpaDeadline tugas tanpa deadline ada di tab Tugas",
                     style = Huruf.meta,
@@ -231,10 +252,6 @@ private fun GridBulan(
     val w = GwadoTema.warna
     val ambang = with(LocalDensity.current) { 56.dp.toPx() }
     val geser by rememberUpdatedState(onGeser)
-    val awal = bulan.atDay(1)
-    val depan = awal.dayOfWeek.value - 1
-    val sel = List(depan) { awal.minusDays((depan - it).toLong()) } +
-        List(bulan.lengthOfMonth()) { awal.plusDays(it.toLong()) }
 
     Kotak(
         modifier.fillMaxWidth().pointerInput(Unit) {
@@ -258,28 +275,52 @@ private fun GridBulan(
                     )
                 }
             }
-            sel.chunked(7).forEach { minggu ->
+            // Ganti bulan: tanggal lama mengalir keluar searah geseran, tanggal baru meletup berurutan.
+            val arahBulan = remember { intArrayOf(1) }
+            AnimatedContent(
+                targetState = bulan,
+                transitionSpec = {
+                    arahBulan[0] = if (targetState > initialState) 1 else -1
+                    // Gerak keluar-masuk milik sendiri (mulai setelah grid baru tersusun); isi lama ditahan.
+                    EnterTransition.None togetherWith tahanSampaiSelesai(Gerak.PUDAR + 60) using SizeTransform(clip = false)
+                },
+                label = "bulan",
+            ) { b ->
+                val lingkupBulan = this
+                val awalB = b.atDay(1)
+                val depanB = awalB.dayOfWeek.value - 1
+                val selB = List(depanB) { awalB.minusDays((depanB - it).toLong()) } +
+                    List(b.lengthOfMonth()) { awalB.plusDays(it.toLong()) }
+                Column(Modifier.keluarSearah(lingkupBulan) { -arahBulan[0] }) {
+            selB.chunked(7).forEachIndexed { baris, minggu ->
                 Row(Modifier.fillMaxWidth().padding(vertical = 1.dp)) {
-                    minggu.forEach { d ->
+                    minggu.forEachIndexed { kolom, d ->
                         val tugas = hari[d]?.deadline.orEmpty().mapNotNull { indeks[it.kejadian.ref] }
                         SelTanggal(
                             d,
-                            diBulan = d.month == bulan.month,
+                            diBulan = d.month == b.month,
                             hariIni = d == hariIni,
                             terpilih = d == pilih,
                             lewat = d < hariIni,
                             tanda = tugas.map { tanda(it, sekarang) },
                             onPilih = { onPilih(d) },
-                            modifier = Modifier.weight(1f),
+                            modifier = Modifier.weight(1f)
+                                .masukButir((baris * 7 + kolom).coerceAtMost(MAKS_BUTIR))
+                                .letupButir(lingkupBulan, (baris * 7 + kolom).coerceAtMost(MAKS_BUTIR), 110, 8),
                         )
                     }
                     repeat(7 - minggu.size) { Spacer(Modifier.weight(1f)) }
+                }
+            }
                 }
             }
             Legenda()
         }
     }
 }
+
+/** Tanggal ke-n setelah ini meletup bersamaan dengan tanggal terakhir yang berjeda. */
+private const val MAKS_BUTIR = 21
 
 @Composable
 private fun SelTanggal(
@@ -302,6 +343,16 @@ private fun SelTanggal(
         else -> w.tinta
     }
     val ket = "${hariPenuh(tanggal)} ${tanggal.dayOfMonth} ${BULAN_NAMA[tanggal.monthValue - 1]}, ${tanda.size} deadline"
+    // Hari yang baru dipilih: kuenya meletup (skala 0 + putar −60°), bukan saat layar pertama tampil.
+    val letup = remember { Animatable(1f) }
+    var tadi by remember { mutableStateOf(terpilih) }
+    LaunchedEffect(terpilih) {
+        if (terpilih && !tadi) {
+            letup.snapTo(0f)
+            letup.animateTo(1f, gtween(Gerak.LETUP, easing = Gerak.Letup))
+        }
+        tadi = terpilih
+    }
     Box(
         modifier
             .height(44.dp)
@@ -317,7 +368,15 @@ private fun SelTanggal(
         contentAlignment = Alignment.Center,
     ) {
         if (diBulan && (terpilih || hariIni)) {
-            Canvas(Modifier.requiredSize(42.dp)) {
+            Canvas(
+                Modifier.requiredSize(42.dp).graphicsLayer {
+                    if (terpilih) {
+                        scaleX = letup.value
+                        scaleY = letup.value
+                        rotationZ = -60f * (1f - letup.value)
+                    }
+                },
+            ) {
                 val kue = pathGelombang(center, 16.dp.toPx(), 9, 0.1f)
                 val g = Jarak.garis.toPx()
                 if (terpilih) {

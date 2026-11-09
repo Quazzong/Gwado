@@ -1,6 +1,6 @@
 package io.github.quazzong.gwado.ui.layar
 
-import io.github.quazzong.gwado.ui.komponen.latarLayar
+import io.github.quazzong.gwado.ui.komponen.LayarPenuh
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -134,64 +134,66 @@ fun LayarSemester(onKembali: () -> Unit, onTersimpan: () -> Unit) {
         }
     }
 
-    Column(Modifier.fillMaxSize().latarLayar().safeDrawingPadding()) {
-        Column(
-            Modifier.weight(1f).verticalScroll(rememberScrollState()).padding(Jarak.tepiLayar),
-            verticalArrangement = Arrangement.spacedBy(Jarak.s16),
-        ) {
-            StripSub("Semester", kiri = { TombolPlumIkon(R.drawable.ikon_kembali, "Kembali", onKembali) })
-            Text(
-                "Hanya tugas dari mata kuliah semester ini yang ditampilkan. Tiap layanan punya cara sendiri " +
-                    "untuk mengenali semester, jadi ketiga isian ini dipakai bersama.",
-                style = Huruf.meta,
-                color = w.tintaRedup,
-            )
-            Column {
-                LabelIsian("Label semester")
-                IsianTeks(label, { label = it; galat = null }, petunjuk = "Ganjil 2026/2027", satuBaris = true)
-                Keterangan("Sama dengan kategori kelas di Brone.")
-            }
-            Column {
-                LabelIsian("Kode semester")
-                IsianTeks(kode, { kode = it; galat = null }, petunjuk = "20261", satuBaris = true)
-                Keterangan("Ada di nama singkat kelas Eling.")
-            }
-            Column {
-                LabelIsian("Mulai semester")
-                Pemilih(
-                    mulai?.let { runCatching { tanggalLengkap(LocalDate.parse(it)) }.getOrNull() ?: it } ?: "Pilih tanggal",
-                    { pilih = Pilih.MULAI },
-                    R.drawable.ikon_kalender,
-                    redup = mulai == null,
+    LayarPenuh("layar-semester") {
+        Column(Modifier.fillMaxSize().safeDrawingPadding()) {
+            Column(
+                Modifier.weight(1f).verticalScroll(rememberScrollState()).padding(Jarak.tepiLayar),
+                verticalArrangement = Arrangement.spacedBy(Jarak.s16),
+            ) {
+                StripSub("Semester", kiri = { TombolPlumIkon(R.drawable.ikon_kembali, "Kembali", onKembali) })
+                Text(
+                    "Hanya tugas dari mata kuliah semester ini yang ditampilkan. Tiap layanan punya cara sendiri " +
+                        "untuk mengenali semester, jadi ketiga isian ini dipakai bersama.",
+                    style = Huruf.meta,
+                    color = w.tintaRedup,
                 )
-                Keterangan("Kelas Classroom yang dibuat sejak tanggal ini diikuti.")
-            }
-            Column {
-                LabelIsian("Kuliah pertama", opsional = true)
-                Row(horizontalArrangement = Arrangement.spacedBy(Jarak.s8), verticalAlignment = Alignment.CenterVertically) {
-                    Pemilih(
-                        kuliah?.let { tanggalLengkap(LocalDate.parse(it)) } ?: "Belum diisi",
-                        { pilih = Pilih.KULIAH },
-                        R.drawable.ikon_kalender,
-                        Modifier.weight(1f),
-                        redup = kuliah == null,
-                    )
-                    if (kuliah != null) TombolGaris("Kosongkan", { kuliah = null })
+                Column {
+                    LabelIsian("Label semester")
+                    IsianTeks(label, { label = it; galat = null }, petunjuk = "Ganjil 2026/2027", satuBaris = true)
+                    Keterangan("Sama dengan kategori kelas di Brone.")
                 }
-                val belumMulai = kuliah?.let { LocalDate.parse(it) > tanggalWib(Instant.now()) } == true
-                Keterangan(
-                    if (belumMulai) "Tanggal ini belum lewat, jadi MINGGU KE-n baru tampil di beranda mulai tanggal ini."
-                    else "Minggu (Senin–Minggu) yang memuat tanggal ini dihitung MINGGU KE-1 di beranda.",
+                Column {
+                    LabelIsian("Kode semester")
+                    IsianTeks(kode, { kode = it; galat = null }, petunjuk = "20261", satuBaris = true)
+                    Keterangan("Ada di nama singkat kelas Eling.")
+                }
+                Column {
+                    LabelIsian("Mulai semester")
+                    Pemilih(
+                        mulai?.let { runCatching { tanggalLengkap(LocalDate.parse(it)) }.getOrNull() ?: it } ?: "Pilih tanggal",
+                        { pilih = Pilih.MULAI },
+                        R.drawable.ikon_kalender,
+                        redup = mulai == null,
+                    )
+                    Keterangan("Kelas Classroom yang dibuat sejak tanggal ini diikuti.")
+                }
+                Column {
+                    LabelIsian("Kuliah pertama", opsional = true)
+                    Row(horizontalArrangement = Arrangement.spacedBy(Jarak.s8), verticalAlignment = Alignment.CenterVertically) {
+                        Pemilih(
+                            kuliah?.let { tanggalLengkap(LocalDate.parse(it)) } ?: "Belum diisi",
+                            { pilih = Pilih.KULIAH },
+                            R.drawable.ikon_kalender,
+                            Modifier.weight(1f),
+                            redup = kuliah == null,
+                        )
+                        if (kuliah != null) TombolGaris("Kosongkan", { kuliah = null })
+                    }
+                    val belumMulai = kuliah?.let { LocalDate.parse(it) > tanggalWib(Instant.now()) } == true
+                    Keterangan(
+                        if (belumMulai) "Tanggal ini belum lewat, jadi MINGGU KE-n baru tampil di beranda mulai tanggal ini."
+                        else "Minggu (Senin–Minggu) yang memuat tanggal ini dihitung MINGGU KE-1 di beranda.",
+                    )
+                }
+                KotakInfo(
+                    "Semester baru berlaku mulai Ambil berikutnya. Tugas dari mata kuliah semester lain " +
+                        "disembunyikan, tidak dihapus.",
                 )
+                galat?.let { PesanGalat(it) }
             }
-            KotakInfo(
-                "Semester baru berlaku mulai Ambil berikutnya. Tugas dari mata kuliah semester lain " +
-                    "disembunyikan, tidak dihapus.",
-            )
-            galat?.let { PesanGalat(it) }
-        }
-        Row(Modifier.fillMaxWidth().padding(Jarak.tepiLayar)) {
-            TombolPermen("Simpan semester", simpan, Modifier.weight(1f))
+            Row(Modifier.fillMaxWidth().padding(Jarak.tepiLayar)) {
+                TombolPermen("Simpan semester", simpan, Modifier.weight(1f))
+            }
         }
     }
 

@@ -1,5 +1,9 @@
 package io.github.quazzong.gwado.ui.layar
 
+import io.github.quazzong.gwado.ui.tema.gtween
+import io.github.quazzong.gwado.ui.tema.Gerak
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.animation.core.Animatable
 import io.github.quazzong.gwado.ui.komponen.Ekspresi
 import io.github.quazzong.gwado.ui.komponen.Stiker
 import io.github.quazzong.gwado.ui.komponen.latarLayar
@@ -255,8 +259,24 @@ private fun KepalaSiapkan() {
 private fun NomorKue(nomor: Int, selesai: Boolean) {
     val w = GwadoTema.warna
     val isi = w.gradasiAksen()
+    // Langkah yang baru selesai: kue bercentang meletup (skala 0 + putar −60°).
+    val letup = remember { Animatable(1f) }
+    var tadi by remember { mutableStateOf(selesai) }
+    LaunchedEffect(selesai) {
+        if (selesai && !tadi) {
+            letup.snapTo(0f)
+            letup.animateTo(1f, gtween(Gerak.LETUP, easing = Gerak.Letup))
+        }
+        tadi = selesai
+    }
     Box(Modifier.size(32.dp), contentAlignment = Alignment.Center) {
-        Canvas(Modifier.fillMaxSize()) {
+        Canvas(
+            Modifier.fillMaxSize().graphicsLayer {
+                scaleX = letup.value
+                scaleY = letup.value
+                rotationZ = -60f * (1f - letup.value)
+            },
+        ) {
             val s = size.minDimension / 32f
             val kue = pathGelombang(Offset(15 * s, 15 * s), 11.5f * s, 9, 0.1f)
             translate(2 * s, 2 * s) { drawPath(kue, w.bayangan) }

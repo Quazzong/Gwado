@@ -1,5 +1,28 @@
 package io.github.quazzong.gwado.ui.layar
 
+import androidx.compose.runtime.LaunchedEffect
+import io.github.quazzong.gwado.ui.komponen.tujuanKepala
+import io.github.quazzong.gwado.ui.komponen.judulKepala
+import io.github.quazzong.gwado.ui.komponen.LocalTerbang
+import io.github.quazzong.gwado.ui.komponen.LetakKepala
+import io.github.quazzong.gwado.ui.komponen.Kilau
+import io.github.quazzong.gwado.ui.komponen.KartuTugas
+import io.github.quazzong.gwado.ui.komponen.KartuTerbang
+import androidx.navigation3.ui.LocalNavAnimatedContentScope
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.graphics.Color
+import androidx.compose.runtime.snapshotFlow
+import androidx.compose.animation.EnterExitState
+import io.github.quazzong.gwado.ui.tema.gtween
+import io.github.quazzong.gwado.ui.tema.Gerak
+import androidx.compose.animation.togetherWith
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.AnimatedContent
+import io.github.quazzong.gwado.ui.komponen.latarDatang
+import io.github.quazzong.gwado.ui.komponen.isiLayar
+import android.content.Context
 import io.github.quazzong.gwado.ui.komponen.latarLayar
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -105,6 +128,24 @@ private sealed interface Keadaan {
 private fun Db.domainSumber(): List<String> =
     semua("SELECT url FROM sources").mapNotNull { r -> (r["url"] as String?)?.let { pecahUrl(it)?.second } }
 
+/** Isi detail yang dimuat sebelum layar dibuka; diambil (dan dihapus) saat layar pertama tersusun. */
+private val PRAMUAT = mutableMapOf<String, Keadaan>()
+
+private suspend fun muatKeadaan(konteks: Context, id: String): Keadaan = try {
+    Gudang.pakai(konteks) { db ->
+        db.ambilTugas(id)?.let { IsiDetail(it, db.riwayatTampil(id).orEmpty(), db.domainSumber()) }
+    }?.let { Keadaan.Ada(it) } ?: Keadaan.TidakAda
+} catch (e: CancellationException) {
+    throw e
+} catch (e: Exception) {
+    Keadaan.Gagal(e.javaClass.simpleName)
+}
+
+/** Muat isi detail sebelum layarnya dibuka, supaya layar tampil lengkap di frame pertama. */
+suspend fun praMuatDetail(konteks: Context, id: String) {
+    PRAMUAT[id] = muatKeadaan(konteks, id)
+}
+
 /** Layar detail satu tugas: info, deskripsi, riwayat, centang, dan buka di situs. */
 @Composable
 fun LayarDetail(id: String, onKembali: () -> Unit, onBerubah: () -> Unit, onUbah: (String) -> Unit) {
@@ -119,21 +160,46 @@ fun LayarDetail(id: String, onKembali: () -> Unit, onBerubah: () -> Unit, onUbah
     var menu by remember { mutableStateOf(false) }
     var konfirmasi by remember { mutableStateOf(false) }
     var galatHapus by remember { mutableStateOf(false) }
-    val keadaan by produceState<Keadaan>(Keadaan.Memuat, id, versi) {
-        value = try {
-            Gudang.pakai(konteks) { db ->
-                db.ambilTugas(id)?.let { IsiDetail(it, db.riwayatTampil(id).orEmpty(), db.domainSumber()) }
-            }?.let { Keadaan.Ada(it) } ?: Keadaan.TidakAda
-        } catch (e: CancellationException) {
-            throw e
-        } catch (e: Exception) {
-            Keadaan.Gagal(e.javaClass.simpleName)
+    // Isi yang sudah dimuat sebelum layar dibuka (praMuatDetail) langsung tampil di frame pertama,
+    // supaya kepala detail sudah ada saat kartu terbang ke tempatnya.
+    val awal = remember(id) { PRAMUAT.remove(id) ?: Keadaan.Memuat }
+    val keadaan by produceState(awal, id, versi) { value = muatKeadaan(konteks, id) }
+
+    val terbang = LocalTerbang.current
+    val dariKartu = remember(id) { terbang?.id == id }
+    val lingkup = LocalNavAnimatedContentScope.current
+    // Sejak mulai ditutup, latar dan kepala detail tetap tersembunyi sampai layarnya dilepas
+    // (layar ditahan sebentar sesudah gerak selesai; tanpa ini detail sempat tampil lagi).
+    var tertutup by remember { mutableStateOf(false) }
+    LaunchedEffect(lingkup) {
+        snapshotFlow { lingkup.transition.targetState }.collect {
+            if (it == EnterExitState.PostExit) {
+                tertutup = true
+                // Dibuka dari kartu: kepala menyusut kembali ke kartu asalnya di daftar.
+                if (dariKartu) terbang?.tutup(id)
+            }
         }
     }
 
-    Column(Modifier.fillMaxSize().latarLayar().safeDrawingPadding()) {
+    Box(Modifier.fillMaxSize()) {
+    // Dibuka dari kartu: latar detail disembunyikan selama kartu terbang (latar daftar di bawahnya
+    // sama persis, jadi pergantiannya tak terlihat). Tanpa kartu: latar memudar masuk/keluar.
+    val latar = if (dariKartu && terbang != null) {
+        Modifier.graphicsLayer { alpha = if (tertutup || (terbang.tahanKepala && terbang.id == id)) 0f else 1f }
+    } else {
+        Modifier.latarDatang()
+    }
+    Box(Modifier.matchParentSize().then(latar).latarLayar())
+    (keadaan as? Keadaan.Ada)?.let { k ->
+        KartuTerbang(
+            id,
+            wajahKartu = { b -> KartuTugas(b, sekarang, polos = true, sembunyikanJudul = true) },
+            wajahKepala = { HeaderDetail(k.isi.tugas, sekarang, polos = true) },
+        )
+    }
+    Column(Modifier.fillMaxSize().safeDrawingPadding()) {
         Row(
-            Modifier.fillMaxWidth().padding(horizontal = Jarak.tepiLayar, vertical = Jarak.s8),
+            Modifier.isiLayar(0).fillMaxWidth().padding(horizontal = Jarak.tepiLayar, vertical = Jarak.s8),
             horizontalArrangement = Arrangement.spacedBy(Jarak.s12),
             verticalAlignment = Alignment.CenterVertically,
         ) {
@@ -192,17 +258,17 @@ fun LayarDetail(id: String, onKembali: () -> Unit, onBerubah: () -> Unit, onUbah
                     Modifier.weight(1f).verticalScroll(rememberScrollState()).padding(horizontal = Jarak.tepiLayar),
                     verticalArrangement = Arrangement.spacedBy(Jarak.s12),
                 ) {
-                    HeaderDetail(t, sekarang)
+                    Box(Modifier.graphicsLayer { alpha = if (tertutup && dariKartu) 0f else 1f }) { HeaderDetail(t, sekarang) }
                     if (t.statusSitus == "hilang") {
-                        Pita("Tugas ini sudah tidak ada di situs. Data terakhir tetap disimpan di HP.")
+                        Pita("Tugas ini sudah tidak ada di situs. Data terakhir tetap disimpan di HP.", Modifier.isiLayar(2))
                     }
-                    PanelInfo(t)
-                    t.deskripsi?.takeIf { it.isNotBlank() }?.let { Deskripsi(it) }
-                    PanelRiwayat(k.isi.riwayat)
+                    Box(Modifier.isiLayar(2)) { PanelInfo(t) }
+                    t.deskripsi?.takeIf { it.isNotBlank() }?.let { Box(Modifier.isiLayar(3)) { Deskripsi(it) } }
+                    Box(Modifier.isiLayar(4)) { PanelRiwayat(k.isi.riwayat) }
                     Spacer(Modifier.height(Jarak.s8))
                 }
                 Row(
-                    Modifier.fillMaxWidth().padding(Jarak.tepiLayar),
+                    Modifier.isiLayar(5).fillMaxWidth().padding(Jarak.tepiLayar),
                     horizontalArrangement = Arrangement.spacedBy(Jarak.s8),
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
@@ -243,6 +309,7 @@ fun LayarDetail(id: String, onKembali: () -> Unit, onBerubah: () -> Unit, onUbah
         }
     }
 }
+}
 
 @Composable
 private fun HapusDialog(
@@ -272,14 +339,23 @@ private fun HapusDialog(
     }
 }
 
+/**
+ * Kepala detail. [polos] = hanya isi (tanpa gradasi, garis, bayangan, judul), dipakai sebagai
+ * wajah kepala di kartu terbang; versi asli menjadi tujuan kartu terbang ([tujuanKepala]).
+ */
 @Composable
-private fun HeaderDetail(t: DetailTugas, sekarang: Instant) {
+private fun HeaderDetail(t: DetailTugas, sekarang: Instant, polos: Boolean = false) {
     val w = GwadoTema.warna
+    val letak = remember(t.id) { LetakKepala() }
     Kotak(
-        Modifier.fillMaxWidth(),
+        (if (polos) Modifier else Modifier.tujuanKepala(t.id, letak)).fillMaxWidth(),
         bentuk = Bentuk.header,
-        latar = gradasiCss(115f, w.strip),
+        latar = if (polos) SolidColor(Color.Transparent) else gradasiCss(115f, w.strip),
+        garis = if (polos) Color.Transparent else w.garis,
+        kilau = if (polos) null else Kilau.Cincin(w.kilau),
+        warnaBayangan = if (polos) Color.Transparent else w.bayangan,
         bayanganKedua = 6.dp,
+        warnaBayanganKedua = if (polos) Color.Transparent else w.lavender,
         padding = PaddingValues(Jarak.garis * 2),
     ) {
         Taburan(
@@ -294,10 +370,20 @@ private fun HeaderDetail(t: DetailTugas, sekarang: Instant) {
         ) {
             Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(Jarak.s8)) {
                 Row(horizontalArrangement = Arrangement.spacedBy(Jarak.s4)) {
-                    ChipStatus(t, sekarang)
+                    AnimatedContent(
+                        targetState = t,
+                        contentKey = { listOf(it.status, it.statusKumpulSitus) },
+                        transitionSpec = { fadeIn(gtween(Gerak.PUDAR)) togetherWith fadeOut(gtween(Gerak.PUDAR, easing = Gerak.Keluar)) },
+                        label = "chip-detail",
+                    ) { tt -> ChipStatus(tt, sekarang) }
                     if (t.asal == "manual") Chip("manual")
                 }
-                Text(t.judul, style = Huruf.judulDetail, color = w.tinta)
+                Text(
+                    t.judul,
+                    style = Huruf.judulDetail,
+                    color = w.tinta,
+                    modifier = if (polos) Modifier.graphicsLayer { alpha = 0f } else Modifier.judulKepala(t.id, letak),
+                )
                 Row(horizontalArrangement = Arrangement.spacedBy(5.dp), verticalAlignment = Alignment.CenterVertically) {
                     IkonLayanan(t.sumber)
                     Text(

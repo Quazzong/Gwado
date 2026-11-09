@@ -11,8 +11,8 @@ class TampilanTest {
         Db.buka(":memory:").use { db ->
             db.migrasi()
             assertEquals(Tekstur.TITIK, db.tekstur())
-            db.simpanTekstur(Tekstur.BENTUK)
-            assertEquals(Tekstur.BENTUK, db.tekstur())
+            db.simpanTekstur(Tekstur.KOTAK)
+            assertEquals(Tekstur.KOTAK, db.tekstur())
             db.simpanTekstur(Tekstur.POLOS)
             assertEquals(Tekstur.POLOS, db.tekstur())
         }
@@ -23,6 +23,8 @@ class TampilanTest {
         assertEquals(Tekstur.TITIK, Tekstur.dariKode("garis-miring"))
         assertEquals(Tekstur.TITIK, Tekstur.dariKode(null))
         assertEquals(Tekstur.KOTAK, Tekstur.dariKode("kotak"))
+        // Pilihan lama yang sudah dihapus kembali ke bawaan.
+        assertEquals(Tekstur.TITIK, Tekstur.dariKode("bentuk"))
     }
 
     @Test

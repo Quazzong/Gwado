@@ -85,6 +85,10 @@ class Pengambil(private val activity: ComponentActivity, private val onBerubah: 
     var sibuk by mutableStateOf(false)
         private set
 
+    /** Id layanan yang sedang dihubungi (untuk chip MENGAMBIL), null kalau tidak ada. */
+    var diambil by mutableStateOf<String?>(null)
+        private set
+
     var hasilTerakhir by mutableStateOf<HasilAmbil?>(null)
         private set
 
@@ -247,6 +251,15 @@ class Pengambil(private val activity: ComponentActivity, private val onBerubah: 
      * mengambil butuh semester yang sudah dikonfirmasi.
      */
     private suspend fun satu(l: Layanan, bolehLogin: Boolean): String {
+        diambil = l.id
+        try {
+            return satuIsi(l, bolehLogin)
+        } finally {
+            diambil = null
+        }
+    }
+
+    private suspend fun satuIsi(l: Layanan, bolehLogin: Boolean): String {
         ditahan.remove(l.id)
         tertahan(l.id, catatan.baca(l.id), Instant.now(), manual = true)?.let { return pesanTertahan(l, it) }
         val adaSemester = Gudang.pakai(activity) { it.semesterTersimpan() } != null

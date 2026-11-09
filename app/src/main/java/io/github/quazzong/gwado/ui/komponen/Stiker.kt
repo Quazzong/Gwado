@@ -1,5 +1,11 @@
 package io.github.quazzong.gwado.ui.komponen
 
+import io.github.quazzong.gwado.ui.tema.gtween
+import io.github.quazzong.gwado.ui.tema.Gerak
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.animation.core.Animatable
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.size
@@ -33,5 +39,17 @@ enum class Ekspresi(
 @Composable
 fun Stiker(ekspresi: Ekspresi, modifier: Modifier = Modifier, ukuran: Dp = 72.dp) {
     val gambar = if (GwadoTema.gelap) ekspresi.gambarGelap else ekspresi.gambar
-    Image(painterResource(gambar), contentDescription = null, modifier = modifier.size(ukuran))
+    // Meletup sekali setiap kali muncul (skala 0,8 → 1 + memudar masuk); tidak bergoyang sesudahnya.
+    val muncul = remember { Animatable(0f) }
+    LaunchedEffect(Unit) { muncul.animateTo(1f, gtween(Gerak.LETUP, easing = Gerak.Letup)) }
+    Image(
+        painterResource(gambar),
+        contentDescription = null,
+        modifier = modifier.size(ukuran).graphicsLayer {
+            val v = muncul.value
+            scaleX = 0.8f + 0.2f * v
+            scaleY = 0.8f + 0.2f * v
+            alpha = v.coerceIn(0f, 1f)
+        },
+    )
 }

@@ -1,5 +1,18 @@
 package io.github.quazzong.gwado.ui.komponen
 
+import io.github.quazzong.gwado.ui.tema.gtween
+import io.github.quazzong.gwado.ui.tema.Gerak
+import androidx.compose.ui.unit.IntOffset
+import androidx.compose.ui.draw.clipToBounds
+import androidx.compose.runtime.getValue
+import androidx.compose.animation.togetherWith
+import androidx.compose.animation.slideOutVertically
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.SizeTransform
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -75,7 +88,8 @@ fun TeksStiker(teks: String, modifier: Modifier = Modifier, ukuran: TextUnit = 3
 @Composable
 fun BatangProgres(pecahan: Float, modifier: Modifier = Modifier) {
     val w = GwadoTema.warna
-    val p = pecahan.coerceIn(0f, 1f)
+    // Isi memanjang/memendek ke nilai baru (tanpa gerak saat pertama tampil).
+    val p by animateFloatAsState(pecahan.coerceIn(0f, 1f), gtween(Gerak.PINDAH, easing = Gerak.Pindah), label = "progres")
     Canvas(
         modifier
             .fillMaxWidth()
@@ -121,12 +135,26 @@ fun Ubin(label: String, nilai: String, modifier: Modifier = Modifier) {
     ) {
         Column {
             Text(label.uppercase(), style = Huruf.label, color = w.tintaRedup, maxLines = 1)
-            BasicText(
-                nilai,
-                style = Huruf.angkaUbin.copy(color = w.tinta),
-                maxLines = 1,
-                autoSize = TextAutoSize.StepBased(minFontSize = 11.sp, maxFontSize = 20.sp),
-            )
+            // Angka berganti: yang lama bergulir keluar, yang baru masuk dari bawah (naik) atau dari atas (turun).
+            AnimatedContent(
+                targetState = nilai,
+                modifier = Modifier.clipToBounds(),
+                transitionSpec = {
+                    val naik = (targetState.toIntOrNull() ?: 0) >= (initialState.toIntOrNull() ?: 0)
+                    val gerak = gtween<IntOffset>(Gerak.PINDAH, easing = Gerak.Pindah)
+                    (slideInVertically(gerak) { if (naik) it else -it } + fadeIn(gtween(Gerak.PINDAH))) togetherWith
+                        (slideOutVertically(gerak) { if (naik) -it else it } + fadeOut(gtween(Gerak.PINDAH))) using
+                        SizeTransform(clip = false)
+                },
+                label = "angka-ubin",
+            ) { angka ->
+                BasicText(
+                    angka,
+                    style = Huruf.angkaUbin.copy(color = w.tinta),
+                    maxLines = 1,
+                    autoSize = TextAutoSize.StepBased(minFontSize = 11.sp, maxFontSize = 20.sp),
+                )
+            }
         }
     }
 }

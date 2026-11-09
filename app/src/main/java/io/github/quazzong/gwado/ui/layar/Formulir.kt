@@ -1,6 +1,6 @@
 package io.github.quazzong.gwado.ui.layar
 
-import io.github.quazzong.gwado.ui.komponen.latarLayar
+import io.github.quazzong.gwado.ui.komponen.LayarPenuh
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -175,71 +175,73 @@ fun LayarFormulir(id: String?, onKembali: () -> Unit, onTersimpan: () -> Unit) {
 
     val namaMk = kode?.let { k -> matkul.firstOrNull { it.first == k }?.second ?: k } ?: "Tanpa mata kuliah"
 
-    Column(Modifier.fillMaxSize().latarLayar().safeDrawingPadding()) {
-        Column(
-            Modifier.weight(1f).verticalScroll(rememberScrollState()).padding(Jarak.tepiLayar),
-            verticalArrangement = Arrangement.spacedBy(Jarak.s16),
-        ) {
-            StripSub(
-                if (id == null) "Tugas baru" else "Ubah tugas",
-                kiri = { TombolPlumIkon(R.drawable.ikon_kembali, "Kembali", onKembali) },
-            )
-            Column {
-                LabelIsian("Judul tugas")
-                IsianTeks(
-                    judul,
-                    {
-                        if (it.codePointCount(0, it.length) <= MAKS_JUDUL) judul = it
-                        if (galat == "judul") galat = null
-                    },
-                    gaya = TextStyle(fontFamily = Nunito, fontWeight = FontWeight.W800, fontSize = 18.sp, lineHeight = 1.3.em),
-                    petunjuk = "Laporan kelompok bab 2",
-                    salah = galat == "judul",
-                    minTinggi = 76.dp,
+    LayarPenuh(if (id == null) "layar-formulir" else null) {
+        Column(Modifier.fillMaxSize().safeDrawingPadding()) {
+            Column(
+                Modifier.weight(1f).verticalScroll(rememberScrollState()).padding(Jarak.tepiLayar),
+                verticalArrangement = Arrangement.spacedBy(Jarak.s16),
+            ) {
+                StripSub(
+                    if (id == null) "Tugas baru" else "Ubah tugas",
+                    kiri = { TombolPlumIkon(R.drawable.ikon_kembali, "Kembali", onKembali) },
                 )
-                if (galat == "judul") {
-                    PesanGalat(GALAT.getValue("judul"))
-                } else {
-                    Text(
-                        "${judul.codePointCount(0, judul.length)}/$MAKS_JUDUL",
-                        style = Huruf.meta.copy(fontSize = 11.sp),
-                        color = w.tintaRedup,
-                        textAlign = TextAlign.End,
-                        modifier = Modifier.fillMaxWidth().padding(top = 4.dp),
+                Column {
+                    LabelIsian("Judul tugas")
+                    IsianTeks(
+                        judul,
+                        {
+                            if (it.codePointCount(0, it.length) <= MAKS_JUDUL) judul = it
+                            if (galat == "judul") galat = null
+                        },
+                        gaya = TextStyle(fontFamily = Nunito, fontWeight = FontWeight.W800, fontSize = 18.sp, lineHeight = 1.3.em),
+                        petunjuk = "Laporan kelompok bab 2",
+                        salah = galat == "judul",
+                        minTinggi = 76.dp,
                     )
-                }
-            }
-            Column {
-                LabelIsian("Mata kuliah")
-                Pemilih(namaMk, { lembar = true }, R.drawable.ikon_bawah, kecil = kode, redup = kode == null)
-                if (galat == "kode_mk") PesanGalat(GALAT.getValue("kode_mk"))
-            }
-            Column {
-                Row(
-                    Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    LabelIsian("Deadline", Modifier.padding(top = 6.dp))
-                    Sakelar(tanpa, { tanpa = it }, "Tanpa deadline")
-                }
-                if (tanpa) {
-                    KotakInfo("Tugas tampil paling bawah dengan tanda Tanpa deadline.")
-                } else {
-                    Row(horizontalArrangement = Arrangement.spacedBy(Jarak.s8)) {
-                        Pemilih(labelTanggal(deadlineMs), { pilihTanggal = true }, R.drawable.ikon_kalender, Modifier.weight(1.5f))
-                        Pemilih(labelJam(deadlineMs), { pilihJam = true }, R.drawable.ikon_jam, Modifier.weight(1f))
+                    if (galat == "judul") {
+                        PesanGalat(GALAT.getValue("judul"))
+                    } else {
+                        Text(
+                            "${judul.codePointCount(0, judul.length)}/$MAKS_JUDUL",
+                            style = Huruf.meta.copy(fontSize = 11.sp),
+                            color = w.tintaRedup,
+                            textAlign = TextAlign.End,
+                            modifier = Modifier.fillMaxWidth().padding(top = 4.dp),
+                        )
                     }
                 }
+                Column {
+                    LabelIsian("Mata kuliah")
+                    Pemilih(namaMk, { lembar = true }, R.drawable.ikon_bawah, kecil = kode, redup = kode == null)
+                    if (galat == "kode_mk") PesanGalat(GALAT.getValue("kode_mk"))
+                }
+                Column {
+                    Row(
+                        Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        LabelIsian("Deadline", Modifier.padding(top = 6.dp))
+                        Sakelar(tanpa, { tanpa = it }, "Tanpa deadline")
+                    }
+                    if (tanpa) {
+                        KotakInfo("Tugas tampil paling bawah dengan tanda Tanpa deadline.")
+                    } else {
+                        Row(horizontalArrangement = Arrangement.spacedBy(Jarak.s8)) {
+                            Pemilih(labelTanggal(deadlineMs), { pilihTanggal = true }, R.drawable.ikon_kalender, Modifier.weight(1.5f))
+                            Pemilih(labelJam(deadlineMs), { pilihJam = true }, R.drawable.ikon_jam, Modifier.weight(1f))
+                        }
+                    }
+                }
+                Column {
+                    LabelIsian("Catatan", opsional = true)
+                    IsianTeks(catatan, { catatan = it }, petunjuk = "Dari grup WA kelas, dikumpulkan lewat ketua kelompok", minTinggi = 68.dp)
+                }
+                if (galat == "umum") PesanGalat(GALAT.getValue("umum"))
             }
-            Column {
-                LabelIsian("Catatan", opsional = true)
-                IsianTeks(catatan, { catatan = it }, petunjuk = "Dari grup WA kelas, dikumpulkan lewat ketua kelompok", minTinggi = 68.dp)
+            Row(Modifier.fillMaxWidth().padding(Jarak.tepiLayar)) {
+                TombolPermen("Simpan tugas", simpan, Modifier.weight(1f))
             }
-            if (galat == "umum") PesanGalat(GALAT.getValue("umum"))
-        }
-        Row(Modifier.fillMaxWidth().padding(Jarak.tepiLayar)) {
-            TombolPermen("Simpan tugas", simpan, Modifier.weight(1f))
         }
     }
 

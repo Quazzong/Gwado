@@ -1,5 +1,7 @@
 package io.github.quazzong.gwado.ui.komponen
 
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.graphics.Color
 import android.content.res.Configuration
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -38,6 +40,8 @@ fun KartuTugas(
     sekarang: Instant,
     modifier: Modifier = Modifier,
     onClick: (() -> Unit)? = null,
+    polos: Boolean = false,
+    sembunyikanJudul: Boolean = false,
 ) {
     val w = GwadoTema.warna
     val selesai = baris.status == "done"
@@ -54,12 +58,17 @@ fun KartuTugas(
     }
     val meta = listOfNotNull(baris.sumber ?: "Manual", baris.matkul).joinToString(" · ")
 
+    val bayangan = if (beres || tanpaDeadline) 0.dp else Jarak.bayangan
     Kotak(
-        modifier = modifier.fillMaxWidth(),
-        latar = SolidColor(latar),
+        // Posisi diam kartu dicatat untuk kartu terbang (sebelum geseran tekan di dalam Kotak).
+        // polos = hanya isi (dipakai kartu terbang, yang menggambar bingkainya sendiri).
+        modifier = (if (polos) modifier else modifier.asalKartu(baris, latar, bayangan)).fillMaxWidth(),
+        latar = SolidColor(if (polos) Color.Transparent else latar),
+        garis = if (polos) Color.Transparent else w.garis,
         putus = tanpaDeadline,
-        kilau = if (tanpaDeadline) null else Kilau.Cincin(w.kilau),
-        bayangan = if (beres || tanpaDeadline) 0.dp else Jarak.bayangan,
+        kilau = if (tanpaDeadline || polos) null else Kilau.Cincin(w.kilau),
+        bayangan = bayangan,
+        warnaBayangan = if (polos) Color.Transparent else w.bayangan,
         onClick = onClick,
     ) {
         Row(
@@ -70,6 +79,8 @@ fun KartuTugas(
             Column(Modifier.weight(1f)) {
                 Text(
                     baris.judul,
+                    modifier = (if (polos) Modifier else Modifier.judulKartu(baris.id))
+                        .graphicsLayer { alpha = if (sembunyikanJudul) 0f else 1f },
                     style = Huruf.judulKartu,
                     color = if (diSitus) w.tintaRedup else w.tinta,
                     maxLines = 2,

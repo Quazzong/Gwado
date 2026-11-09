@@ -1,6 +1,6 @@
 package io.github.quazzong.gwado.ui.layar
 
-import io.github.quazzong.gwado.ui.komponen.latarLayar
+import io.github.quazzong.gwado.ui.komponen.LayarPenuh
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -121,57 +121,58 @@ fun LayarMatkul(sumber: String, onKembali: () -> Unit) {
         }
     }
 
-    Column(
-        Modifier
-            .fillMaxSize()
-            .latarLayar()
-            .safeDrawingPadding()
-            .verticalScroll(rememberScrollState())
-            .padding(Jarak.tepiLayar),
-        verticalArrangement = Arrangement.spacedBy(Jarak.s12),
-    ) {
-        val d = daftar
-        StripSub(
-            label,
-            kiri = { TombolPlumIkon(R.drawable.ikon_kembali, "Kembali", onKembali) },
-            kanan = { if (d != null) Chip("${d.size} mata kuliah", jenis = JenisChip.PUTIH) },
-        )
-        if (gagal) {
-            Text("Daftar mata kuliah tidak bisa dibuka. Coba lagi nanti.", style = Huruf.isi, color = w.galat)
-        }
-        when {
-            d == null -> Unit
-            d.isEmpty() -> Text(
-                "Belum ada mata kuliah. Ambil $label dulu supaya daftar kelasnya terbaca.",
-                style = Huruf.isi,
-                color = w.tintaRedup,
+    LayarPenuh("layar-matkul-$sumber") {
+        Column(
+            Modifier
+                .fillMaxSize()
+                .safeDrawingPadding()
+                .verticalScroll(rememberScrollState())
+                .padding(Jarak.tepiLayar),
+            verticalArrangement = Arrangement.spacedBy(Jarak.s12),
+        ) {
+            val d = daftar
+            StripSub(
+                label,
+                kiri = { TombolPlumIkon(R.drawable.ikon_kembali, "Kembali", onKembali) },
+                kanan = { if (d != null) Chip("${d.size} mata kuliah", jenis = JenisChip.PUTIH) },
             )
-            else -> {
-                Text(
-                    listOfNotNull(
-                        aturan(sumber, semester),
-                        "Ketuk mata kuliah untuk mengikuti atau mengabaikannya secara manual.",
-                    ).joinToString(" "),
-                    style = Huruf.meta,
+            if (gagal) {
+                Text("Daftar mata kuliah tidak bisa dibuka. Coba lagi nanti.", style = Huruf.isi, color = w.galat)
+            }
+            when {
+                d == null -> Unit
+                d.isEmpty() -> Text(
+                    "Belum ada mata kuliah. Ambil $label dulu supaya daftar kelasnya terbaca.",
+                    style = Huruf.isi,
                     color = w.tintaRedup,
                 )
-                Kotak(Modifier.fillMaxWidth(), padding = PaddingValues(horizontal = 12.dp, vertical = 2.dp)) {
-                    Column {
-                        d.forEachIndexed { i, m ->
-                            if (i > 0) Box(Modifier.fillMaxWidth().height(Jarak.garis).background(w.garisHalus))
-                            BarisMatkul(
-                                m,
-                                terbuka = buka == m.externalId,
-                                onKetuk = { buka = if (buka == m.externalId) null else m.externalId },
-                                onPilih = { aksi -> pilih(m, aksi) },
-                            )
+                else -> {
+                    Text(
+                        listOfNotNull(
+                            aturan(sumber, semester),
+                            "Ketuk mata kuliah untuk mengikuti atau mengabaikannya secara manual.",
+                        ).joinToString(" "),
+                        style = Huruf.meta,
+                        color = w.tintaRedup,
+                    )
+                    Kotak(Modifier.fillMaxWidth(), padding = PaddingValues(horizontal = 12.dp, vertical = 2.dp)) {
+                        Column {
+                            d.forEachIndexed { i, m ->
+                                if (i > 0) Box(Modifier.fillMaxWidth().height(Jarak.garis).background(w.garisHalus))
+                                BarisMatkul(
+                                    m,
+                                    terbuka = buka == m.externalId,
+                                    onKetuk = { buka = if (buka == m.externalId) null else m.externalId },
+                                    onPilih = { aksi -> pilih(m, aksi) },
+                                )
+                            }
                         }
                     }
+                    KotakInfo(
+                        "Perubahan berlaku saat pengambilan berikutnya. Tugas dari mata kuliah yang dilewati " +
+                            "disembunyikan, tidak dihapus.",
+                    )
                 }
-                KotakInfo(
-                    "Perubahan berlaku saat pengambilan berikutnya. Tugas dari mata kuliah yang dilewati " +
-                        "disembunyikan, tidak dihapus.",
-                )
             }
         }
     }

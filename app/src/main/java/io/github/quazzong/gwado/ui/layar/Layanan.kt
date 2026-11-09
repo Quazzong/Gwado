@@ -1,5 +1,14 @@
 package io.github.quazzong.gwado.ui.layar
 
+import io.github.quazzong.gwado.ui.tema.gtween
+import io.github.quazzong.gwado.ui.komponen.Pemuat
+import io.github.quazzong.gwado.ui.tema.Gerak
+import androidx.compose.animation.togetherWith
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.AnimatedContent
+import io.github.quazzong.gwado.ui.komponen.asalTombol
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -16,7 +25,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ButtonDefaults
@@ -51,6 +59,8 @@ import io.github.quazzong.gwado.segar.Tingkat
 import io.github.quazzong.gwado.segar.statusSumber
 import io.github.quazzong.gwado.semester.tanggalWib
 import io.github.quazzong.gwado.semester.tebakSemester
+import io.github.quazzong.gwado.ui.komponen.itemsTab
+import io.github.quazzong.gwado.ui.komponen.itemTab
 import io.github.quazzong.gwado.ui.komponen.Chip
 import io.github.quazzong.gwado.ui.komponen.IkonLayanan
 import io.github.quazzong.gwado.ui.komponen.JenisChip
@@ -92,6 +102,12 @@ internal fun chipStatus(st: StatusSumber): Pair<String, JenisChip> = when (st.la
 }
 
 /**
+ * Hasil muat terakhir, dipakai sebagai nilai awal saat layar disusun ulang (misalnya kembali dari
+ * detail), supaya layar langsung tampil lengkap dan tidak berkedip ke keadaan kosong.
+ */
+private var layananTerakhir: List<InfoLayanan>? = null
+
+/**
  * Tab Layanan: semester aktif, kartu tiap layanan tersambung dengan statusnya, Tambah layanan,
  * dan Ambil semua. [versi] naik setiap kali database atau token berubah. [onMasuk] membuka
  * layar login Moodle; Classroom langsung ke izin Google setelah peringatan. semester null =
@@ -114,7 +130,7 @@ fun LayarLayanan(
 ) {
     val w = GwadoTema.warna
     val sekarang = rememberSekarang()
-    val daftar by produceState<List<InfoLayanan>?>(null, versi) {
+    val daftar by produceState(layananTerakhir, versi) {
         value = try {
             pengambil.daftarTersambung()
         } catch (e: CancellationException) {
@@ -122,6 +138,7 @@ fun LayarLayanan(
         } catch (e: Exception) {
             emptyList()
         }
+        layananTerakhir = value
     }
     val belum by produceState(emptyList<Layanan>(), versi) {
         value = try {
@@ -147,29 +164,30 @@ fun LayarLayanan(
         contentPadding = PaddingValues(Jarak.tepiLayar),
         verticalArrangement = Arrangement.spacedBy(Jarak.s8),
     ) {
-        item(key = "strip") {
+        itemTab(key = "strip") {
             StripSub(
                 "Layanan",
                 Modifier.padding(bottom = Jarak.s8),
                 benih = 13,
                 ukuran = 26.sp,
-                kanan = { TombolGarisIkon(R.drawable.ikon_gerigi, "Pengaturan tampilan", onPengaturan) },
+                kanan = { TombolGarisIkon(R.drawable.ikon_gerigi, "Pengaturan tampilan", onPengaturan, Modifier.asalTombol("layar-pengaturan")) },
             )
         }
-        if (pesanUmum.isNotEmpty()) item(key = "umum") { Pita(pesanUmum, merah = true) }
-        item(key = "semester") { PanelSemester(semester, kuliahMulai, onUbahSemester, onKonfirmasi) }
+        if (pesanUmum.isNotEmpty()) itemTab(key = "umum") { Pita(pesanUmum, merah = true) }
+        itemTab(key = "semester") { PanelSemester(semester, kuliahMulai, onUbahSemester, onKonfirmasi) }
         val d = daftar
         if (d != null && d.isEmpty()) {
-            item(key = "kosong") {
+            itemTab(key = "kosong") {
                 Kotak(Modifier.fillMaxWidth(), putus = true, kilau = null, bayangan = 0.dp) {
                     Text("Belum ada layanan tersambung.", style = Huruf.meta, color = w.tintaRedup)
                 }
             }
         }
         if (d != null) {
-            items(d.zip(status), key = { it.first.layanan.id }) { (info, st) ->
+            itemsTab(d.zip(status), key = { it.first.layanan.id }) { (info, st) ->
                 KartuLayanan(
                     info, st, matkul[info.layanan.id], pengambil.status[info.layanan.id],
+                    mengambil = pengambil.diambil == info.layanan.id,
                     onAmbil = { pengambil.ambil(info.layanan) },
                     onLupakan = { pengambil.lupakan(info.layanan) },
                     onMatikan = { dimatikan = info.layanan },
@@ -178,7 +196,7 @@ fun LayarLayanan(
             }
         }
         if (belum.isNotEmpty()) {
-            item(key = "tambah") {
+            itemTab(key = "tambah") {
                 Column(Modifier.padding(top = Jarak.s4), verticalArrangement = Arrangement.spacedBy(Jarak.s4)) {
                     TombolGaris("Tambah layanan", { lembar = true }, ikon = R.drawable.ikon_tambah)
                     for (l in belum) {
@@ -189,7 +207,7 @@ fun LayarLayanan(
                 }
             }
         }
-        item(key = "ambil") {
+        itemTab(key = "ambil") {
             Column(Modifier.padding(top = Jarak.s8), verticalArrangement = Arrangement.spacedBy(Jarak.s8)) {
                 TombolPermen(
                     if (pengambil.sibuk) "Mengambil…" else "Ambil semua sekarang",
@@ -254,7 +272,7 @@ private fun PanelSemester(
                 )
                 Row(Modifier.padding(top = Jarak.s8), horizontalArrangement = Arrangement.spacedBy(Jarak.s8)) {
                     TombolPlum("Sudah benar", { onKonfirmasi(tebakan) })
-                    TombolGaris("Ubah", onUbah)
+                    TombolGaris("Ubah", onUbah, Modifier.asalTombol("layar-semester"))
                 }
             }
         } else {
@@ -281,7 +299,7 @@ private fun PanelSemester(
                         color = w.tintaRedup,
                     )
                 }
-                TombolGaris("Ubah", onUbah)
+                TombolGaris("Ubah", onUbah, Modifier.asalTombol("layar-semester"))
             }
         }
     }
@@ -293,6 +311,7 @@ private fun KartuLayanan(
     st: StatusSumber,
     ringkasan: String?,
     pesanAmbil: String?,
+    mengambil: Boolean,
     onAmbil: () -> Unit,
     onLupakan: () -> Unit,
     onMatikan: () -> Unit,
@@ -330,7 +349,23 @@ private fun KartuLayanan(
                     IkonLayanan(info.baris.nama, ukuran = 18.dp)
                     Text(st.nama, style = Huruf.judulKartu, color = w.tinta)
                 }
-                Chip(teksChip, jenis = jenis)
+                // Selama layanan ini dihubungi: chip MENGAMBIL + pemuat kecil, berganti silang dengan chip status.
+                AnimatedContent(
+                    targetState = mengambil,
+                    transitionSpec = {
+                        fadeIn(gtween(Gerak.PUDAR, easing = LinearEasing)) togetherWith fadeOut(gtween(Gerak.PUDAR, easing = Gerak.Keluar))
+                    },
+                    label = "chip-layanan",
+                ) { sedang ->
+                    if (sedang) {
+                        Row(horizontalArrangement = Arrangement.spacedBy(5.dp), verticalAlignment = Alignment.CenterVertically) {
+                            Pemuat(ukuran = 16.dp)
+                            Chip("mengambil")
+                        }
+                    } else {
+                        Chip(teksChip, jenis = jenis)
+                    }
+                }
             }
             Text(kalimat, style = Huruf.meta, color = w.tintaRedup, modifier = Modifier.padding(top = 4.dp))
             ringkasan?.let { Text("Mata kuliah: $it", style = Huruf.meta, color = w.tintaRedup) }
@@ -348,7 +383,7 @@ private fun KartuLayanan(
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 if (ditolak || belumLogin) TombolPlum(if (moodle) "Login" else "Beri izin lagi", onAmbil)
-                TombolGaris("Mata kuliah", onMatkul)
+                TombolGaris("Mata kuliah", onMatkul, Modifier.asalTombol("layar-matkul-${info.layanan.id}"))
                 Spacer(Modifier.weight(1f))
                 Box {
                     var buka by remember { mutableStateOf(false) }
