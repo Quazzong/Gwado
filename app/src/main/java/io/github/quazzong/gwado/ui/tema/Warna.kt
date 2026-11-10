@@ -57,7 +57,7 @@ fun warnaDari(t: Token, gelap: Boolean): Warna {
     )
 }
 
-/** Palet bawaan Permen (DESAIN §2.1). */
+/** Palet bawaan Permen. */
 val WarnaTerang = warnaDari(PERMEN_TERANG, gelap = false)
 val WarnaGelap = warnaDari(PERMEN_GELAP, gelap = true)
 

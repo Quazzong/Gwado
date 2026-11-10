@@ -18,7 +18,7 @@ object Kontrak {
 
     fun muat(path: String): JsonObject = Json.parseToJsonElement(file(path).readText()).jsonObject
 
-    /** HasilSumber → JSON dengan nama kunci yang sama dengan golden (format inbox SERPER). */
+    /** HasilSumber → JSON dengan nama kunci yang sama dengan golden. */
     fun keJson(h: HasilSumber): JsonObject = buildJsonObject {
         putJsonArray("courses") {
             h.kelas.forEach { k ->

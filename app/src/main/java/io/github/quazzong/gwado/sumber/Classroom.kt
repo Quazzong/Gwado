@@ -11,7 +11,7 @@ import kotlinx.serialization.json.contentOrNull
 
 /**
  * Parser Google Classroom: respons API mentah → kelas + tugas.
- * Terjemahan dari serper/sumber/classroom.py. Fungsi murni: tanpa jaringan, tanpa database.
+ * Fungsi murni: tanpa jaringan, tanpa database.
  */
 object Classroom {
     private val STATUS = mapOf(

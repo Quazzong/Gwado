@@ -1,7 +1,4 @@
--- 0001_awal.sql — skema awal Gwado (GW6), subset skema SERPER
--- Struktur, CHECK, dan UNIQUE sama dengan migrasi SERPER 0001, 0002, 0003, dan 0005 untuk
--- tabel yang dibawa. Tidak dibawa: job_runs, class_schedule, lampiran, kalender, metrik,
--- tampilan, dan kolom *_override milik perencana. Semua waktu teks ISO 8601 UTC.
+-- 0001_awal.sql — skema awal Gwado. Semua waktu teks ISO 8601 UTC.
 
 -- ===== DATA SUMBER  =====
 
@@ -91,7 +88,7 @@ CREATE TABLE task_user_state (
   catatan  TEXT
 ) STRICT;
 
--- Termasuk aturan semester (semester_label, semester_kode, semester_mulai); diisi di GW7
+-- Termasuk aturan semester (semester_label, semester_kode, semester_mulai)
 CREATE TABLE preferences (
   kunci TEXT PRIMARY KEY,
   nilai TEXT NOT NULL

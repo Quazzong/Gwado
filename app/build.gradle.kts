@@ -7,7 +7,7 @@ plugins {
     alias(libs.plugins.baselineprofile)
 }
 
-val versiSqlite = "2.7.1"  // sqlite, sqlite-bundled, dan .so test (GW6b) harus satu versi
+val versiSqlite = "2.7.1"  // sqlite, sqlite-bundled, dan .so test harus satu versi
 
 // Kunci rilis dibaca dari keystore.properties di root proyek (tidak masuk Git):
 // storeFile, storePassword, keyAlias, keyPassword. Kalau file itu tidak ada, APK rilis
@@ -89,7 +89,7 @@ dependencies {
     debugImplementation(libs.androidx.compose.ui.test.manifest)
     debugImplementation(libs.androidx.compose.ui.tooling)
 }
-// GW6b: test JVM di laptop butuh libsqliteJni.so versi Linux. sqlite-bundled versi
+// Test JVM di laptop butuh libsqliteJni.so versi Linux. sqlite-bundled versi
 // Android hanya membawa .so untuk HP, jadi .so diambil dari artefak desktop
 // (sqlite-bundled-jvm) ke folder yang dibaca AGP saat test. Tidak di-commit.
 val sqliteNativeJvm = configurations.create("sqliteNativeJvm") { isTransitive = false }

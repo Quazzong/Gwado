@@ -84,7 +84,7 @@ class IngestGoldenTest {
     private val golden = Kontrak.muat("golden/ingest/ingest.json")
 
     @Test
-    fun konstantaSamaDenganSerper() {
+    fun konstantaSamaDenganGolden() {
         val k = golden.getValue("konstanta").jsonObject
         assertEquals(k.getValue("ambang_hilang").jsonPrimitive.long, AMBANG_HILANG.toLong())
         val contoh = Tugas("assign:1", "10", "assign", null, "x", "", null, null, null)

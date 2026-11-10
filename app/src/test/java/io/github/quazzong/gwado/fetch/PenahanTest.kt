@@ -15,7 +15,7 @@ import kotlinx.serialization.json.long
 import org.junit.Assert.assertEquals
 import org.junit.Test
 
-/** Kontrak golden/fetch/penahan.json (dibuat serper-app tests/buat_golden_penahan.py). */
+/** Kontrak golden/fetch/penahan.json. */
 class PenahanTest {
     private val g = Kontrak.muat("golden/fetch/penahan.json")
 

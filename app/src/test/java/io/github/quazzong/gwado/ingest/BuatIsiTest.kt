@@ -18,7 +18,7 @@ private val SELESAI = Instant.parse("2026-10-20T05:00:07.123Z")
 class BuatIsiTest {
 
     @Test
-    fun fetchIdSepertiSerper() {
+    fun fetchIdSesuaiPola() {
         val id = buatFetchId("brone", MULAI)
         assertTrue(id, Regex("^brone-20261020T050002Z-[0-9a-f]{6}$").matches(id))
     }

@@ -10,12 +10,12 @@ import org.junit.Assert.assertTrue
 import org.junit.Test
 import org.junit.runner.RunWith
 
-/** Spike GW6b di HP: sama dengan SpikeSqliteTest, tapi memakai .so ARM dari APK. */
+/** Memastikan SQLite bawaan APK (.so ARM) punya fitur yang dipakai ingest. */
 @RunWith(AndroidJUnit4::class)
 class SpikeSqliteHpTest {
 
     @Test
-    fun fiturIngestSerperTersediaDiHp() {
+    fun fiturIngestTersediaDiHp() {
         BundledSQLiteDriver().open(":memory:").use { c ->
             val versi = c.prepare("SELECT sqlite_version()").use { it.step(); it.getText(0) }
             Log.i("GwadoSpike", "SQLite bundled di HP: $versi")

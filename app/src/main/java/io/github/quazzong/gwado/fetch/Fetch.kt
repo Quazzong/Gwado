@@ -12,7 +12,7 @@ import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
 
-// Terjemahan bagian umum serper/fetch.py. Token tidak pernah masuk URL, log, atau pesan error.
+// Bagian umum pengambilan data lewat HTTP. Token tidak pernah masuk URL, log, atau pesan error.
 const val TIMEOUT = 30                 // detik
 val JEDA_ULANG = listOf(10, 20)        // detik; jeda sebelum percobaan ke-2 dan ke-3
 

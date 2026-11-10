@@ -9,13 +9,13 @@ import java.time.format.DateTimeFormatter
 import java.time.format.DateTimeParseException
 import java.time.temporal.ChronoUnit
 
-// Terjemahan penahan di serper/fetch.py (B7c3): jendela hindari per sumber, lalu cooldown 30 menit.
-// Dicek di dalam job. Khusus Gwado: tombol manual hanya kena jeda pendek (JEDA_MANUAL), bukan
+// Penahan pengambilan: jendela hindari per sumber, lalu cooldown 30 menit.
+// Dicek di dalam job. Tombol manual hanya kena jeda pendek (JEDA_MANUAL), bukan
 // cooldown 30 menit; jendela hindari tetap berlaku untuk semua.
 
 val COOLDOWN: Duration = Duration.ofMinutes(30)
 
-/** Gwado saja: jeda antar-ambil manual, mencegah ketukan beruntun. Bukan bagian kontrak SERPER. */
+/** Jeda antar-ambil manual, mencegah ketukan beruntun. Tidak diatur golden penahan. */
 val JEDA_MANUAL: Duration = Duration.ofMinutes(1)
 
 /** Jam WIB [mulai, selesai), boleh melewati tengah malam. Brone: backup situs, lambat sampai timeout. */
@@ -23,7 +23,7 @@ val JENDELA_HINDARI: Map<String, Pair<Int, Int>> = mapOf("brone" to (23 to 2))
 
 private val WIB = ZoneOffset.ofHours(7)
 
-/** Waktu UTC ke detik, bentuk yang sama dengan file status SERPER: 2026-10-21T03:00:05Z. */
+/** Waktu UTC ke detik, misalnya 2026-10-21T03:00:05Z. */
 internal fun iso(t: Instant): String = DateTimeFormatter.ISO_INSTANT.format(t.truncatedTo(ChronoUnit.SECONDS))
 
 fun diJendelaHindari(sumber: String, sekarang: Instant): Boolean {
@@ -69,7 +69,7 @@ sealed interface HasilJob {
     data class Selesai(val hasil: HasilSumber) : HasilJob
 }
 
-/** Penyimpanan waktu sukses per sumber (SERPER: satu file per sumber; Gwado: SharedPreferences). */
+/** Penyimpanan waktu sukses per sumber (di aplikasi: SharedPreferences). */
 interface CatatanSukses {
     fun baca(sumber: String): String?
     fun tulis(sumber: String, waktuTeks: String)

@@ -1,6 +1,6 @@
 package io.github.quazzong.gwado.sumber
 
-/** Kelas dari satu sumber. Bentuknya sama dengan format inbox SERPER. */
+/** Kelas dari satu sumber. Bentuknya sama dengan golden parser. */
 data class Kelas(
     val externalId: String,
     val nama: String,

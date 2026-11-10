@@ -6,8 +6,8 @@ import java.time.LocalDate
 import java.time.ZoneOffset
 import java.time.format.DateTimeParseException
 
-// Aturan semester adalah data (§5.1 konteks): tiga nilai di tabel preferences.
-// Edisi publik: ditebak dari tanggal (terjemahan serper/semester.py, dibuktikan golden),
+// Aturan semester adalah data: tiga nilai di tabel preferences.
+// Ditebak dari tanggal (dibuktikan golden),
 // lalu dikonfirmasi atau dibetulkan pengguna. Ingest menolak jalan sebelum ketiganya tersimpan.
 
 /** Kunci preferensi → label isian, dalam urutan tampil. */

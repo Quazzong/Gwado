@@ -7,7 +7,7 @@ import kotlinx.coroutines.withContext
 /**
  * Satu-satunya pintu ke database aplikasi (gwado.db). Semua akses lewat satu jalur
  * (limitedParallelism(1)), jadi koneksi tidak pernah dipakai dua blok bersamaan.
- * Satu objek per proses, supaya layar dan penjadwal (GW9) memakai koneksi yang sama.
+ * Satu objek per proses, supaya layar dan penjadwal memakai koneksi yang sama.
  */
 object Gudang {
     private val jalur = Dispatchers.IO.limitedParallelism(1)

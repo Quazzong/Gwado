@@ -18,7 +18,7 @@ import kotlinx.serialization.json.put
 import org.junit.Assert.assertEquals
 import org.junit.Test
 
-/** Kontrak golden/fetch/moodle.json (dibuat serper-app tests/buat_golden_fetch.py). */
+/** Kontrak golden/fetch/moodle.json. */
 class FetchMoodleTest {
     private val g = Kontrak.muat("golden/fetch/moodle.json")
     private val situs = g.getValue("situs").jsonPrimitive.content

@@ -9,7 +9,7 @@ import org.junit.Assert.assertThrows
 import org.junit.Assert.assertTrue
 import org.junit.Test
 
-/** Meniru test_minta_* di serper-app tests/test_fetch.py: HTTP palsu, tanpa jaringan. */
+/** Perilaku minta (ulang, klasifikasi galat) dengan HTTP palsu, tanpa jaringan. */
 class MintaTest {
     private fun json(s: String) = Json.parseToJsonElement(s)
     private val diam: (String) -> Unit = {}

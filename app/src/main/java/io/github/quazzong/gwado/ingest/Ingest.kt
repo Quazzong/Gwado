@@ -8,14 +8,14 @@ import java.security.MessageDigest
 import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonPrimitive
 
-// Terjemahan serper/ingest.py (proses). Satu Isi = satu transaksi. Hanya menulis courses,
+// Memasukkan hasil fetch ke database. Satu Isi = satu transaksi. Hanya menulis courses,
 // tasks (asal='sumber'), task_changes (oleh='ingest'), dan source_runs. Tugas manual dan data
 // pengguna (task_user_state, preferensi) tidak pernah disentuh. Dibuktikan golden ingest.
 
 /** Run sukses penuh berturut-turut tanpa tugas itu sebelum ditandai hilang. */
 const val AMBANG_HILANG = 2
 
-/** Hasil fetch satu sumber satu run (format inbox SERPER tanpa file). error != null = run gagal. */
+/** Hasil fetch satu sumber satu run (bentuk yang sama dengan golden ingest). error != null = run gagal. */
 data class Isi(
     val fetchId: String,
     val sumber: String,

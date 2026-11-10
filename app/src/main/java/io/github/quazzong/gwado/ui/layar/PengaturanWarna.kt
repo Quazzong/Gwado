@@ -93,7 +93,7 @@ private const val TERANG_MIN = 0.4
 private const val TERANG_MAKS = 0.97
 
 /**
- * Bagian Warna di Pengaturan tampilan (DESAIN §2.3, §9.10): mode Simpel (contoh + Bebas) atau
+ * Bagian Warna di Pengaturan tampilan: mode Simpel (contoh + Bebas) atau
  * Lanjutan (tujuh kelompok + kontras). Warna seluruh aplikasi berubah selama digeser; pilihan
  * disimpan dan widget digambar ulang saat geseran dilepas atau pilihan diketuk.
  */

@@ -9,7 +9,7 @@ import kotlinx.serialization.json.booleanOrNull
 
 /**
  * Parser Moodle (Brone, Eling): respons API mentah → kelas + tugas.
- * Terjemahan dari serper/sumber/moodle.py. Fungsi murni: tanpa jaringan, tanpa database.
+ * Fungsi murni: tanpa jaringan, tanpa database.
  * Kebenarannya dijaga golden file di src/test/resources/kontrak.
  */
 object Moodle {

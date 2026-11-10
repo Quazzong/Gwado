@@ -86,7 +86,7 @@ fun pisahBaris(s: String): List<String> {
     return hasil
 }
 
-// ---------- HTML → teks polos (meniru serper/sumber/moodle.py: _Teks + teks_polos) ----------
+// ---------- HTML → teks polos (meniru HTMLParser Python yang dipakai pembuat golden) ----------
 
 private val BLOK = setOf("p", "br", "div", "li", "tr", "h1", "h2", "h3", "h4", "h5", "h6")
 private val LEWATI = setOf("script", "style")

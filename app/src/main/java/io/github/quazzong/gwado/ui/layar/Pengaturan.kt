@@ -51,7 +51,7 @@ import io.github.quazzong.gwado.ui.tema.LocalPilihanTema
 import kotlinx.coroutines.launch
 
 /**
- * Pengaturan tampilan (DESAIN §9.10): tekstur latar sebagai tiga ubin pratinjau dan pilihan tema
+ * Pengaturan tampilan: tekstur latar sebagai tiga ubin pratinjau dan pilihan tema
  * (ikut sistem, terang, gelap). Pilihan langsung tersimpan; [onBerubah] memuat ulang supaya semua
  * layar ikut berganti.
  */

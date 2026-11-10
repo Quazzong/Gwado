@@ -20,7 +20,7 @@ import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
 
-/** Kontrak golden/fetch/classroom.json (dibuat serper-app tests/buat_golden_fetch_classroom.py). */
+/** Kontrak golden/fetch/classroom.json. */
 class FetchClassroomTest {
     private val g = Kontrak.muat("golden/fetch/classroom.json")
     private val akses = g.getValue("akses").jsonPrimitive.content      // karangan

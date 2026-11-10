@@ -3,7 +3,7 @@ package io.github.quazzong.gwado.tampilan
 import android.content.SharedPreferences
 import io.github.quazzong.gwado.db.Db
 
-/** Tekstur latar layar (DESAIN §7). kode = nilai di preferences `tekstur`. */
+/** Tekstur latar layar. kode = nilai di preferences `tekstur`. */
 enum class Tekstur(val kode: String, val label: String) {
     POLOS("polos", "Polos"),
     TITIK("titik", "Titik"),
@@ -32,7 +32,7 @@ fun Db.simpanTekstur(t: Tekstur) {
     )
 }
 
-/** Tema tampilan (DESAIN §9.10). kode = nilai di SharedPreferences `tema`. */
+/** Tema tampilan. kode = nilai di SharedPreferences `tema`. */
 enum class Tema(val kode: String, val label: String) {
     SISTEM("sistem", "Ikut sistem"),
     TERANG("terang", "Terang"),
@@ -71,7 +71,7 @@ private const val KUNCI_WARNA_BEBAS = "warna_bebas"
 private const val KUNCI_WARNA_TERANG = "warna_lanjut_terang"
 private const val KUNCI_WARNA_GELAP = "warna_lanjut_gelap"
 
-/** Pilihan warna (DESAIN §2.3), di SharedPreferences seperti tema; nilai rusak → bawaan. */
+/** Pilihan warna, di SharedPreferences seperti tema; nilai rusak → bawaan. */
 fun SharedPreferences.pilihanWarna(): PilihanWarna {
     val bawaan = PilihanWarna()
     val contoh = getString(KUNCI_WARNA_CONTOH, null)

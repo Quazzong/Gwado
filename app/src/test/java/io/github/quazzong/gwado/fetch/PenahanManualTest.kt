@@ -7,7 +7,7 @@ import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
 
-/** Aturan khusus Gwado (bukan kontrak SERPER): manual hanya kena jeda pendek + jendela hindari. */
+/** Aturan di luar golden penahan: manual hanya kena jeda pendek + jendela hindari. */
 class PenahanManualTest {
     private val sukses = Instant.parse("2026-10-21T03:00:05Z")             // 10.00.05 WIB
     private val statusSukses = iso(sukses)
