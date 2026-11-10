@@ -69,10 +69,9 @@ fun pesanKosong(isi: IsiWidget, singkat: Boolean): String = when {
 }
 
 /**
- * Tata letak widget Terdekat: berapa baris, baris ringkas atau rinci, apakah progres ikut, dan
- * apakah sisa ruangnya cukup untuk stiker.
+ * Tata letak widget Terdekat: berapa baris, baris ringkas atau rinci, dan apakah progres ikut.
  */
-data class TataTerdekat(val baris: Int, val rinci: Boolean, val progres: Boolean, val stiker: Boolean = false)
+data class TataTerdekat(val baris: Int, val rinci: Boolean, val progres: Boolean)
 
 /**
  * Launcher (misalnya Samsung) melaporkan tinggi widget lebih besar daripada yang digambar,
@@ -81,25 +80,23 @@ data class TataTerdekat(val baris: Int, val rinci: Boolean, val progres: Boolean
 internal const val KOREKSI_TINGGI = 0.86f
 internal const val TINGGI_KEPALA = 26f      // padding atas + label TERDEKAT
 internal const val TINGGI_BAWAH = 13f       // padding bawah + bayangan
-internal const val BARIS_RINGKAS = 24f      // chip + judul satu baris + garis
+internal const val BARIS_RINGKAS = 22f      // chip + judul satu baris + garis (diukur ±21,7dp)
+internal const val TINGGI_GARIS = 2f        // garis pemisah; baris pertama tidak punya
 internal const val BARIS_RINCI = 40f        // + mata kuliah dan tanggal
 internal const val TINGGI_PROGRES = 34f
-internal const val TINGGI_STIKER = 60f     // stiker 56dp + jarak
 
 /**
  * Hitung tata letak dari tinggi laporan (dp) dan jumlah tugas yang tersedia. Kalau tugasnya lebih
  * banyak dari yang muat, semua baris ringkas. Kalau semuanya muat, ruang sisa dipakai baris rinci,
- * lalu progres minggu ini di bawah, lalu stiker di ruang yang masih kosong.
+ * lalu progres minggu ini di bawah.
  */
 fun tataTerdekat(tinggiLapor: Float, tersedia: Int, adaProgres: Boolean): TataTerdekat {
     val ruang = tinggiLapor * KOREKSI_TINGGI - TINGGI_KEPALA - TINGGI_BAWAH
-    val muat = floor(ruang / BARIS_RINGKAS).toInt().coerceAtLeast(1)
+    val muat = floor((ruang + TINGGI_GARIS) / BARIS_RINGKAS).toInt().coerceAtLeast(1)
     if (tersedia >= muat) return TataTerdekat(muat.coerceAtMost(tersedia), rinci = false, progres = false)
     val rinci = tersedia * BARIS_RINCI <= ruang
     val sisa = ruang - tersedia * (if (rinci) BARIS_RINCI else BARIS_RINGKAS)
-    val progres = adaProgres && sisa >= TINGGI_PROGRES
-    val sisaStiker = sisa - if (progres) TINGGI_PROGRES else 0f
-    return TataTerdekat(tersedia, rinci, progres, stiker = sisaStiker >= TINGGI_STIKER)
+    return TataTerdekat(tersedia, rinci, progres = adaProgres && sisa >= TINGGI_PROGRES)
 }
 
 internal const val PADDING_DATAR = 27f      // padding kiri + kanan kartu (termasuk bayangan)
@@ -126,4 +123,20 @@ fun ukuranAngkaSempit(
     val lebar = lebarLapor - PADDING_DATAR
     val dp = minOf(tinggi / TINGGI_BARIS, lebar / (LEBAR_DIGIT * digit.coerceAtLeast(1)))
     return (dp / skalaHuruf).coerceIn(ANGKA_MIN, ANGKA_MAKS)
+}
+
+internal const val TINGGI_LABEL = 16f       // label TUGAS
+internal const val TINGGI_TUGAS = 36f       // judul dua baris 12sp + jarak (tanpa chip)
+internal const val ANGKA_TINGGI_MAKS = 96f
+
+/**
+ * Ukuran angka (sp) widget Tugas yang tinggi: mengisi ruang di antara label dan tugas pertama,
+ * paling kecil 40sp dan paling besar [ANGKA_TINGGI_MAKS] (launcher bisa melaporkan tinggi lebih
+ * besar daripada yang digambar, jadi angka tidak dibuat sebesar laporan).
+ */
+fun ukuranAngkaTinggi(lebarLapor: Float, tinggiLapor: Float, digit: Int, skalaHuruf: Float = 1f): Float {
+    val tinggi = tinggiLapor * KOREKSI_TINGGI - PADDING_TEGAK - (TINGGI_LABEL + TINGGI_TUGAS + TINGGI_CHIP) * skalaHuruf
+    val lebar = lebarLapor - PADDING_DATAR
+    val dp = minOf(tinggi / TINGGI_BARIS, lebar / (LEBAR_DIGIT * digit.coerceAtLeast(1)))
+    return (dp / skalaHuruf).coerceIn(40f, ANGKA_TINGGI_MAKS)
 }

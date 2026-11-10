@@ -19,20 +19,18 @@ import io.github.quazzong.gwado.ui.tema.GwadoTema
 
 /**
  * Ekspresi maskot kue; gambarnya vector drawable `stiker_*`. Versi `_gelap` memakai garis dan
- * hiasan terang supaya terlihat di latar gelap. [widget] = alias yang dipilih launcher sendiri
- * menurut mode gelap sistem (`values-night`), dipakai widget saat tema Gwado ikut sistem.
+ * hiasan terang supaya terlihat di latar gelap.
  */
 enum class Ekspresi(
     @param:DrawableRes val gambar: Int,
     @param:DrawableRes val gambarGelap: Int,
-    @param:DrawableRes val widget: Int,
 ) {
-    NETRAL(R.drawable.stiker_netral, R.drawable.stiker_netral_gelap, R.drawable.widget_stiker_netral),
-    MELAMBAI(R.drawable.stiker_melambai, R.drawable.stiker_melambai_gelap, R.drawable.widget_stiker_melambai),
-    SANTAI(R.drawable.stiker_santai, R.drawable.stiker_santai_gelap, R.drawable.widget_stiker_santai),
-    BERSORAK(R.drawable.stiker_bersorak, R.drawable.stiker_bersorak_gelap, R.drawable.widget_stiker_bersorak),
-    BINGUNG(R.drawable.stiker_bingung, R.drawable.stiker_bingung_gelap, R.drawable.widget_stiker_bingung),
-    TIDUR(R.drawable.stiker_tidur, R.drawable.stiker_tidur_gelap, R.drawable.widget_stiker_tidur),
+    NETRAL(R.drawable.stiker_netral, R.drawable.stiker_netral_gelap),
+    MELAMBAI(R.drawable.stiker_melambai, R.drawable.stiker_melambai_gelap),
+    SANTAI(R.drawable.stiker_santai, R.drawable.stiker_santai_gelap),
+    BERSORAK(R.drawable.stiker_bersorak, R.drawable.stiker_bersorak_gelap),
+    BINGUNG(R.drawable.stiker_bingung, R.drawable.stiker_bingung_gelap),
+    TIDUR(R.drawable.stiker_tidur, R.drawable.stiker_tidur_gelap),
 }
 
 /** Stiker maskot sebagai hiasan: tidak dibacakan pembaca layar, maknanya sudah ada di teks di sebelahnya. */

@@ -62,28 +62,19 @@ class IsiWidgetTest {
 
     @Test
     fun tugasBanyakSemuaBarisRingkasTanpaTerpotong() {
-        // Samsung Note 9, 4×1: lapor 130dp, digambar ±112dp → 3 baris.
+        // Samsung Note 9, 4×1: lapor 130dp (WQHD) atau 129dp (FHD+), digambar ±114dp → 3 baris.
         assertEquals(TataTerdekat(3, rinci = false, progres = false), tataTerdekat(130f, 12, adaProgres = true))
-        // 4×2: lapor 288dp → 8 baris.
-        assertEquals(8, tataTerdekat(288f, 12, adaProgres = true).baris)
+        assertEquals(3, tataTerdekat(129f, 12, adaProgres = true).baris)
+        // 4×2: lapor 288dp, digambar ±238dp → 9 baris (±233dp).
+        assertEquals(9, tataTerdekat(288f, 12, adaProgres = true).baris)
     }
 
     @Test
     fun tugasSedikitMemakaiBarisRinciLaluProgres() {
         assertEquals(TataTerdekat(5, rinci = true, progres = false), tataTerdekat(288f, 5, adaProgres = true))
-        assertEquals(TataTerdekat(2, rinci = true, progres = true, stiker = true), tataTerdekat(288f, 2, adaProgres = true))
-        assertEquals(TataTerdekat(2, rinci = true, progres = false, stiker = true), tataTerdekat(288f, 2, adaProgres = false))
+        assertEquals(TataTerdekat(2, rinci = true, progres = true), tataTerdekat(288f, 2, adaProgres = true))
+        assertEquals(TataTerdekat(2, rinci = true, progres = false), tataTerdekat(288f, 2, adaProgres = false))
         assertEquals(TataTerdekat(2, rinci = false, progres = false), tataTerdekat(130f, 2, adaProgres = true))
-    }
-
-    @Test
-    fun stikerHanyaKalauSisaRuangCukup() {
-        // 4×2 kosong (belum ada tugas): ruang penuh untuk stiker.
-        assertEquals(TataTerdekat(0, rinci = true, progres = false, stiker = true), tataTerdekat(288f, 0, adaProgres = false))
-        // 4×1 dengan satu tugas rinci: sisa 32dp, tidak cukup.
-        assertEquals(false, tataTerdekat(130f, 1, adaProgres = false).stiker)
-        // 4×2 dengan lima tugas rinci: sisa 8dp.
-        assertEquals(false, tataTerdekat(288f, 5, adaProgres = true).stiker)
     }
 
     @Test
@@ -107,5 +98,21 @@ class IsiWidgetTest {
         assert(ukuranAngkaSempit(80f, 90f, 1, adaChip = true, skalaHuruf = 1.3f) < ukuranAngkaSempit(80f, 90f, 1, adaChip = true))
         // Tidak pernah lebih kecil dari batas bawah.
         assertEquals(ANGKA_MIN, ukuranAngkaSempit(40f, 40f, 3, adaChip = true), 0.01f)
+    }
+
+    @Test
+    fun angkaTinggiMengisiRuangDenganBatas() {
+        // 4×2 Note 9 (lapor 361×288): angka sampai batas atas.
+        assertEquals(ANGKA_TINGGI_MAKS, ukuranAngkaTinggi(361f, 288f, 1), 0.01f)
+        // Tinggi pas ambang tata letak tinggi: tidak lebih kecil dari angka lama 40sp.
+        assertEquals(40f, ukuranAngkaTinggi(361f, 150f, 1), 0.01f)
+        // Di antaranya angka mengikuti tinggi.
+        val sedang = ukuranAngkaTinggi(361f, 220f, 1)
+        assert(sedang > 40f && sedang < ANGKA_TINGGI_MAKS)
+        // 2×2 dengan tiga angka dibatasi lebar.
+        val tiga = ukuranAngkaTinggi(170f, 288f, 3)
+        assert(tiga * LEBAR_DIGIT * 3 <= 170f - PADDING_DATAR + 0.01f)
+        // Huruf sistem diperbesar: angka mengecil.
+        assert(ukuranAngkaTinggi(361f, 220f, 1, skalaHuruf = 1.3f) < sedang)
     }
 }

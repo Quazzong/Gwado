@@ -6,10 +6,4 @@
     <item name="widget_chip_mepet" type="drawable">@drawable/widget_chip_mepet_terang</item>
     <item name="widget_chip_netral" type="drawable">@drawable/widget_chip_netral_terang</item>
     <item name="widget_chip_putus" type="drawable">@drawable/widget_chip_putus_terang</item>
-    <item name="widget_stiker_netral" type="drawable">@drawable/stiker_netral</item>
-    <item name="widget_stiker_melambai" type="drawable">@drawable/stiker_melambai</item>
-    <item name="widget_stiker_santai" type="drawable">@drawable/stiker_santai</item>
-    <item name="widget_stiker_bersorak" type="drawable">@drawable/stiker_bersorak</item>
-    <item name="widget_stiker_bingung" type="drawable">@drawable/stiker_bingung</item>
-    <item name="widget_stiker_tidur" type="drawable">@drawable/stiker_tidur</item>
 </resources>

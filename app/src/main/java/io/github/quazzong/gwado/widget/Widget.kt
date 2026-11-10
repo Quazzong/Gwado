@@ -14,7 +14,6 @@ import androidx.compose.ui.unit.sp
 import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.glance.GlanceId
 import androidx.glance.GlanceModifier
-import androidx.glance.Image
 import androidx.glance.ImageProvider
 import androidx.glance.LocalSize
 import androidx.glance.action.Action
@@ -42,7 +41,6 @@ import androidx.glance.layout.fillMaxSize
 import androidx.glance.layout.fillMaxWidth
 import androidx.glance.layout.height
 import androidx.glance.layout.padding
-import androidx.glance.layout.size
 import androidx.glance.layout.width
 import androidx.glance.text.FontWeight
 import androidx.glance.text.Text
@@ -55,7 +53,6 @@ import io.github.quazzong.gwado.layanan.prefsGwado
 import io.github.quazzong.gwado.tampilan.Tema
 import io.github.quazzong.gwado.tampilan.tema
 import io.github.quazzong.gwado.tugas.daftarTugas
-import io.github.quazzong.gwado.ui.komponen.Ekspresi
 import io.github.quazzong.gwado.ui.layar.suksesTerakhir
 import io.github.quazzong.gwado.waktu.Chip
 import io.github.quazzong.gwado.waktu.Makna
@@ -118,8 +115,6 @@ private class GayaWidget(tema: Tema) {
     val chipMepet = gambar(R.drawable.widget_chip_mepet, R.drawable.widget_chip_mepet_terang, R.drawable.widget_chip_mepet_gelap)
     val chipNetral = gambar(R.drawable.widget_chip_netral, R.drawable.widget_chip_netral_terang, R.drawable.widget_chip_netral_gelap)
     val chipPutus = gambar(R.drawable.widget_chip_putus, R.drawable.widget_chip_putus_terang, R.drawable.widget_chip_putus_gelap)
-
-    fun stiker(e: Ekspresi) = gambar(e.widget, e.gambar, e.gambarGelap)
 }
 
 private val LocalGaya = staticCompositionLocalOf { GayaWidget(Tema.SISTEM) }
@@ -236,21 +231,6 @@ private fun ChipWidget(chip: Chip?) {
     }
 }
 
-/**
- * Stiker maskot untuk ruang kosong di widget: netral kalau ada tugas, santai kalau belum pernah
- * diambil, bersorak kalau semua beres, bingung kalau database tidak terbaca.
- */
-@Composable
-private fun StikerWidget(isi: IsiWidget?) {
-    val ekspresi = when {
-        isi == null -> Ekspresi.BINGUNG
-        isi.terdekat.isNotEmpty() -> Ekspresi.NETRAL
-        isi.diambil == null -> Ekspresi.SANTAI
-        else -> Ekspresi.BERSORAK
-    }
-    Image(ImageProvider(LocalGaya.current.stiker(ekspresi)), contentDescription = null, modifier = GlanceModifier.size(56.dp))
-}
-
 @Composable
 private fun TeksKosong(teks: String) {
     Text(teks, style = TextStyle(color = LocalGaya.current.redup, fontSize = 12.sp, fontWeight = FontWeight.Bold), maxLines = 2)
@@ -297,7 +277,7 @@ private fun TugasPertama(context: Context, isi: IsiWidget?, barisJudul: Int) {
 /**
  * Angka = tugas yang masih harus dikerjakan (sama dengan ubin Aktif di beranda); seberapa
  * mendesak terlihat dari label dan chip tugas terdekat. Tata letak menurut ukuran: 1×1 = angka
- * di atas chip; tinggi = angka besar di atas; 2×1 = label dan angka satu baris, tugas di bawahnya;
+ * di atas chip; tinggi = angka sebesar ruangnya di atas; 2×1 = label dan angka satu baris, tugas di bawahnya;
  * lebih lebar = angka besar di kiri, chip di kanan, judul + keterangan selebar widget.
  */
 @Composable
@@ -326,12 +306,13 @@ private fun IsiTugas(context: Context, isi: IsiWidget?) {
                 }
             }
             ukuran.height >= TINGGI_ANGKA_BESAR -> {
-                Box(GlanceModifier.fillMaxWidth().defaultWeight().clickable(beranda), contentAlignment = Alignment.BottomEnd) {
-                    Column(GlanceModifier.fillMaxSize()) {
-                        LabelTugas(isi, duaBaris = false)
-                        Text(angka, style = gayaAngka)
-                    }
-                    StikerWidget(isi)
+                Column(GlanceModifier.fillMaxWidth().defaultWeight().clickable(beranda)) {
+                    LabelTugas(isi, duaBaris = false)
+                    val besar = ukuranAngkaTinggi(
+                        ukuran.width.value, ukuran.height.value, angka.length,
+                        skalaHuruf = context.resources.configuration.fontScale,
+                    )
+                    Text(angka, style = gayaAngka.copy(fontSize = besar.sp), maxLines = 1)
                 }
                 TugasPertama(context, isi, barisJudul = 2)
             }
@@ -373,7 +354,7 @@ private fun IsiTugas(context: Context, isi: IsiWidget?) {
 /**
  * Baris tugas sebanyak yang muat (tanpa baris terpotong), sisanya disebut "+N lagi" di kepala.
  * Kalau semua tugas muat dan masih ada ruang: baris rinci (mata kuliah + tanggal), lalu progres
- * minggu ini di bawah, lalu stiker di ruang yang masih kosong.
+ * minggu ini di bawah.
  */
 @Composable
 private fun IsiTerdekat(context: Context, isi: IsiWidget?) {
@@ -411,12 +392,9 @@ private fun IsiTerdekat(context: Context, isi: IsiWidget?) {
                 }
             }
         }
-        if (tata.stiker) {
-            Box(GlanceModifier.fillMaxWidth().defaultWeight(), contentAlignment = Alignment.Center) { StikerWidget(isi) }
-        }
         val progres = isi?.progres
         if (tata.progres && progres != null) {
-            if (!tata.stiker) Spacer(GlanceModifier.defaultWeight())
+            Spacer(GlanceModifier.defaultWeight())
             Column(GlanceModifier.fillMaxWidth().clickable(beranda)) {
                 Text("MINGGU INI · ${progres.selesai} DARI ${progres.total} SELESAI", style = g.label, maxLines = 1)
                 Spacer(GlanceModifier.height(5.dp))
