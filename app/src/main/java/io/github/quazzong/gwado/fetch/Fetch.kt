@@ -1,7 +1,9 @@
 package io.github.quazzong.gwado.fetch
 
 import android.util.Log
+import java.io.ByteArrayOutputStream
 import java.io.IOException
+import java.io.InputStream
 import java.net.HttpURLConnection
 import java.net.URL
 import kotlinx.serialization.SerializationException
@@ -51,8 +53,24 @@ fun bukaHttp(url: String, data: ByteArray?, headers: Map<String, String>): Jawab
     }
     val kode = k.responseCode
     val aliran = if (kode in 200..299) k.inputStream else k.errorStream
-    val badan = aliran?.use { it.readBytes().decodeToString() } ?: ""
+    val badan = aliran?.use { bacaTerbatas(it) } ?: ""
     return JawabanHttp(kode, badan)
+}
+
+/** Batas isi satu jawaban; yang lebih besar ditolak supaya memori HP tidak habis. */
+const val MAKS_JAWABAN = 20 * 1024 * 1024
+
+/** Baca aliran sebagai teks UTF-8; lebih dari [maks] byte → FetchError "lain" (tidak diulang). */
+internal fun bacaTerbatas(aliran: InputStream, maks: Int = MAKS_JAWABAN): String {
+    val keluar = ByteArrayOutputStream()
+    val penampung = ByteArray(64 * 1024)
+    while (true) {
+        val n = aliran.read(penampung)
+        if (n < 0) break
+        if (keluar.size() + n > maks) throw FetchError("lain", "jawaban lebih dari ${maks / (1024 * 1024)} MB")
+        keluar.write(penampung, 0, n)
+    }
+    return keluar.toByteArray().decodeToString()
 }
 
 /** Hanya objek atau daftar: parser kotlinx menerima teks tanpa kutip yang ditolak json.loads. */

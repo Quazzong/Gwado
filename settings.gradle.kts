@@ -24,3 +24,4 @@ dependencyResolutionManagement {
 
 rootProject.name = "Gwado"
 include(":app")
+include(":baselineprofile")

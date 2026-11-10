@@ -110,4 +110,19 @@ class MintaTest {
             assertEquals(badan, "jawaban bukan JSON", e.pesan)
         }
     }
+
+    @Test
+    fun jawabanDibacaSampaiBatas() {
+        val teks = "ä".repeat(70_000)                    // > penampung 64 KB, UTF-8 dua byte
+        assertEquals(teks, bacaTerbatas(teks.toByteArray().inputStream(), maks = 140_000))
+    }
+
+    @Test
+    fun jawabanMelebihiBatasDitolakTanpaUlang() {
+        val e = assertThrows(FetchError::class.java) {
+            bacaTerbatas(ByteArray(3 * 1024 * 1024).inputStream(), maks = 2 * 1024 * 1024)
+        }
+        assertEquals("lain", e.jenis)
+        assertEquals("jawaban lebih dari 2 MB", e.pesan)
+    }
 }

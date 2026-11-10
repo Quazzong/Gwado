@@ -180,9 +180,13 @@ internal fun pecahUrl(url: String): Pair<String, String?>? {
     return skema to host.lowercase().ifEmpty { null }
 }
 
-/** url kalau https ke salah satu domain sumber yang dikenal; selain itu null. */
+/**
+ * url kalau https ke salah satu domain sumber yang dikenal; selain itu null.
+ * URL berisi garis miring terbalik, spasi, atau karakter kontrol ditolak: browser membaca `\`
+ * sebagai `/`, jadi `https://lain.example\@brone.ub.ac.id/` dibuka di lain.example.
+ */
 fun linkSumber(url: String?, domain: Collection<String>): String? {
-    if (url == null) return null
+    if (url == null || url.any { it == '\\' || it <= ' ' || it == '\u007f' }) return null
     val (skema, host) = pecahUrl(url) ?: return null
     return if (skema == "https" && host != null && host in domain) url else null
 }

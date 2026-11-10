@@ -1,0 +1,4 @@
+# Varian pembuat Baseline Profile: nama kelas dan isi metode dibiarkan asli supaya profil yang
+# direkam memakai nama dari kode sumber. R8 memetakannya sendiri saat membuat APK rilis.
+-dontobfuscate
+-dontoptimize

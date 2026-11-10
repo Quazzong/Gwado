@@ -1,10 +1,20 @@
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.kotlin.serialization)
+    alias(libs.plugins.baselineprofile)
 }
 
 val versiSqlite = "2.7.1"  // sqlite, sqlite-bundled, dan .so test (GW6b) harus satu versi
+
+// Kunci rilis dibaca dari keystore.properties di root proyek (tidak masuk Git):
+// storeFile, storePassword, keyAlias, keyPassword. Kalau file itu tidak ada, APK rilis
+// dibuat tanpa tanda tangan.
+val kunciRilis = rootProject.file("keystore.properties").takeIf { it.exists() }?.let { berkas ->
+    Properties().apply { berkas.inputStream().use { load(it) } }
+}
 
 android {
     namespace = "io.github.quazzong.gwado"
@@ -22,8 +32,20 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
+    signingConfigs {
+        if (kunciRilis != null) {
+            create("rilis") {
+                storeFile = file(kunciRilis.getProperty("storeFile"))
+                storePassword = kunciRilis.getProperty("storePassword")
+                keyAlias = kunciRilis.getProperty("keyAlias")
+                keyPassword = kunciRilis.getProperty("keyPassword")
+            }
+        }
+    }
+
     buildTypes {
         release {
+            signingConfig = signingConfigs.findByName("rilis")
             optimization {
                 // Seluruh aplikasi dioptimalkan R8. Optimasi sebagian (packageScope) memindahkan
                 // sebagian kelas kotlin.collections keluar paketnya sehingga aplikasi crash saat dibuka.
@@ -57,6 +79,8 @@ dependencies {
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.work.runtime.ktx)
     implementation(libs.androidx.glance.appwidget)
+    implementation(libs.androidx.profileinstaller)
+    "baselineProfile"(project(":baselineprofile"))
     testImplementation(libs.junit)
     androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.compose.ui.test.junit4)
