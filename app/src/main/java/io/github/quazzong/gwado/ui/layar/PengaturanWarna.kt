@@ -197,7 +197,7 @@ private fun KueWarna(isi: Brush, label: String, aktif: Boolean, modifier: Modifi
                     relativeLineTo(4.5f * s, 4.5f * s)
                     relativeLineTo(8.5f * s, -10 * s)
                 }
-                drawPath(centang, w.garis, style = Stroke(3 * s, cap = StrokeCap.Round, join = StrokeJoin.Round))
+                drawPath(centang, w.diAtasAksen, style = Stroke(3 * s, cap = StrokeCap.Round, join = StrokeJoin.Round))
             }
         }
         Text(label, style = Huruf.meta.copy(fontSize = 11.sp), color = if (aktif) w.tinta else w.tintaRedup)
