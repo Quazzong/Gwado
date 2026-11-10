@@ -47,7 +47,10 @@ import io.github.quazzong.gwado.tampilan.Tekstur
 import io.github.quazzong.gwado.tampilan.tekstur
 import io.github.quazzong.gwado.tampilan.Tema
 import io.github.quazzong.gwado.tampilan.tema
+import io.github.quazzong.gwado.ui.tema.LocalPengaturWarna
 import io.github.quazzong.gwado.ui.tema.LocalPilihanTema
+import io.github.quazzong.gwado.ui.tema.PengaturWarna
+import io.github.quazzong.gwado.tampilan.pilihanWarna
 import io.github.quazzong.gwado.ui.layar.LayarLayanan
 import io.github.quazzong.gwado.ui.layar.LayarMasuk
 import io.github.quazzong.gwado.ui.layar.LayarSiapkan
@@ -84,6 +87,7 @@ class MainActivity : ComponentActivity() {
     private val matkul = mutableStateMapOf<String, String>()               // sumber → "N diikuti · M dilewati"
     private var tekstur by mutableStateOf(Tekstur.BAWAAN)
     private var tema by mutableStateOf(Tema.BAWAAN)
+    private val pengaturWarna by lazy { PengaturWarna(prefsGwado(this).pilihanWarna()) }
     private var lencanaLayanan by mutableStateOf(false)                    // ada layanan yang menolak login/izin
     private var tampilSiapkan by mutableStateOf(false)                     // layar Siapkan Gwado menggantikan tab
     private var bukaTugas by mutableStateOf<String?>(null)                 // detail yang diminta dari widget
@@ -107,8 +111,8 @@ class MainActivity : ComponentActivity() {
                 )
                 onDispose {}
             }
-            GwadoTema(gelap) {
-                CompositionLocalProvider(LocalTekstur provides tekstur, LocalPilihanTema provides tema) {
+            GwadoTema(gelap, pengaturWarna.palet) {
+                CompositionLocalProvider(LocalTekstur provides tekstur, LocalPilihanTema provides tema, LocalPengaturWarna provides pengaturWarna) {
                 Akar(
                     daftar = daftar,
                     versi = versiData,

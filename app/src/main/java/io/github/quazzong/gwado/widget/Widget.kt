@@ -12,7 +12,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.datastore.preferences.core.intPreferencesKey
+import androidx.glance.ColorFilter
 import androidx.glance.GlanceId
+import androidx.glance.Image
 import androidx.glance.GlanceModifier
 import androidx.glance.ImageProvider
 import androidx.glance.LocalSize
@@ -34,6 +36,7 @@ import androidx.glance.currentState
 import androidx.glance.layout.Alignment
 import androidx.glance.layout.Box
 import androidx.glance.layout.Column
+import androidx.glance.layout.ContentScale
 import androidx.glance.layout.ColumnScope
 import androidx.glance.layout.Row
 import androidx.glance.layout.Spacer
@@ -50,7 +53,11 @@ import io.github.quazzong.gwado.R
 import io.github.quazzong.gwado.beranda.progresMinggu
 import io.github.quazzong.gwado.db.Gudang
 import io.github.quazzong.gwado.layanan.prefsGwado
+import io.github.quazzong.gwado.tampilan.PERMEN_GELAP
+import io.github.quazzong.gwado.tampilan.PERMEN_TERANG
 import io.github.quazzong.gwado.tampilan.Tema
+import io.github.quazzong.gwado.tampilan.Token
+import io.github.quazzong.gwado.tampilan.pilihanWarna
 import io.github.quazzong.gwado.tampilan.tema
 import io.github.quazzong.gwado.tugas.daftarTugas
 import io.github.quazzong.gwado.ui.layar.suksesTerakhir
@@ -66,55 +73,41 @@ const val EKSTRA_TUGAS = "io.github.quazzong.gwado.TUGAS"
 /** Naik setiap kali data berubah, supaya widget yang sedang hidup membaca ulang database. */
 private val VERSI = intPreferencesKey("versi")
 
-/** Warna widget yang berbeda antara tema terang dan gelap. */
-private class Palet(val tinta: Long, val redup: Long, val garisHalus: Long, val ubin: Long, val merah: Long)
-
-private val PALET_TERANG = Palet(0xFF3A1D36, 0xFF7A5872, 0xFFF1E4EE, 0xFFF1ECFA, 0xFFC8303B)
-private val PALET_GELAP = Palet(0xFFF6E9F2, 0xFFC4ABBF, 0xFF3A2842, 0xFF33233B, 0xFFFF8A8F)
-
-private val AKSEN = ColorProvider(Color(0xFFF7A8D8))
 private val DI_ATAS_LEWAT = ColorProvider(Color(0xFF3A0F18))
 private val DI_ATAS_MEPET = ColorProvider(Color(0xFF3A2A00))
 
 /**
- * Warna, gaya teks, dan gambar widget untuk satu pilihan tema. [Tema.SISTEM] memakai warna
- * siang/malam dan gambar tanpa akhiran (dipilih launcher menurut mode gelap sistem); Terang dan
- * Gelap memakai warna dan gambar `_terang`/`_gelap` yang tetap, apa pun mode sistemnya.
+ * Warna dan gaya teks widget untuk satu pilihan tema dan palet (terang, gelap) pilihan pengguna.
+ * Kartu dan chip adalah bentuk putih yang diwarnai dari kode, jadi semua warna datang dari sini.
+ * [Tema.SISTEM] memakai warna siang/malam (di Android 11 ke bawah dipilih saat widget digambar);
+ * Terang dan Gelap memakai warna tetap.
  */
-private class GayaWidget(tema: Tema) {
+private class GayaWidget(tema: Tema, private val palet: Pair<Token, Token> = PERMEN_TERANG to PERMEN_GELAP) {
     private val gelap: Boolean? = when (tema) {
         Tema.SISTEM -> null
         Tema.TERANG -> false
         Tema.GELAP -> true
     }
 
-    private fun warna(pilih: (Palet) -> Long): GlanceColor = when (gelap) {
-        null -> ColorProvider(day = Color(pilih(PALET_TERANG)), night = Color(pilih(PALET_GELAP)))
-        false -> ColorProvider(Color(pilih(PALET_TERANG)))
-        true -> ColorProvider(Color(pilih(PALET_GELAP)))
+    private fun warna(k: String): GlanceColor = when (gelap) {
+        null -> ColorProvider(day = Color(palet.first.getValue(k)), night = Color(palet.second.getValue(k)))
+        false -> ColorProvider(Color(palet.first.getValue(k)))
+        true -> ColorProvider(Color(palet.second.getValue(k)))
     }
 
-    private fun gambar(sistem: Int, terang: Int, gelap: Int) = when (this.gelap) {
-        null -> sistem
-        false -> terang
-        true -> gelap
-    }
-
-    val tinta = warna { it.tinta }
-    val redup = warna { it.redup }
-    val garisHalus = warna { it.garisHalus }
-    val ubin = warna { it.ubin }
-    val merah = warna { it.merah }
+    val tinta = warna("tinta")
+    val redup = warna("tintaRedup")
+    val garisHalus = warna("garisHalus")
+    val ubin = warna("ubin")
+    val merah = warna("galat")
+    val kartuWarna = warna("kartu")
+    val garis = warna("garis")
+    val bayangan = warna("bayangan")
+    val aksen = warna("aksen")
 
     val label = TextStyle(color = redup, fontSize = 11.sp, fontWeight = FontWeight.Bold)
     val judul = TextStyle(color = tinta, fontSize = 13.sp, fontWeight = FontWeight.Bold)
     val kecil = TextStyle(color = redup, fontSize = 11.sp, fontWeight = FontWeight.Bold)
-
-    val kartu = gambar(R.drawable.widget_kartu, R.drawable.widget_kartu_terang, R.drawable.widget_kartu_gelap)
-    val chipLewat = gambar(R.drawable.widget_chip_lewat, R.drawable.widget_chip_lewat_terang, R.drawable.widget_chip_lewat_gelap)
-    val chipMepet = gambar(R.drawable.widget_chip_mepet, R.drawable.widget_chip_mepet_terang, R.drawable.widget_chip_mepet_gelap)
-    val chipNetral = gambar(R.drawable.widget_chip_netral, R.drawable.widget_chip_netral_terang, R.drawable.widget_chip_netral_gelap)
-    val chipPutus = gambar(R.drawable.widget_chip_putus, R.drawable.widget_chip_putus_terang, R.drawable.widget_chip_putus_gelap)
 }
 
 private val LocalGaya = staticCompositionLocalOf { GayaWidget(Tema.SISTEM) }
@@ -175,8 +168,8 @@ abstract class WidgetGwado : GlanceAppWidget() {
         provideContent {
             val versi = currentState(VERSI) ?: 0
             val isi by produceState(awal, versi) { value = muatIsi(context) }
-            // Tema dibaca ulang setiap versi naik: mengganti tema di Gwado ikut memperbarui widget.
-            val gaya = remember(versi) { GayaWidget(prefs.tema()) }
+            // Tema dan warna dibaca ulang setiap versi naik: menggantinya di Gwado ikut memperbarui widget.
+            val gaya = remember(versi) { GayaWidget(prefs.tema(), prefs.pilihanWarna().palet()) }
             CompositionLocalProvider(LocalGaya provides gaya) { Isi(context, isi) }
         }
     }
@@ -202,32 +195,56 @@ class PenerimaTerdekat : GlanceAppWidgetReceiver() {
     override val glanceAppWidget: GlanceAppWidget = WidgetTerdekat()
 }
 
-/** Kartu widget: garis + bayangan keras dari drawable (sudut bulat juga di Android lama). */
+/** Lapis bentuk putih yang diwarnai dari kode, mengisi seluruh induknya. */
+@Composable
+private fun Lapis(bentuk: Int, warna: GlanceColor) {
+    Image(
+        ImageProvider(bentuk), contentDescription = null, modifier = GlanceModifier.fillMaxSize(),
+        contentScale = ContentScale.FillBounds, colorFilter = ColorFilter.tint(warna),
+    )
+}
+
+/** Kartu widget: bayangan keras, garis, dan isi dari tiga lapis bentuk yang diwarnai dari kode. */
 @Composable
 private fun Kartu(isi: @Composable ColumnScope.() -> Unit) {
-    Column(
-        modifier = GlanceModifier.fillMaxSize()
-            .background(ImageProvider(LocalGaya.current.kartu))
-            .padding(start = 12.dp, top = 10.dp, end = 15.dp, bottom = 13.dp),
-        content = isi,
-    )
+    val g = LocalGaya.current
+    Box(GlanceModifier.fillMaxSize()) {
+        Lapis(R.drawable.widget_bentuk_bayangan, g.bayangan)
+        Lapis(R.drawable.widget_bentuk_garis, g.garis)
+        Lapis(R.drawable.widget_bentuk_isi, g.kartuWarna)
+        Column(
+            modifier = GlanceModifier.fillMaxSize().padding(start = 12.dp, top = 10.dp, end = 15.dp, bottom = 13.dp),
+            content = isi,
+        )
+    }
 }
 
 @Composable
 private fun ChipWidget(chip: Chip?) {
     val g = LocalGaya.current
-    val (latar, warnaTeks) = when (chip?.makna) {
-        null -> g.chipPutus to g.redup
-        Makna.LEWAT -> g.chipLewat to DI_ATAS_LEWAT
-        Makna.MEPET -> g.chipMepet to DI_ATAS_MEPET
-        Makna.NORMAL -> g.chipNetral to g.tinta
+    val warnaTeks = when (chip?.makna) {
+        null -> g.redup
+        Makna.LEWAT -> DI_ATAS_LEWAT
+        Makna.MEPET -> DI_ATAS_MEPET
+        Makna.NORMAL -> g.tinta
     }
-    Box(GlanceModifier.background(ImageProvider(latar)).padding(horizontal = 8.dp, vertical = 2.dp)) {
-        Text(
-            (chip?.label ?: "tanpa deadline").uppercase(),
-            style = TextStyle(color = warnaTeks, fontSize = 11.sp, fontWeight = FontWeight.Bold),
-            maxLines = 1,
-        )
+    // Chip berlapis: latar luar = garis (diwarnai dari kode; putus-putus untuk tanpa deadline),
+    // latar dalam = isi status tetap (lewat/mepet) atau warna kartu. Ukuran mengikuti teks.
+    val isiChip = when (chip?.makna) {
+        null -> GlanceModifier
+        Makna.LEWAT -> GlanceModifier.background(ImageProvider(R.drawable.widget_chip_isi_lewat))
+        Makna.MEPET -> GlanceModifier.background(ImageProvider(R.drawable.widget_chip_isi_mepet))
+        Makna.NORMAL -> GlanceModifier.background(ImageProvider(R.drawable.widget_chip_bentuk_isi), colorFilter = ColorFilter.tint(g.kartuWarna))
+    }
+    val garisChip = if (chip == null) R.drawable.widget_chip_bentuk_putus else R.drawable.widget_chip_bentuk_garis
+    Box(GlanceModifier.background(ImageProvider(garisChip), colorFilter = ColorFilter.tint(if (chip == null) g.redup else g.garis))) {
+        Box(isiChip.padding(horizontal = 8.dp, vertical = 2.dp)) {
+            Text(
+                (chip?.label ?: "tanpa deadline").uppercase(),
+                style = TextStyle(color = warnaTeks, fontSize = 11.sp, fontWeight = FontWeight.Bold),
+                maxLines = 1,
+            )
+        }
     }
 }
 
@@ -401,7 +418,7 @@ private fun IsiTerdekat(context: Context, isi: IsiWidget?) {
                 LinearProgressIndicator(
                     progress = progres.selesai.toFloat() / progres.total,
                     modifier = GlanceModifier.fillMaxWidth().height(8.dp),
-                    color = AKSEN,
+                    color = g.aksen,
                     backgroundColor = g.ubin,
                 )
             }

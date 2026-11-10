@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!-- Warna widget saat sistem dalam mode gelap. -->
-<resources>
-    <color name="widget_kartu">@color/widget_kartu_gelap</color>
-    <color name="widget_garis">@color/widget_garis_gelap</color>
-    <color name="widget_bayangan">@color/widget_bayangan_gelap</color>
-    <color name="widget_garis_halus">@color/widget_garis_halus_gelap</color>
-    <color name="widget_redup">@color/widget_redup_gelap</color>
-</resources>

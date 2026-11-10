@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Lapis isi chip widget (putih, diwarnai dari kode), 2dp di dalam lapis garis. -->
+<inset xmlns:android="http://schemas.android.com/apk/res/android" android:inset="2dp">
+    <shape android:shape="rectangle">
+        <corners android:radius="6dp" />
+        <solid android:color="#FFFFFFFF" />
+    </shape>
+</inset>

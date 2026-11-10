@@ -337,7 +337,7 @@ private fun SelTanggal(
     val isiKue = w.gradasiAksen()
     val warnaAngka = when {
         !diBulan -> w.luarBulan
-        terpilih -> Color(0xFF3A1D36)
+        terpilih -> w.diAtasAksen
         tanggal.dayOfWeek == DayOfWeek.SUNDAY -> w.minggu
         lewat -> w.tintaRedup
         else -> w.tinta

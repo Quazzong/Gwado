@@ -59,7 +59,7 @@ private fun ContohKomponen() = GwadoTema {
             padding = PaddingValues(0.dp),
             rataIsi = Alignment.Center,
         ) {
-            Text("4", style = Huruf.angkaUbin, color = Color(0xFF3A1D36))
+            Text("4", style = Huruf.angkaUbin, color = w.diAtasAksen)
         }
     }
 }

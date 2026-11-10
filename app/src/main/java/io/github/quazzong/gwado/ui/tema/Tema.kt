@@ -10,14 +10,34 @@ import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.ReadOnlyComposable
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.staticCompositionLocalOf
+import io.github.quazzong.gwado.tampilan.PilihanWarna
 import io.github.quazzong.gwado.tampilan.Tema
+import io.github.quazzong.gwado.tampilan.Token
 
 private val LokalWarna = staticCompositionLocalOf { WarnaTerang }
 private val LokalGelap = staticCompositionLocalOf { false }
 
 /** Pilihan tema pengguna (Ikut sistem/Terang/Gelap); disediakan MainActivity. */
 val LocalPilihanTema = staticCompositionLocalOf { Tema.BAWAAN }
+
+/**
+ * Pemegang pilihan warna yang sedang dipakai. Mengubah [pilihan] langsung mengganti warna seluruh
+ * aplikasi (live, misalnya selama slider digeser); menyimpannya urusan pemanggil.
+ */
+class PengaturWarna(awal: PilihanWarna) {
+    var pilihan by mutableStateOf(awal)
+    /** Palet (terang, gelap) dari [pilihan], dihitung ulang hanya saat pilihan berubah. */
+    val palet: Pair<Token, Token> by derivedStateOf { pilihan.palet() }
+}
+
+/** Pengatur warna aplikasi; disediakan MainActivity. */
+val LocalPengaturWarna = staticCompositionLocalOf { PengaturWarna(PilihanWarna()) }
 
 /** Pintu baca token: `GwadoTema.warna.aksen`. */
 object GwadoTema {
@@ -29,10 +49,19 @@ object GwadoTema {
         @Composable @ReadOnlyComposable get() = LokalGelap.current
 }
 
-/** Tema aplikasi: palet tetap terang atau gelap (bawaan ikut sistem). Warna juga dipetakan ke Material 3. */
+/**
+ * Tema aplikasi: [palet] (terang, gelap; bawaan Permen), versi terang atau gelap (bawaan ikut sistem).
+ * Warna juga dipetakan ke Material 3.
+ */
 @Composable
-fun GwadoTema(gelap: Boolean = isSystemInDarkTheme(), isi: @Composable () -> Unit) {
-    val warna = if (gelap) WarnaGelap else WarnaTerang
+fun GwadoTema(gelap: Boolean = isSystemInDarkTheme(), palet: Pair<Token, Token>? = null, isi: @Composable () -> Unit) {
+    val warna = remember(gelap, palet) {
+        when {
+            palet == null -> if (gelap) WarnaGelap else WarnaTerang
+            gelap -> warnaDari(palet.second, gelap = true)
+            else -> warnaDari(palet.first, gelap = false)
+        }
+    }
     CompositionLocalProvider(LokalWarna provides warna, LokalGelap provides gelap, LocalContentColor provides warna.tinta) {
         MaterialTheme(colorScheme = skemaM3(warna, gelap), typography = TipografiM3, content = isi)
     }

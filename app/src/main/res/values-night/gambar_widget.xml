@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!-- Gambar widget tanpa akhiran: launcher memilih versi terang/gelap menurut mode gelap sistem. -->
-<resources>
-    <item name="widget_kartu" type="drawable">@drawable/widget_kartu_gelap</item>
-    <item name="widget_chip_lewat" type="drawable">@drawable/widget_chip_lewat_gelap</item>
-    <item name="widget_chip_mepet" type="drawable">@drawable/widget_chip_mepet_gelap</item>
-    <item name="widget_chip_netral" type="drawable">@drawable/widget_chip_netral_gelap</item>
-    <item name="widget_chip_putus" type="drawable">@drawable/widget_chip_putus_gelap</item>
-</resources>

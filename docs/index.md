@@ -27,7 +27,7 @@ Tidak ada server dan tidak ada akun Gwado. Gwado mengambil tugas langsung dari H
 
 - Butuh Android 10 atau lebih baru.
 - Saat ini hanya untuk Brone dan Eling (Moodle Universitas Brawijaya) serta Google Classroom. Gwado bukan aplikasi resmi universitas maupun Google.
-- Izin Classroom masih dalam tahap pengujian di Google, jadi Google menampilkan peringatan aplikasi belum diverifikasi.
+- Izin Classroom masih dalam tahap pengujian di Google: akunmu harus didaftarkan dulu sebagai penguji (minta lewat [Issues](https://github.com/Quazzong/Gwado/issues)), dan Google menampilkan peringatan aplikasi belum diverifikasi.
 - Data hanya ada di satu HP. Kalau pindah HP atau aplikasi dihapus, tugas diambil ulang dari situs, tapi centang dan tugas yang ditambah sendiri tidak ikut.
 - Pengambilan otomatis tidak selalu tepat jam karena Android menghemat baterai.
 - Alarm tidak berdering saat mode Jangan Ganggu menyala.

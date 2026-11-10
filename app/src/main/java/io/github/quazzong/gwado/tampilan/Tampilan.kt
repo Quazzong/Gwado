@@ -64,3 +64,33 @@ fun SharedPreferences.tema(): Tema = Tema.dariKode(getString(KUNCI_TEMA, null))
 fun SharedPreferences.simpanTema(t: Tema) {
     edit().putString(KUNCI_TEMA, t.kode).apply()
 }
+
+private const val KUNCI_WARNA_MODE = "warna_mode"
+private const val KUNCI_WARNA_CONTOH = "warna_contoh"
+private const val KUNCI_WARNA_BEBAS = "warna_bebas"
+private const val KUNCI_WARNA_TERANG = "warna_lanjut_terang"
+private const val KUNCI_WARNA_GELAP = "warna_lanjut_gelap"
+
+/** Pilihan warna (DESAIN §2.3), di SharedPreferences seperti tema; nilai rusak → bawaan. */
+fun SharedPreferences.pilihanWarna(): PilihanWarna {
+    val bawaan = PilihanWarna()
+    val contoh = getString(KUNCI_WARNA_CONTOH, null)
+        ?.takeIf { k -> k == PilihanWarna.KODE_BEBAS || CONTOH_WARNA.any { it.kode == k } } ?: bawaan.contoh
+    return PilihanWarna(
+        mode = ModeWarna.entries.firstOrNull { it.kode == getString(KUNCI_WARNA_MODE, null) } ?: bawaan.mode,
+        contoh = contoh,
+        bebas = dariKodeLch(getString(KUNCI_WARNA_BEBAS, null)) ?: bawaan.bebas,
+        lanjutTerang = dariKodeKelompok(getString(KUNCI_WARNA_TERANG, null)),
+        lanjutGelap = dariKodeKelompok(getString(KUNCI_WARNA_GELAP, null)),
+    )
+}
+
+fun SharedPreferences.simpanPilihanWarna(p: PilihanWarna) {
+    edit()
+        .putString(KUNCI_WARNA_MODE, p.mode.kode)
+        .putString(KUNCI_WARNA_CONTOH, p.contoh)
+        .putString(KUNCI_WARNA_BEBAS, kodeLch(p.bebas))
+        .putString(KUNCI_WARNA_TERANG, kodeKelompok(p.lanjutTerang))
+        .putString(KUNCI_WARNA_GELAP, kodeKelompok(p.lanjutGelap))
+        .apply()
+}

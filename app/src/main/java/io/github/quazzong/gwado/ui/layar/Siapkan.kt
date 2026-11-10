@@ -288,7 +288,7 @@ private fun NomorKue(nomor: Int, selesai: Boolean) {
                     relativeLineTo(3.2f * s, 3.2f * s)
                     relativeLineTo(6 * s, -7 * s)
                 }
-                drawPath(centang, Color(0xFF3A1D36), style = Stroke(2.4f * s, cap = StrokeCap.Round, join = StrokeJoin.Round))
+                drawPath(centang, w.diAtasAksen, style = Stroke(2.4f * s, cap = StrokeCap.Round, join = StrokeJoin.Round))
             }
         }
         if (!selesai) {

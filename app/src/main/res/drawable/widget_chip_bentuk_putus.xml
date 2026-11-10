@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Garis putus-putus chip tanpa deadline (putih, diwarnai dari kode), tanpa isi. -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android" android:shape="rectangle">
+    <corners android:radius="8dp" />
+    <stroke android:width="2dp" android:color="#FFFFFFFF" android:dashWidth="4dp" android:dashGap="3dp" />
+</shape>

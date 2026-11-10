@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Lapis garis kartu widget (putih, diwarnai dari kode); lapis isi menutupinya kecuali tepi 2dp. -->
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:right="3dp" android:bottom="3dp">
+        <shape android:shape="rectangle">
+            <corners android:radius="18dp" />
+            <solid android:color="#FFFFFFFF" />
+        </shape>
+    </item>
+</layer-list>

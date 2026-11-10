@@ -38,7 +38,7 @@ fun LencanaKue(
 ) {
     val w = GwadoTema.warna
     val isi = w.gradasiAksen()
-    val warnaTeks = if (putus) w.tinta else Color(0xFF3A1D36)
+    val warnaTeks = if (putus) w.tinta else w.diAtasAksen
     Box(modifier.size(ukuran)) {
         Canvas(Modifier.fillMaxSize()) {
             val s = size.minDimension / 70f

@@ -208,7 +208,7 @@ fun RadioKue(pilih: Boolean, modifier: Modifier = Modifier, ukuran: Dp = 22.dp) 
                 relativeLineTo(3 * s, 3 * s)
                 relativeLineTo(5 * s, -6 * s)
             }
-            drawPath(centang, Color(0xFF3A1D36), style = Stroke(2.2f * s, cap = StrokeCap.Round, join = StrokeJoin.Round))
+            drawPath(centang, w.diAtasAksen, style = Stroke(2.2f * s, cap = StrokeCap.Round, join = StrokeJoin.Round))
         }
     }
 }

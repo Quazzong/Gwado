@@ -8,7 +8,6 @@ import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.StrokeJoin
@@ -71,7 +70,7 @@ fun IkonSelesai(modifier: Modifier = Modifier, ukuran: Dp = 26.dp) {
         }
         drawPath(
             centang,
-            Color(0xFF3A1D36),
+            w.diAtasAksen,
             style = Stroke(2.4f * s, cap = StrokeCap.Round, join = StrokeJoin.Round),
         )
     }

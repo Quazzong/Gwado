@@ -101,6 +101,7 @@ fun LayarPengaturan(onKembali: () -> Unit, onBerubah: () -> Unit) {
                 style = Huruf.meta,
                 color = w.tintaRedup,
             )
+            BagianWarna()
         }
     }
 }

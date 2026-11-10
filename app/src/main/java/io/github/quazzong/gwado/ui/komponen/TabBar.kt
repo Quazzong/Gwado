@@ -31,7 +31,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.drawscope.translate
 import androidx.compose.ui.graphics.graphicsLayer
@@ -122,7 +121,7 @@ private fun <T> SatuTab(t: ItemTab<T>, aktif: Boolean, onClick: () -> Unit, modi
             Icon(
                 painterResource(t.ikon),
                 contentDescription = null,
-                tint = if (aktif) Color(0xFF3A1D36) else w.tintaRedup,
+                tint = if (aktif) w.diAtasAksen else w.tintaRedup,
                 modifier = Modifier.size(21.dp).graphicsLayer {
                     translationY = -6.dp.toPx() * lompat.value
                     scaleX = 1f + 0.3f * lompat.value
