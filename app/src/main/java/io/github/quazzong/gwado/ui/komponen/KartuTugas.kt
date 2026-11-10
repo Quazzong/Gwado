@@ -1,5 +1,6 @@
 package io.github.quazzong.gwado.ui.komponen
 
+import androidx.compose.runtime.remember
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.Color
 import android.content.res.Configuration
@@ -59,17 +60,22 @@ fun KartuTugas(
     val meta = listOfNotNull(baris.sumber ?: "Manual", baris.matkul).joinToString(" · ")
 
     val bayangan = if (beres || tanpaDeadline) 0.dp else Jarak.bayangan
+    val terbang = LocalTerbang.current
+    val asal = remember { AsalKartu(baris) }
+    asal.baris = baris
+    asal.warna = latar
+    asal.bayangan = bayangan
     Kotak(
         // Posisi diam kartu dicatat untuk kartu terbang (sebelum geseran tekan di dalam Kotak).
         // polos = hanya isi (dipakai kartu terbang, yang menggambar bingkainya sendiri).
-        modifier = (if (polos) modifier else modifier.asalKartu(baris, latar, bayangan)).fillMaxWidth(),
+        modifier = (if (polos) modifier else modifier.asalKartu(asal)).fillMaxWidth(),
         latar = SolidColor(if (polos) Color.Transparent else latar),
         garis = if (polos) Color.Transparent else w.garis,
         putus = tanpaDeadline,
         kilau = if (tanpaDeadline || polos) null else Kilau.Cincin(w.kilau),
         bayangan = bayangan,
         warnaBayangan = if (polos) Color.Transparent else w.bayangan,
-        onClick = onClick,
+        onClick = onClick?.let { klik -> { if (!polos) asal.pilih(terbang); klik() } },
     ) {
         Row(
             Modifier.fillMaxWidth(),
@@ -79,7 +85,7 @@ fun KartuTugas(
             Column(Modifier.weight(1f)) {
                 Text(
                     baris.judul,
-                    modifier = (if (polos) Modifier else Modifier.judulKartu(baris.id))
+                    modifier = (if (polos) Modifier else Modifier.judulKartu(asal))
                         .graphicsLayer { alpha = if (sembunyikanJudul) 0f else 1f },
                     style = Huruf.judulKartu,
                     color = if (diSitus) w.tintaRedup else w.tinta,

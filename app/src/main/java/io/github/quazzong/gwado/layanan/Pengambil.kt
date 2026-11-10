@@ -55,7 +55,7 @@ val DAFTAR_LAYANAN = listOf(
 )
 
 /** Status layanan yang sudah tersambung tapi belum boleh diambil. */
-private const val TUNGGU_SEMESTER = "Tersambung. Tugas diambil setelah semester dikonfirmasi."
+private const val TUNGGU_SEMESTER = "Tersambung. Konfirmasi semester dulu."
 
 /** Gagal mendapat access token Google; pesannya aman ditampilkan. */
 private class GagalIzin(pesan: String) : Exception(pesan)
@@ -284,7 +284,7 @@ class Pengambil(private val activity: ComponentActivity, private val onBerubah: 
         val passport = UUID.randomUUID().toString()
         prefs.edit().putString("passport", passport).putString("login_sumber", l.id).apply()
         activity.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(alamatLogin(situs, passport))))
-        return "Menunggu login ${l.label} di browser… (kalau ditanya \"Buka dengan\", pilih Gwado)"
+        return "Menunggu login ${l.label}…"
     }
 
     /** Access token Google; layar izin hanya muncul kalau Google memintanya. */
@@ -352,13 +352,12 @@ class Pengambil(private val activity: ComponentActivity, private val onBerubah: 
     private fun teksTertahan(l: Layanan, t: HasilJob.Tertahan): String = when (t.sebab) {
         SebabTertahan.JENDELA_HINDARI -> {
             val (m, sl) = JENDELA_HINDARI.getValue(l.id)
-            "${l.label} sedang backup (%02d.00–%02d.00 WIB), situs tidak dihubungi. Coba lagi setelah %02d.00 WIB."
-                .format(m, sl, sl)
+            "${l.label} sedang backup. Coba lagi setelah %02d.00 WIB.".format(sl)
         }
         SebabTertahan.COOLDOWN -> {
             val detik = Duration.between(Instant.now(), t.bolehLagi ?: Instant.now()).seconds.coerceAtLeast(1)
             val sisa = if (detik < 60) "$detik detik" else "${detik / 60 + 1} menit"
-            "${l.label} baru saja diambil, situs tidak dihubungi. Coba lagi dalam $sisa."
+            "${l.label} baru saja diambil. Coba lagi dalam $sisa."
         }
     }
 }

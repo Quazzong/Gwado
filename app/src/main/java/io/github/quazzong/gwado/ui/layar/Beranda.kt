@@ -299,13 +299,13 @@ fun Beranda(
         when (kosong) {
             null -> Unit
             Kosong.BELUM_LAYANAN -> itemTab(key = "kosong") {
-                IsiKosong(Ekspresi.MELAMBAI, "Belum ada layanan tersambung", "Sambungkan Brone, Eling, atau Classroom supaya tugasmu muncul di sini.") {
+                IsiKosong(Ekspresi.MELAMBAI, "Belum ada layanan tersambung", "Sambungkan Brone, Eling, atau Classroom.") {
                     TombolPermen("Tambah layanan", onBukaLayanan, Modifier.padding(top = Jarak.s12))
                     TombolGaris("Tugas manual", onTambah, Modifier.padding(top = Jarak.s8))
                 }
             }
             Kosong.BELUM_TUGAS -> itemTab(key = "kosong") {
-                IsiKosong(Ekspresi.SANTAI, "Belum ada tugas", "Tarik ke bawah untuk mengambil tugas dari situs kuliah, atau catat tugas dari grup kelas sendiri.") {
+                IsiKosong(Ekspresi.SANTAI, "Belum ada tugas", "Tarik ke bawah untuk mengambil, atau catat tugas sendiri.") {
                     TombolPermen(if (menyegarkan) "Mengambil…" else "Ambil sekarang", onSegarkan, Modifier.padding(top = Jarak.s12))
                     TombolGaris("Tugas manual", onTambah, Modifier.padding(top = Jarak.s8))
                 }
@@ -317,7 +317,7 @@ fun Beranda(
                     IsiKosong(
                         Ekspresi.BERSORAK,
                         if (aktif == null) "Semua tugas beres" else "Semua tugas ${singkat(aktif)} beres",
-                        "Tidak ada tugas aktif. Yang sudah selesai tetap bisa dilihat di bawah.",
+                        "Tidak ada tugas aktif.",
                         rayakan = rayakan,
                     )
                 }
@@ -491,7 +491,7 @@ private fun KotakDitahan(ditahan: Map<String, Tahan>) {
                 val teks = when (t.sebab) {
                     SebabTertahan.JENDELA_HINDARI -> {
                         val j = t.sampai.atOffset(WIB)
-                        "${l.label} sedang backup, jadi tidak dihubungi sampai %02d.%02d WIB.".format(j.hour, j.minute)
+                        "${l.label} sedang backup sampai %02d.%02d WIB.".format(j.hour, j.minute)
                     }
                     SebabTertahan.COOLDOWN -> {
                         val detik = Duration.between(kini, t.sampai).seconds.coerceAtLeast(1)
@@ -501,7 +501,6 @@ private fun KotakDitahan(ditahan: Map<String, Tahan>) {
                 }
                 Text(teks, style = Huruf.isi.copy(fontSize = 13.sp), color = w.tinta)
             }
-            Text("Tugas lama tetap aman di HP.", style = Huruf.meta, color = w.tintaRedup)
         }
       }
     }

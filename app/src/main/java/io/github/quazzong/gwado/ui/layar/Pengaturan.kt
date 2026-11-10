@@ -85,22 +85,8 @@ fun LayarPengaturan(onKembali: () -> Unit, onBerubah: () -> Unit) {
                     for (t in Tekstur.entries) UbinTekstur(t, t == dipilih, { pilih(t) }, Modifier.weight(1f))
                 }
             }
-            Text(
-                "Tekstur hanya tampil di latar layar, tidak di belakang teks kartu.",
-                style = Huruf.meta,
-                color = w.tintaRedup,
-            )
             Text("TEMA", style = Huruf.label, color = w.tintaRedup, modifier = Modifier.padding(top = Jarak.s8))
             Segmen(Tema.entries.map { it to it.label }, temaDipilih, pilihTema)
-            Text(
-                when (temaDipilih) {
-                    Tema.SISTEM -> "Gwado dan widgetnya terang atau gelap mengikuti pengaturan tampilan HP."
-                    Tema.TERANG -> "Gwado dan widgetnya selalu terang, apa pun pengaturan HP."
-                    Tema.GELAP -> "Gwado dan widgetnya selalu gelap, apa pun pengaturan HP."
-                },
-                style = Huruf.meta,
-                color = w.tintaRedup,
-            )
             BagianWarna()
         }
     }

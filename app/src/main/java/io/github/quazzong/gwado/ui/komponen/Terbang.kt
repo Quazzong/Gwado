@@ -75,34 +75,37 @@ class Terbang(internal val cakupan: CoroutineScope) {
     internal var baris: BarisTugas? = null
     internal var warnaKartu: Color = Color.White
     internal var bayanganKartu: Dp = Jarak.bayangan
-    internal val letakKartu = mutableMapOf<String, LayoutCoordinates>()
-    internal val letakJudul = mutableMapOf<String, LayoutCoordinates>()
-    internal val barisKartu = mutableMapOf<String, BarisTugas>()
+    // Kartu yang terakhir diketuk. Tugas yang sama bisa tampil di dua tab sekaligus (tab yang
+    // tersembunyi tetap tersusun), jadi asal terbang = kartu yang diketuk, bukan kartu terakhir ditata.
+    internal var asal: AsalKartu? = null
     private var nomor = 0
 
-    // --- posisi item daftar (untuk terbelah) ---
-    internal val letak = mutableMapOf<Any, LayoutCoordinates>()
-    internal val tengah = mutableMapOf<Any, Float>()
+    // --- titik tengah kartu yang diketuk (untuk terbelah) ---
+    private var tengah: Float? = null
 
-    internal fun tengahDari(kunci: Any): Float? {
-        val c = letak[kunci]?.takeIf { it.isAttached } ?: return tengah[kunci]
-        return (c.positionInRoot().y + c.size.height / 2f).also { tengah[kunci] = it }
+    internal fun tengahAsal(): Float? {
+        val c = asal?.kartu?.takeIf { it.isAttached } ?: return tengah
+        return (c.positionInRoot().y + c.size.height / 2f).also { tengah = it }
     }
 
     /** Dipanggil saat kartu diketuk (sebelum detail dibuka): catat posisi diam kartu itu. */
     fun siapkan(idTugas: String) {
-        val c = letakKartu[idTugas]?.takeIf { it.isAttached }
-        val j = letakJudul[idTugas]?.takeIf { it.isAttached }
-        if (c == null || j == null) {
+        val a = asal?.takeIf { it.baris.id == idTugas }
+        val c = a?.kartu?.takeIf { it.isAttached }
+        val j = a?.judul?.takeIf { it.isAttached }
+        if (a == null || c == null || j == null) {
             id = null
             return
         }
         id = idTugas
         kartu = Bidang(c.boundsInRoot(), j.boundsInRoot())
         kepala = null
-        baris = barisKartu[idTugas]
+        baris = a.baris
+        warnaKartu = a.warna
+        bayanganKartu = a.bayangan
         tahanKepala = true
-        tengahDari(idTugas)
+        tengah = null
+        tengahAsal()
         // Pengaman: kalau kepala detail tidak pernah tertata (misalnya detail gagal dimuat), tampilkan biasa.
         cakupan.launch {
             delay(800)
@@ -143,8 +146,8 @@ class Terbang(internal val cakupan: CoroutineScope) {
         cakupan.launch {
             // Tunggu daftar tersusun lagi, lalu pakai posisi kartu yang sekarang (posisi diam).
             withFrameNanos { }
-            letakKartu[idTugas]?.takeIf { it.isAttached }?.let { c ->
-                val j = letakJudul[idTugas]?.takeIf { it.isAttached }
+            asal?.takeIf { it.baris.id == idTugas }?.kartu?.takeIf { it.isAttached }?.let { c ->
+                val j = asal?.judul?.takeIf { it.isAttached }
                 kartu = Bidang(c.boundsInRoot(), j?.boundsInRoot() ?: kartu!!.judul)
             }
             p.animateTo(0f, gtween(Gerak.TUTUP, 40, Gerak.Mulus))
@@ -218,28 +221,30 @@ class Terbang(internal val cakupan: CoroutineScope) {
 
 val LocalTerbang = staticCompositionLocalOf<Terbang?> { null }
 
+/** Letak satu kartu tugas di daftar dan judulnya; diserahkan ke [Terbang] saat kartu diketuk. */
+internal class AsalKartu(var baris: BarisTugas) {
+    var kartu: LayoutCoordinates? = null
+    var judul: LayoutCoordinates? = null
+    var warna: Color = Color.White
+    var bayangan: Dp = Jarak.bayangan
+
+    /** Jadikan kartu ini asal terbang (dipanggil sebelum detail dibuka). */
+    fun pilih(t: Terbang?) {
+        t?.asal = this
+    }
+}
+
 /** Kartu tugas di daftar: catat posisinya (posisi diam, sebelum geseran tekan) dan sembunyikan saat terbang. */
 @Composable
-internal fun Modifier.asalKartu(baris: BarisTugas, warna: Color, bayangan: Dp): Modifier {
+internal fun Modifier.asalKartu(asal: AsalKartu): Modifier {
     val t = LocalTerbang.current ?: return this
-    t.barisKartu[baris.id] = baris
     return this
-        .onPlaced { c ->
-            t.letakKartu[baris.id] = c
-            if (t.id == baris.id) {
-                t.warnaKartu = warna
-                t.bayanganKartu = bayangan
-            }
-        }
-        .graphicsLayer { alpha = if (t.aktif && t.id == baris.id) 0f else 1f }
+        .onPlaced { asal.kartu = it }
+        .graphicsLayer { alpha = if (t.aktif && t.asal === asal) 0f else 1f }
 }
 
 /** Judul kartu tugas: catat posisinya untuk judul yang ikut terbang. */
-@Composable
-internal fun Modifier.judulKartu(id: String): Modifier {
-    val t = LocalTerbang.current ?: return this
-    return onPlaced { t.letakJudul[id] = it }
-}
+internal fun Modifier.judulKartu(asal: AsalKartu): Modifier = onPlaced { asal.judul = it }
 
 /** Letak kepala detail dan judulnya; penerbangan mulai begitu keduanya sudah tertata. */
 class LetakKepala {

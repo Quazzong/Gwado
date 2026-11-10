@@ -167,12 +167,6 @@ private fun BagianSimpel(p: PilihanWarna, ganti: (PilihanWarna, Boolean) -> Unit
             }
         }
     }
-    Text(
-        "Gwado mengatur terang-gelapnya sendiri, jadi tulisan tetap mudah dibaca di tema terang maupun gelap. " +
-            "Warna tanda (lewat, mepet, layanan) tidak ikut berubah.",
-        style = Huruf.meta,
-        color = w.tintaRedup,
-    )
 }
 
 /** Contoh warna berbentuk kue; terpilih = bayangan lebih tebal + centang. */
@@ -313,11 +307,6 @@ private fun BagianLanjutan(p: PilihanWarna, ganti: (PilihanWarna, Boolean) -> Un
             }
         }
     }
-    Text(
-        "Warna lain (ubin, garis tipis, gradasi strip) dihitung dari tujuh warna ini. Kontras di bawah 4,5 : 1 tetap boleh disimpan.",
-        style = Huruf.meta,
-        color = w.tintaRedup,
-    )
     val namaTema = if (gelap) "tema gelap" else "tema terang"
     if ((if (gelap) p.lanjutGelap else p.lanjutTerang).isNotEmpty()) {
         TombolGaris("Atur ulang $namaTema", { tanyaAturUlang = true }, Modifier.fillMaxWidth())
@@ -330,8 +319,7 @@ private fun BagianLanjutan(p: PilihanWarna, ganti: (PilihanWarna, Boolean) -> Un
             title = { Text("Atur ulang $namaTema?", style = Huruf.judulBagian) },
             text = {
                 Text(
-                    "Tujuh warna $namaTema kembali ke hasil mode Simpel. Warna yang sudah kamu atur di $namaTema hilang; " +
-                        "tema yang satunya tidak berubah.",
+                    "Warna $namaTema kembali ke hasil Simpel. Tema satunya tidak berubah.",
                     style = Huruf.isi,
                 )
             },

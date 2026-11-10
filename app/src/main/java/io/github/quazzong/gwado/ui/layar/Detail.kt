@@ -262,7 +262,7 @@ fun LayarDetail(id: String, onKembali: () -> Unit, onBerubah: () -> Unit, onUbah
                 ) {
                     Box(Modifier.graphicsLayer { alpha = if (tertutup && dariKartu) 0f else 1f }) { HeaderDetail(t, sekarang) }
                     if (t.statusSitus == "hilang") {
-                        Pita("Tugas ini sudah tidak ada di situs. Data terakhir tetap disimpan di HP.", Modifier.isiLayar(2))
+                        Pita("Tugas ini sudah tidak ada di situs.", Modifier.isiLayar(2))
                     }
                     Box(Modifier.isiLayar(2)) { PanelInfo(t) }
                     t.deskripsi?.takeIf { it.isNotBlank() }?.let { Box(Modifier.isiLayar(3)) { Deskripsi(it) } }
@@ -326,7 +326,7 @@ private fun HapusDialog(
         AlertDialog(
             onDismissRequest = onTutup,
             title = { Text("Hapus tugas ini?", style = Huruf.judulBagian) },
-            text = { Text("Tugas, catatan, dan riwayatnya dihapus permanen dari HP.", style = Huruf.isi) },
+            text = { Text("Tugas ini dihapus permanen.", style = Huruf.isi) },
             confirmButton = { TextButton(onHapus, colors = ButtonDefaults.textButtonColors(contentColor = w.galat)) { Text("Hapus") } },
             dismissButton = { TextButton(onTutup, colors = warna) { Text("Batal") } },
         )

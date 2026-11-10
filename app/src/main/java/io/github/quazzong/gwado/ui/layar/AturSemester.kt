@@ -39,7 +39,6 @@ import io.github.quazzong.gwado.semester.simpanSemester
 import io.github.quazzong.gwado.semester.tanggalWib
 import io.github.quazzong.gwado.semester.tebakSemester
 import io.github.quazzong.gwado.ui.komponen.IsianTeks
-import io.github.quazzong.gwado.ui.komponen.KotakInfo
 import io.github.quazzong.gwado.ui.komponen.LabelIsian
 import io.github.quazzong.gwado.ui.komponen.Pemilih
 import io.github.quazzong.gwado.ui.komponen.PesanGalat
@@ -141,21 +140,15 @@ fun LayarSemester(onKembali: () -> Unit, onTersimpan: () -> Unit) {
                 verticalArrangement = Arrangement.spacedBy(Jarak.s16),
             ) {
                 StripSub("Semester", kiri = { TombolPlumIkon(R.drawable.ikon_kembali, "Kembali", onKembali) })
-                Text(
-                    "Hanya tugas dari mata kuliah semester ini yang ditampilkan. Tiap layanan punya cara sendiri " +
-                        "untuk mengenali semester, jadi ketiga isian ini dipakai bersama.",
-                    style = Huruf.meta,
-                    color = w.tintaRedup,
-                )
                 Column {
                     LabelIsian("Label semester")
                     IsianTeks(label, { label = it; galat = null }, petunjuk = "Ganjil 2026/2027", satuBaris = true)
-                    Keterangan("Sama dengan kategori kelas di Brone.")
+                    Keterangan("Kategori kelas di Brone.")
                 }
                 Column {
                     LabelIsian("Kode semester")
                     IsianTeks(kode, { kode = it; galat = null }, petunjuk = "20261", satuBaris = true)
-                    Keterangan("Ada di nama singkat kelas Eling.")
+                    Keterangan("Dari nama singkat kelas Eling.")
                 }
                 Column {
                     LabelIsian("Mulai semester")
@@ -165,7 +158,7 @@ fun LayarSemester(onKembali: () -> Unit, onTersimpan: () -> Unit) {
                         R.drawable.ikon_kalender,
                         redup = mulai == null,
                     )
-                    Keterangan("Kelas Classroom yang dibuat sejak tanggal ini diikuti.")
+                    Keterangan("Kelas Classroom sejak tanggal ini.")
                 }
                 Column {
                     LabelIsian("Kuliah pertama", opsional = true)
@@ -179,16 +172,9 @@ fun LayarSemester(onKembali: () -> Unit, onTersimpan: () -> Unit) {
                         )
                         if (kuliah != null) TombolGaris("Kosongkan", { kuliah = null })
                     }
-                    val belumMulai = kuliah?.let { LocalDate.parse(it) > tanggalWib(Instant.now()) } == true
-                    Keterangan(
-                        if (belumMulai) "Tanggal ini belum lewat, jadi MINGGU KE-n baru tampil di beranda mulai tanggal ini."
-                        else "Minggu (Senin–Minggu) yang memuat tanggal ini dihitung MINGGU KE-1 di beranda.",
-                    )
+                    Keterangan("Awal hitungan MINGGU KE-n.")
                 }
-                KotakInfo(
-                    "Semester baru berlaku mulai Ambil berikutnya. Tugas dari mata kuliah semester lain " +
-                        "disembunyikan, tidak dihapus.",
-                )
+                Keterangan("Berlaku mulai Ambil berikutnya. Tugas lama tidak dihapus.")
                 galat?.let { PesanGalat(it) }
             }
             Row(Modifier.fillMaxWidth().padding(Jarak.tepiLayar)) {

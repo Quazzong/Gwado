@@ -55,7 +55,6 @@ import io.github.quazzong.gwado.tugas.pilihanMatkul
 import io.github.quazzong.gwado.tugas.tambahManual
 import io.github.quazzong.gwado.tugas.ubahManual
 import io.github.quazzong.gwado.ui.komponen.IsianTeks
-import io.github.quazzong.gwado.ui.komponen.KotakInfo
 import io.github.quazzong.gwado.ui.komponen.LabelIsian
 import io.github.quazzong.gwado.ui.komponen.LembarBawah
 import io.github.quazzong.gwado.ui.komponen.Pemilih
@@ -224,9 +223,7 @@ fun LayarFormulir(id: String?, onKembali: () -> Unit, onTersimpan: () -> Unit) {
                         LabelIsian("Deadline", Modifier.padding(top = 6.dp))
                         Sakelar(tanpa, { tanpa = it }, "Tanpa deadline")
                     }
-                    if (tanpa) {
-                        KotakInfo("Tugas tampil paling bawah dengan tanda Tanpa deadline.")
-                    } else {
+                    if (!tanpa) {
                         Row(horizontalArrangement = Arrangement.spacedBy(Jarak.s8)) {
                             Pemilih(labelTanggal(deadlineMs), { pilihTanggal = true }, R.drawable.ikon_kalender, Modifier.weight(1.5f))
                             Pemilih(labelJam(deadlineMs), { pilihJam = true }, R.drawable.ikon_jam, Modifier.weight(1f))

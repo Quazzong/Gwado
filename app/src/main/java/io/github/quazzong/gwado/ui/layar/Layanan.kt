@@ -49,8 +49,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import io.github.quazzong.gwado.R
-import io.github.quazzong.gwado.fetch.JENDELA_HINDARI
-import io.github.quazzong.gwado.layanan.DAFTAR_LAYANAN
 import io.github.quazzong.gwado.layanan.InfoLayanan
 import io.github.quazzong.gwado.layanan.Layanan
 import io.github.quazzong.gwado.layanan.Pengambil
@@ -153,11 +151,6 @@ fun LayarLayanan(
     var izinGoogle by remember { mutableStateOf<Layanan?>(null) }
     var dimatikan by remember { mutableStateOf<Layanan?>(null) }
     val status = daftar?.let { d -> statusSumber(d.map { it.baris }, sekarang) }.orEmpty()
-    val keterangan = listOf("Ambil manual bisa diulang setiap 1 menit.") + DAFTAR_LAYANAN.mapNotNull { l ->
-        JENDELA_HINDARI[l.id]?.let { (m, s) ->
-            "${l.label} tidak dihubungi pukul %02d.00 sampai %02d.00 karena situsnya sedang backup.".format(m, s)
-        }
-    }
 
     LazyColumn(
         modifier.fillMaxSize(),
@@ -217,7 +210,6 @@ fun LayarLayanan(
                 if (pengambil.pesan.isNotEmpty()) {
                     Text(pengambil.pesan, style = Huruf.meta.copy(fontWeight = FontWeight.W800), color = w.tinta)
                 }
-                Text(keterangan.joinToString(" "), style = Huruf.meta, color = w.tintaRedup)
             }
         }
     }
@@ -475,9 +467,7 @@ internal fun DialogIzinGoogle(onLanjut: () -> Unit, onTutup: () -> Unit) {
         title = { Text("Izin Google Classroom", style = Huruf.judulBagian) },
         text = {
             Text(
-                "Google akan memperingatkan bahwa Gwado belum diverifikasi. Itu wajar selama Gwado masih " +
-                    "tahap uji: pilih lanjutkan, lalu izinkan Gwado membaca kelas dan tugas Classroom-mu. " +
-                    "Gwado hanya membaca, tidak bisa mengubah apa pun.",
+                "Google akan bilang Gwado belum diverifikasi. Pilih Lanjutkan. Gwado hanya membaca kelas dan tugas.",
                 style = Huruf.isi,
             )
         },
@@ -496,8 +486,7 @@ private fun DialogMatikan(l: Layanan, onMatikan: () -> Unit, onTutup: () -> Unit
         title = { Text("Matikan ${l.label}?", style = Huruf.judulBagian) },
         text = {
             Text(
-                "$awal dan ${l.label} tidak diambil lagi. Tugas yang sudah diambil tetap ada. " +
-                    "Sambungkan lagi kapan saja lewat Tambah layanan.",
+                "$awal. Tugas yang sudah diambil tetap ada.",
                 style = Huruf.isi,
             )
         },

@@ -33,6 +33,7 @@ import androidx.compose.ui.layout.layout
 import kotlinx.coroutines.launch
 import androidx.compose.ui.layout.onPlaced
 import androidx.compose.ui.layout.LayoutCoordinates
+import androidx.compose.ui.layout.positionInRoot
 import androidx.compose.ui.layout.boundsInRoot
 import androidx.compose.runtime.withFrameNanos
 import androidx.compose.ui.platform.LocalDensity
@@ -286,12 +287,15 @@ fun Modifier.terbelah(kunci: Any): Modifier {
     val t = LocalTerbang.current ?: return this
     val av = lingkupLayar() ?: return this
     val px = LocalDensity.current.density
-    DisposableEffect(t, kunci) { onDispose { t.letak.remove(kunci) } }
-    val catat = this.onPlaced { t.letak[kunci] = it }
+    // Letak item ini sendiri: kunci yang sama bisa dipakai item di tab lain yang tetap tersusun.
+    val letak = remember { arrayOfNulls<LayoutCoordinates>(1) }
+    val tengah = remember { floatArrayOf(Float.NaN) }
+    val catat = this.onPlaced { letak[0] = it }
     if (kunci == t.id) return catat
     fun jarak(): Pair<Float, Int> {
-        val dari = t.id?.let { t.tengahDari(it) } ?: return 0f to 0
-        val aku = t.tengahDari(kunci) ?: return 0f to 0
+        val dari = t.id?.let { t.tengahAsal() } ?: return 0f to 0
+        letak[0]?.takeIf { it.isAttached }?.let { tengah[0] = it.positionInRoot().y + it.size.height / 2f }
+        val aku = tengah[0].takeIf { !it.isNaN() } ?: return 0f to 0
         val d = aku - dari
         val jauh = (abs(d) / (80 * px)).roundToInt().coerceIn(1, 3)
         return sign(d) * (14f + 6f * jauh) to jauh

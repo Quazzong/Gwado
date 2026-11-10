@@ -38,7 +38,6 @@ import io.github.quazzong.gwado.semester.daftarMatkul
 import io.github.quazzong.gwado.semester.semesterTersimpan
 import io.github.quazzong.gwado.ui.komponen.Chip
 import io.github.quazzong.gwado.ui.komponen.JenisChip
-import io.github.quazzong.gwado.ui.komponen.KotakInfo
 import io.github.quazzong.gwado.ui.komponen.Kotak
 import io.github.quazzong.gwado.ui.komponen.Segmen
 import io.github.quazzong.gwado.ui.komponen.StripSub
@@ -142,19 +141,12 @@ fun LayarMatkul(sumber: String, onKembali: () -> Unit) {
             when {
                 d == null -> Unit
                 d.isEmpty() -> Text(
-                    "Belum ada mata kuliah. Ambil $label dulu supaya daftar kelasnya terbaca.",
+                    "Belum ada mata kuliah. Ambil $label dulu.",
                     style = Huruf.isi,
                     color = w.tintaRedup,
                 )
                 else -> {
-                    Text(
-                        listOfNotNull(
-                            aturan(sumber, semester),
-                            "Ketuk mata kuliah untuk mengikuti atau mengabaikannya secara manual.",
-                        ).joinToString(" "),
-                        style = Huruf.meta,
-                        color = w.tintaRedup,
-                    )
+                    aturan(sumber, semester)?.let { Text(it, style = Huruf.meta, color = w.tintaRedup) }
                     Kotak(Modifier.fillMaxWidth(), padding = PaddingValues(horizontal = 12.dp, vertical = 2.dp)) {
                         Column {
                             d.forEachIndexed { i, m ->
@@ -168,10 +160,7 @@ fun LayarMatkul(sumber: String, onKembali: () -> Unit) {
                             }
                         }
                     }
-                    KotakInfo(
-                        "Perubahan berlaku saat pengambilan berikutnya. Tugas dari mata kuliah yang dilewati " +
-                            "disembunyikan, tidak dihapus.",
-                    )
+                    Text("Berlaku mulai Ambil berikutnya.", style = Huruf.meta, color = w.tintaRedup)
                 }
             }
         }

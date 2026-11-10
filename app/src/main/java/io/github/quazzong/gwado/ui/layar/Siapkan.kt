@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
@@ -134,13 +135,15 @@ fun LayarSiapkan(
                 NomorKue(1, selesai = tersambung.isNotEmpty())
                 Column(Modifier.weight(1f)) {
                     Text("Layanan", style = Huruf.judulKartu, color = w.tinta)
-                    Text(
-                        if (tersambung.isEmpty()) "Sambungkan situs tempat dosen memberi tugas."
-                        else "Tambah lagi kapan saja dari tab Layanan.",
-                        style = Huruf.meta,
-                        color = w.tintaRedup,
-                        modifier = Modifier.padding(top = 2.dp, bottom = 8.dp),
-                    )
+                    if (tersambung.isEmpty()) {
+                        Text(
+                            "Sambungkan situs tempat dosen memberi tugas.",
+                            style = Huruf.meta,
+                            color = w.tintaRedup,
+                            modifier = Modifier.padding(top = 2.dp),
+                        )
+                    }
+                    Spacer(Modifier.height(8.dp))
                     tersambung.forEachIndexed { i, info ->
                         if (i > 0) Box(Modifier.fillMaxWidth().height(Jarak.garis).background(w.garisHalus))
                         Row(
@@ -176,8 +179,7 @@ fun LayarSiapkan(
                         val tebakan = remember { tebakSemester(tanggalWib(Instant.now())) }
                         Text(
                             "Tebakan Gwado: ${tebakan["semester_label"]}, kode ${tebakan["semester_kode"]}, " +
-                                "mulai ${tanggalLengkap(LocalDate.parse(tebakan.getValue("semester_mulai")))}. " +
-                                "Hanya tugas dari mata kuliah semester ini yang ditampilkan.",
+                                "mulai ${tanggalLengkap(LocalDate.parse(tebakan.getValue("semester_mulai")))}.",
                             style = Huruf.meta,
                             color = w.tintaRedup,
                             modifier = Modifier.padding(top = 2.dp, bottom = 8.dp),
@@ -200,7 +202,7 @@ fun LayarSiapkan(
         }, Modifier.fillMaxWidth())
         kurang?.let { PesanGalat(it) }
         Text(
-            "Password tidak pernah disimpan. Data tugas dan token hanya ada di HP ini.",
+            "Password tidak pernah disimpan. Data hanya ada di HP ini.",
             style = Huruf.meta,
             color = w.tintaRedup,
         )
@@ -320,7 +322,7 @@ private fun LayarTunggu() {
             modifier = Modifier.padding(top = 14.dp),
         )
         Text(
-            "Ini hanya sekali dan butuh sekitar satu menit. Setelah itu tarik beranda ke bawah untuk mengambil lagi.",
+            "Sekitar satu menit, hanya sekali ini.",
             style = Huruf.meta,
             color = w.tintaRedup,
             textAlign = TextAlign.Center,

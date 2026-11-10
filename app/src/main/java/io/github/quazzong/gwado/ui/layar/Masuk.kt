@@ -81,8 +81,7 @@ fun LayarMasuk(pengambil: Pengambil, id: String, onKembali: () -> Unit) {
                 Column {
                     Text("Browser akan membuka halaman login ${l.label}", style = Huruf.judulKartu, color = w.tinta)
                     Text(
-                        "Setelah login berhasil, HP mungkin bertanya aplikasi mana yang membuka tautannya. " +
-                            "Pilih Gwado, bukan Moodle.",
+                        "Kalau HP bertanya, pilih Gwado.",
                         style = Huruf.meta,
                         color = w.tintaRedup,
                         modifier = Modifier.padding(top = 4.dp),
@@ -112,8 +111,7 @@ fun LayarMasuk(pengambil: Pengambil, id: String, onKembali: () -> Unit) {
                 Kotak(Modifier.fillMaxWidth(), putus = true, kilau = null, bayangan = 0.dp) {
                     Column(verticalArrangement = Arrangement.spacedBy(Jarak.s8)) {
                         Text(
-                            "Kalau HP langsung membuka aplikasi Moodle, salin alamat yang diawali moodlemobile:// " +
-                                "lalu tempel di sini. Tekan Buka halaman login dulu kalau belum.",
+                            "Salin alamat moodlemobile:// yang terbuka di aplikasi Moodle, lalu tempel di sini.",
                             style = Huruf.meta,
                             color = w.tintaRedup,
                         )
@@ -127,7 +125,7 @@ fun LayarMasuk(pengambil: Pengambil, id: String, onKembali: () -> Unit) {
                     }
                 }
             }
-            Text("Password tidak pernah disimpan. Token login hanya ada di HP ini.", style = Huruf.meta, color = w.tintaRedup)
+            Text("Password tidak pernah disimpan.", style = Huruf.meta, color = w.tintaRedup)
         }
     }
 }
