@@ -1,37 +1,36 @@
 # Gwado
 
-Gwado adalah aplikasi Android yang mengumpulkan tugas kuliah dari **Brone**, **Eling**, dan **Google Classroom** ke satu daftar, lengkap dengan deadline, kalender, dan pengingat.
+Tugas kuliahku tersebar di tiga tempat: Brone, Eling, dan Google Classroom. Capek bukanya satu-satu, jadi aku bikin Gwado: aplikasi Android yang ngumpulin semua tugas itu ke satu daftar, lengkap dengan deadline, kalender, dan pengingat.
 
-Tidak ada server dan tidak ada akun Gwado. Gwado mengambil tugas langsung dari HP-mu, dan semua datanya tinggal di HP-mu.
+Gwado nggak pakai server dan nggak perlu bikin akun. Tugas diambil langsung dari HP-mu dan datanya juga cuma ada di HP-mu.
 
 - [Unduh APK](https://github.com/Quazzong/Gwado/releases)
 - [Kebijakan privasi](privasi.md)
 - [Kode sumber](https://github.com/Quazzong/Gwado)
 
-## Fitur
+## Isinya
 
-- Tugas diambil otomatis beberapa kali sehari; tarik daftar ke bawah untuk mengambil saat itu juga.
-- Tugas yang lewat atau tinggal kurang dari dua hari dikumpulkan di bagian Mendesak.
-- Pengingat 3 hari dan 1 hari sebelum deadline, ringkasan pagi, dan alarm 3 jam sebelum deadline.
-- Kalender deadline dan widget layar utama.
-- Tugas dari luar situs (misalnya grup WhatsApp) bisa ditambah sendiri.
+- Tugas diambil sendiri beberapa kali sehari. Mau sekarang juga? Tarik beranda ke bawah.
+- Yang sudah lewat atau sisa kurang dari dua hari masuk bagian **Mendesak**.
+- Pengingat H-3 dan H-1, ringkasan tiap pagi, dan alarm yang bunyi 3 jam sebelum deadline.
+- Kalender deadline dan widget.
+- Tugas dari grup WA bisa dicatat sendiri.
 
-## Cara memasang
+## Cara pasang
 
-1. Unduh berkas `.apk` terbaru dari [Releases](https://github.com/Quazzong/Gwado/releases), lalu buka.
-2. Di layar **Siapkan Gwado**, tambah layanan. Brone dan Eling dibuka di browser untuk login kampus. Kalau HP bertanya aplikasi mana yang membuka hasilnya, pilih **Gwado**.
-3. Untuk Classroom, pilih akun Google yang dipakai kuliah lalu beri izin baca.
-4. Setujui tebakan semester, lalu tekan **Mulai**.
+1. Unduh `.apk` terbaru dari [Releases](https://github.com/Quazzong/Gwado/releases), lalu buka.
+2. Sambungkan Brone dan Eling: login kampus lewat browser. Kalau HP nanya mau dibuka pakai apa, pilih **Gwado**.
+3. Sambungkan Classroom: pilih akun Google kuliahmu, lalu izinkan. Google bakal bilang Gwado belum diverifikasi. Itu wajar; ketuk **Lanjutan**, lalu **Buka Gwado**.
+4. Cek semesternya, lalu tekan **Mulai**.
 
-## Batasan
+## Yang perlu kamu tahu
 
-- Butuh Android 10 atau lebih baru.
-- Saat ini hanya untuk Brone dan Eling (Moodle Universitas Brawijaya) serta Google Classroom. Gwado bukan aplikasi resmi universitas maupun Google.
-- Izin Classroom masih dalam tahap pengujian di Google: akunmu harus didaftarkan dulu sebagai penguji (minta lewat [Issues](https://github.com/Quazzong/Gwado/issues)), dan Google menampilkan peringatan aplikasi belum diverifikasi.
-- Data hanya ada di satu HP. Kalau pindah HP atau aplikasi dihapus, tugas diambil ulang dari situs, tapi centang dan tugas yang ditambah sendiri tidak ikut.
-- Pengambilan otomatis tidak selalu tepat jam karena Android menghemat baterai.
-- Alarm tidak berdering saat mode Jangan Ganggu menyala.
+- Minimal Android 10.
+- Cuma untuk Brone, Eling (UB), dan Google Classroom. Ini proyek pribadi, bukan aplikasi resmi kampus atau Google.
+- Data cuma ada di satu HP. Kalau ganti HP, tugas bisa diambil ulang, tapi centang dan tugas yang kamu catat sendiri hilang.
+- Pengambilan otomatis kadang telat, karena Android menghemat baterai.
+- Alarm nggak bunyi selama Jangan Ganggu menyala.
 
 ## Kontak
 
-Masalah atau pertanyaan bisa ditulis di [GitHub Issues](https://github.com/Quazzong/Gwado/issues).
+Ada masalah atau pertanyaan? Tulis di [Issues](https://github.com/Quazzong/Gwado/issues).
